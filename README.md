@@ -12,9 +12,13 @@ A Video Platform Project with [Nest](https://github.com/nestjs/nest) framework
 # development
 $ npm run start
 
-# watch mode
+# watch mode (Highly Recommended)
 $ npm run start:dev
 
 # production mode
 $ npm run start:prod
 ```
+
+## For developer
+
+Please read the [README_DEV.md](./README_DEV.md)
