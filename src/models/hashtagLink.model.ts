@@ -1,15 +1,17 @@
-import { UUID } from 'crypto';
-import { Table, Column, Model } from 'sequelize-typescript';
+import { UUID } from "crypto";
+import { Table, Column, Model } from "sequelize-typescript";
 
-@Table
+@Table({ freezeTableName: true })
 export class HashtagLink extends Model {
-  
-    @Column({primaryKey : true})
-    contents_id : UUID
+	// Columns
+	@Column({ primaryKey: true })
+	contents_id: UUID;
 
-    @Column({primaryKey : true})
-    hashtag_id : UUID
+	@Column({ primaryKey: true })
+	hashtag_id: UUID;
 
-    @Column
-    is_video : boolean
+	@Column
+	is_video: boolean;
+
+	// Relationship
 }

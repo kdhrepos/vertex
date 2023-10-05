@@ -1,12 +1,14 @@
-import { UUID } from 'crypto';
-import { Table, Column, Model } from 'sequelize-typescript';
+import { UUID } from "crypto";
+import { Table, Column, Model } from "sequelize-typescript";
 
-@Table
+@Table({ freezeTableName: true })
 export class PlaylistContents extends Model {
-    
-  @Column({primaryKey: true})
-  video_id : UUID
+	// Columns
+	@Column({ primaryKey: true })
+	video_id: UUID;
 
-  @Column
-  playlist_id : UUID
+	@Column
+	playlist_id: UUID;
+
+	// Relationship
 }

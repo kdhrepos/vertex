@@ -1,24 +1,27 @@
-import { UUID } from 'crypto';
-import { Table, Column, Model } from 'sequelize-typescript';
+import { UUID } from "crypto";
+import { Table, Column, Model, IsEmail } from "sequelize-typescript";
 
-@Table
+@Table({ freezeTableName: true })
 export class User extends Model {
+	// Columns
+	@Column({ primaryKey: true })
+	id: UUID;
 
-    @Column({primaryKey : true})
-    id : UUID
+	@Column
+	password: string;
 
-    @Column
-    password : string
+	@IsEmail
+	@Column({ unique: true })
+	email: string;
 
-    @Column
-    email : string
+	@Column
+	name: string;
 
-    @Column
-    name : string
+	@Column({ allowNull: true })
+	profile_image_path: string;
 
-    @Column({allowNull : true})
-    profile_image_path : string
+	@Column({ allowNull: true })
+	description: string;
 
-    @Column
-    description : string
+	// Relationship
 }

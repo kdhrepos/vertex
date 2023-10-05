@@ -1,21 +1,23 @@
-import { UUID } from 'crypto';
-import { Table, Column, Model } from 'sequelize-typescript';
+import { UUID } from "crypto";
+import { Table, Column, Model } from "sequelize-typescript";
 
-@Table
+@Table({ freezeTableName: true })
 export class VideoComment extends Model {
-  
-    @Column({primaryKey : true})
-    id : UUID
-    
-    @Column
-    video_id : UUID
+	// Columns
+	@Column({ primaryKey: true })
+	id: UUID;
 
-    @Column
-    user_id : UUID
+	@Column
+	video_id: UUID;
 
-    @Column({allowNull : true})
-    parent_id : UUID
+	@Column
+	user_id: UUID;
 
-    @Column
-    content : string
+	@Column({ allowNull: true })
+	parent_id: UUID;
+
+	@Column
+	content: string;
+
+	//Relationship
 }
