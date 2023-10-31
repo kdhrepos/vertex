@@ -1,15 +1,13 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
-import { SwaggerDocument } from "./swagger.document";
+import { Swagger } from "./swagger.document";
 
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule, {});
-
-	// app.setGlobalPrefix("/v1");
+	const app = await NestFactory.create(AppModule, { bodyParser: true });
 
 	// Swagger Documentation
-	SwaggerDocument.swaggerSetup(app);
+	Swagger.swaggerSetup(app);
 
 	// Validation Pipe
 	app.useGlobalPipes(

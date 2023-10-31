@@ -8,9 +8,17 @@ export class PlaylistController {
 	@Get(":playlist_id")
 	findPlaylist() {}
 
+	@ApiOperation({ description: "재생목록 리스트 생성" })
+	@Post(":playlist_id")
+	createPlaylist() {}
+
+	@ApiOperation({ description: "재생목록 리스트 삭제" })
+	@Delete(":playlist_id")
+	deletePlaylist() {}
+
 	@ApiOperation({ description: "유저의 재생목록 내 컨텐츠 요청" })
 	@Get("contents/:playlist_id")
-	findPlaylistContents() {}
+	findContents() {}
 
 	@ApiOperation({ description: "재생목록에 비디오 추가" })
 	@Post("contents/:video_id")
@@ -19,12 +27,4 @@ export class PlaylistController {
 	@ApiOperation({ description: "재생목록의 비디오 삭제" })
 	@Delete("contents/:video_id")
 	deleteToPlaylist() {}
-
-	@ApiOperation({ description: "재생목록 리스트 생성" })
-	@Post(":playlist_id")
-	createPlaylist() {}
-
-	@ApiOperation({ description: "재생목록 리스트 삭제" })
-	@Delete(":playlist_id")
-	deletePlaylist() {}
 }

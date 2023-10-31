@@ -2,16 +2,22 @@ import { UUID } from "crypto";
 import { Table, Column, Model } from "sequelize-typescript";
 
 @Table({ freezeTableName: true })
-export class PostComment extends Model {
+export class VideoComment extends Model {
 	// Columns
 	@Column({ primaryKey: true })
-	id: UUID;
+	id: number;
 
 	@Column
-	post_id: UUID;
+	video_id: UUID;
+
+	@Column
+	user_id: UUID;
+
+	@Column({ allowNull: true })
+	parent_id: UUID;
 
 	@Column
 	content: string;
 
-	// Relationship
+	//Relationship
 }

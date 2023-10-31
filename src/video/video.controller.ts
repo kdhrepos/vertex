@@ -48,4 +48,22 @@ export class VideoController {
 	@ApiOperation({ description: "비디오 다운로드 요청" })
 	@Get("/download/:video_id")
 	async downloadVideo() {}
+
+	@ApiOperation({ description: "비디오에 댓글 등록" })
+	@Get("/comment/:video_id")
+	async uploadCommentToVideo(@Param("video_id") params) {
+		return params;
+	}
+
+	@ApiOperation({ description: "비디오에 댓글 수정" })
+	@Patch("/comment/:video_id")
+	async updateCommentToVideo(@Param("video_id") params) {
+		return params;
+	}
+
+	@ApiOperation({ description: "비디오 좋아요/싫어요 누르기" })
+	@Post("/like/:video_id")
+	async likeToVideo(@Param("video_id") params) {
+		return params;
+	}
 }

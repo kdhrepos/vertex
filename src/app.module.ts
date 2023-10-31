@@ -22,10 +22,16 @@ import { sequelizeOptions } from "./database/sequelize.options";
 import { HashtagModule } from "./hashtag/hashtag.module";
 import { KeywordModule } from "./keyword/keyword.module";
 import { PlaylistModule } from "./playlist/playlist.module";
-import { PlaylistContentsController } from "./playlist/playlist-contents.controller";
+// import { PlaylistContentsController } from "./playlist/playlist-contents.controller";
 
 @Module({
 	imports: [
+		ConfigModule.forRoot({
+			envFilePath: `.${process.env.NODE_ENV}.env`,
+			isGlobal: true,
+			expandVariables: true,
+		}),
+		SequelizeModule.forRoot(sequelizeOptions),
 		VideoModule,
 		PostModule,
 		UserModule,
@@ -33,13 +39,9 @@ import { PlaylistContentsController } from "./playlist/playlist-contents.control
 		HashtagModule,
 		SubscriptionModule,
 		PlaylistModule,
-		SequelizeModule.forRoot(sequelizeOptions),
 		KeywordModule,
-		// ConfigModule.forRoot({
-		// 	envFilePath: ".env",
-		// }),
 	],
-	controllers: [PlaylistContentsController],
+	controllers: [],
 	providers: [],
 })
 export class AppModule {

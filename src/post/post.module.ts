@@ -8,7 +8,7 @@ import { PostCommentService } from "./post-comment.service";
 import { PostLikeService } from "./post-like.service";
 
 import { SequelizeModule } from "@nestjs/sequelize";
-import { Post } from "src/models/post.model";
+import { Post } from "src/model/post.model";
 
 @Module({
 	imports: [SequelizeModule.forFeature([Post])],

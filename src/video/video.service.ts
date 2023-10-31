@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { Video } from "../models/video.model";
+import { Video } from "../model/video.model";
 import { InjectModel } from "@nestjs/sequelize";
 
 @Injectable()
