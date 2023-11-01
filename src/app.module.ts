@@ -20,9 +20,7 @@ import { HTTPLoggerMiddleware } from "./middleware/http-logger.middleware";
 // Database
 import { sequelizeOptions } from "./database/sequelize.options";
 import { HashtagModule } from "./hashtag/hashtag.module";
-import { KeywordModule } from "./keyword/keyword.module";
 import { PlaylistModule } from "./playlist/playlist.module";
-// import { PlaylistContentsController } from "./playlist/playlist-contents.controller";
 
 @Module({
 	imports: [
@@ -39,7 +37,6 @@ import { PlaylistModule } from "./playlist/playlist.module";
 		HashtagModule,
 		SubscriptionModule,
 		PlaylistModule,
-		KeywordModule,
 	],
 	controllers: [],
 	providers: [],

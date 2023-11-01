@@ -1,6 +1,7 @@
-import { Controller, Delete, Get, Post } from "@nestjs/common";
+import { Controller, Delete, Get, Param, Post, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { SubscriptionService } from "./subscription.service";
+import { SubscriptionService } from "../user/subscription.service";
+import { SubscriptionDto } from "./dto/subscription.dto";
 
 @ApiTags("Subscription")
 @Controller("subscription")
@@ -9,17 +10,17 @@ export class SubscriptionController {
 
 	@ApiOperation({ description: "구독 목록 요청" })
 	@Get(":user_id")
-	findSubscriptionList() {}
+	findSubscriptionList(@Param() userId: string) {}
 
 	@ApiOperation({ description: "구독한 컨텐츠 요청" })
 	@Get(":user_id/contents")
-	findContentsList() {}
+	findContentsList(@Param() userId: string) {}
 
 	@ApiOperation({ description: "구독 요청" })
-	@Post(":creator_id")
-	subscribeChannel() {}
+	@Post("/subscribe")
+	subscribeChannel(@Query() subscriptionDto: SubscriptionDto) {}
 
 	@ApiOperation({ description: "구독 취소" })
-	@Delete(":creator_id")
-	unsubscribeChannel() {}
+	@Delete("/unsubscribe")
+	unsubscribeChannel(@Query() subscriptionDto: SubscriptionDto) {}
 }

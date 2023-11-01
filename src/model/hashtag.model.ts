@@ -4,7 +4,7 @@ import { Table, Column, Model } from "sequelize-typescript";
 @Table({ freezeTableName: true })
 export class Hashtag extends Model {
 	// Columns
-	@Column({ primaryKey: true })
+	@Column({ primaryKey: true, autoIncrement: true })
 	id: UUID;
 
 	@Column
