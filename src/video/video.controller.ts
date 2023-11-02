@@ -12,11 +12,8 @@ import {
 } from "@nestjs/common";
 import { VideoService } from "./video.service";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
+
 import { FileInterceptor } from "@nestjs/platform-express";
-import { diskStorage } from "multer";
-import { extname, join } from "path";
-import { randomUUID } from "crypto";
-import { multerOption } from "src/multer.options";
 import { FirebaseService } from "src/firebase/firebase.service";
 
 @ApiTags("Video")
@@ -54,7 +51,7 @@ export class VideoController {
 	}
 
 	@ApiOperation({ description: "비디오 업로드" })
-	@UseInterceptors(FileInterceptor("video", multerOption))
+	@UseInterceptors(FileInterceptor("video", {}))
 	@Post("/create")
 	async createVideo(@UploadedFile() video: Express.Multer.File) {
 		console.log(video);

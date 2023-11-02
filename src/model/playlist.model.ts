@@ -5,7 +5,7 @@ import { Table, Column, Model } from "sequelize-typescript";
 export class Playlist extends Model {
 	// Columns
 	@Column({ primaryKey: true })
-	id: UUID;
+	id: number;
 
 	@Column
 	user_id: UUID;

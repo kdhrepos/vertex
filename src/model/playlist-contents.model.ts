@@ -8,7 +8,7 @@ export class PlaylistContents extends Model {
 	video_id: UUID;
 
 	@Column
-	playlist_id: UUID;
+	playlist_id: number;
 
 	// Relationship
 }

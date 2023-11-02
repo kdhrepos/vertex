@@ -19,7 +19,7 @@ import { HTTPLoggerMiddleware } from "./middleware/http-logger.middleware";
 
 // Database
 import { sequelizeOptions } from "./database/sequelize.options";
-import { HashtagModule } from "./hashtag/hashtag.module";
+// import { HashtagModule } from "./hashtag/hashtag.module";
 import { PlaylistModule } from "./playlist/playlist.module";
 
 @Module({
@@ -34,7 +34,7 @@ import { PlaylistModule } from "./playlist/playlist.module";
 		PostModule,
 		UserModule,
 		AuthModule,
-		HashtagModule,
+		// HashtagModule,
 		SubscriptionModule,
 		PlaylistModule,
 	],

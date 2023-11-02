@@ -3,15 +3,6 @@ import { AuthGuard } from "@nestjs/passport";
 import { Observable } from "rxjs";
 
 @Injectable()
-export class LoginGuard implements CanActivate {
-	canActivate(
-		context: ExecutionContext,
-	): boolean | Promise<boolean> | Observable<boolean> {
-		return true;
-	}
-}
-
-@Injectable()
 export class GoogleAuthGuard extends AuthGuard("google") {
 	async canActivate(context: any): Promise<boolean> {
 		const result = (await super.canActivate(context)) as boolean;

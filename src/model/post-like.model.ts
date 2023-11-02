@@ -8,5 +8,5 @@ export class PostLike extends Model {
 	user_id: UUID;
 
 	@Column({ primaryKey: true })
-	video_id: UUID;
+	post_id: UUID;
 }

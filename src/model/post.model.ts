@@ -10,9 +10,6 @@ export class Post extends Model {
 	@Column
 	user_id: UUID;
 
-	@Column({ allowNull: true })
-	parent_id: UUID;
-
 	@Column
 	title: string;
 

@@ -1,9 +1,16 @@
 import { Controller, Delete, Get, Post } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { PlaylistService } from "./playlist.service";
+import { PlaylistContentsService } from "./playlist-contents.service";
 
 @ApiTags("Playlist")
 @Controller("playlist")
 export class PlaylistController {
+	constructor(
+		private playlistService: PlaylistService,
+		private playlistContentsService: PlaylistContentsService,
+	) {}
+
 	@ApiOperation({ description: "유저의 재생목록 리스트 요청" })
 	@Get(":playlist_id")
 	findPlaylist() {}

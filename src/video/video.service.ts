@@ -11,9 +11,6 @@ import { Video } from "../model/video.model";
 import { InjectModel } from "@nestjs/sequelize";
 import { createReadStream, statSync } from "fs";
 
-import { initializeApp } from "firebase/app";
-import { getStorage, ref } from "firebase/storage";
-
 @Injectable()
 export class VideoService {
 	constructor(
@@ -79,7 +76,6 @@ export class VideoService {
 	/**
 	 * @param userId
 	 * @param videoFile
-	 * @description 사용자가 하나의 비디오를 업로드
 	 */
 	async create(userId: string, video: Express.Multer.File) {
 		// const firebase = initializeApp({});
@@ -91,14 +87,12 @@ export class VideoService {
 	 * @param userId
 	 * @param videoId
 	 * @param videoInfo // 비디오 메타 데이터
-	 * @description 사용자가 하나의 비디오를 수정
 	 */
 	async update(userId: string, videoId: string, videoInfo: any) {}
 
 	/**
 	 * @param userId
 	 * @param videoId
-	 * @description 사용자가 자신이 업로드한 비디오를 삭제
 	 */
 	async delete(userId: string, videoId: string) {}
 }

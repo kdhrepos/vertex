@@ -10,7 +10,6 @@ import {
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { multerOption } from "src/multer.options";
 import { PostService } from "./post.service";
 
 @ApiTags("Community")
@@ -30,7 +29,7 @@ export class PostController {
 
 	@ApiOperation({ description: "한 채널에 게시글 업로드" })
 	@Post("/aaa")
-	@UseInterceptors(FileInterceptor("img", multerOption))
+	@UseInterceptors(FileInterceptor("img", {}))
 	async createPost(@UploadedFile() file: Express.Multer.File) {}
 
 	@ApiOperation({ description: "한 채널의 게시글 수정" })

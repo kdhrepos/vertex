@@ -6,9 +6,9 @@ import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
 export class UserController {
 	constructor() {}
 
-	// @ApiBody({ type: CreateUserDto })
-	@Post("/sign-up")
-	createUser() {
-		return "user successfully made";
-	}
+	// // @ApiBody({ type: CreateUserDto })
+	// @Post("/sign-up")
+	// createUser() {
+	// 	return "user successfully made";
+	// }
 }

@@ -7,20 +7,13 @@ export class FirebaseService {
 	private readonly firebase: FirebaseApp;
 
 	private readonly firebaseConfiguration = {
-		// apiKey: `${process.env.FIREBASE_API_KEY}`,
-		// authDomain: `${process.env.FIREBASE_AUTH_DOMAIN}`,
-		// projectId: `${process.env.FIREBASE_PROJECT_ID}`,
-		// storageBucket: `${process.env.FIREBASE_STORAGE}`,
-		// appId: `${process.env.FIREBASE_APP_ID}`,
-		// messagingSenderId: "606232107300",
-		// measurementId: "G-DTQ0C1PHH0",
-		apiKey: "AIzaSyDkxjQN_kjK6vhe4toVhU6gkWBYPpmwm4o",
-		authDomain: "vertex-403708.firebaseapp.com",
-		projectId: "vertex-403708",
-		storageBucket: "vertex-403708.appspot.com",
-		messagingSenderId: "606232107300",
-		appId: "1:606232107300:web:39dbf8a927b415cdf5bbb1",
-		measurementId: "G-DTQ0C1PHH0",
+		apiKey: `${process.env.FIREBASE_API_KEY}`,
+		authDomain: `${process.env.FIREBASE_AUTH_DOMAIN}`,
+		projectId: `${process.env.FIREBASE_PROJECT_ID}`,
+		storageBucket: `${process.env.FIREBASE_STORAGE}`,
+		appId: `${process.env.FIREBASE_APP_ID}`,
+		messagingSenderId: `${process.env.FIREBASE_SENDER_ID}`,
+		measurementId: `${process.env.FIREBASE_MEASUREMENT_ID}`,
 	};
 
 	private readonly logger = new Logger("Firebase Service");
@@ -46,4 +39,6 @@ export class FirebaseService {
 	}
 
 	async deleteVideo() {}
+
+	async findVideo() {}
 }

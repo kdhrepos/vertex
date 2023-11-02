@@ -8,6 +8,9 @@ export class PostComment extends Model {
 	id: number;
 
 	@Column
+	user_id: UUID;
+
+	@Column
 	post_id: UUID;
 
 	@Column

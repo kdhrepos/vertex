@@ -6,7 +6,7 @@ import { Post } from "src/model/post.model";
 export class PostService {
 	constructor(
 		@InjectModel(Post)
-		private PostModel: typeof Post,
+		private postModel: typeof Post,
 	) {}
 
 	private readonly logger = new Logger("Post Service");

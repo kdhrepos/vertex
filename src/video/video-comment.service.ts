@@ -11,6 +11,9 @@ export class VideoCommentService {
 
 	private readonly logger = new Logger("Video Comment Service");
 
+	/**
+	 * @description 비디오 ID를 통해 비디오의 댓글들을 검색
+	 */
 	async findAll() {}
 
 	async create() {}
