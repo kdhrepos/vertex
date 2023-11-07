@@ -5,7 +5,6 @@ import { Swagger } from "./swagger";
 import * as passport from "passport";
 import * as session from "express-session";
 import * as cookieParser from "cookie-parser";
-import { GoogleAuthGuard } from "./auth/auth.guard";
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule, { bodyParser: true });
