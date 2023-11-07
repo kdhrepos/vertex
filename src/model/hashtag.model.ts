@@ -2,16 +2,13 @@ import { UUID } from "crypto";
 import { Table, Column, Model } from "sequelize-typescript";
 
 @Table({ freezeTableName: true })
-export class PostComment extends Model {
+export class Hashtag extends Model {
 	// Columns
-	@Column({ primaryKey: true })
-	id: UUID;
+	@Column({ primaryKey: true, autoIncrement: true })
+	id: number;
 
 	@Column
-	post_id: UUID;
-
-	@Column
-	content: string;
+	name: string;
 
 	// Relationship
 }

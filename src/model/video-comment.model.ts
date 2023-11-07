@@ -5,16 +5,16 @@ import { Table, Column, Model } from "sequelize-typescript";
 export class VideoComment extends Model {
 	// Columns
 	@Column({ primaryKey: true })
-	id: UUID;
+	id: number;
 
-	@Column
+	@Column({ unique: true })
 	video_id: UUID;
 
-	@Column
+	@Column({ unique: true })
 	user_id: UUID;
 
 	@Column({ allowNull: true })
-	parent_id: UUID;
+	parent_id: number;
 
 	@Column
 	content: string;

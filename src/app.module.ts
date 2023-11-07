@@ -17,29 +17,38 @@ import { SubscriptionModule } from "./subscription/subscription.module";
 // Logger
 import { HTTPLoggerMiddleware } from "./middleware/http-logger.middleware";
 
-// Database
-import { sequelizeOptions } from "./database/sequelize.options";
-import { HashtagModule } from "./hashtag/hashtag.module";
-import { KeywordModule } from "./keyword/keyword.module";
+// import { HashtagModule } from "./hashtag/hashtag.module";
 import { PlaylistModule } from "./playlist/playlist.module";
-import { PlaylistContentsController } from "./playlist/playlist-contents.controller";
 
 @Module({
 	imports: [
+		ConfigModule.forRoot({
+			envFilePath: `.${process.env.NODE_ENV}.env`,
+			isGlobal: true,
+			expandVariables: true,
+		}),
+		SequelizeModule.forRoot({
+			dialect: "mysql",
+				host: process.env.DATABASE_HOST,
+				port: Number(process.env.DATABASE_PORT),
+				username: process.env.DATABASE_USER,
+				password: process.env.DATABASE_PASSWORD,
+				database: process.env.DATABASE_NAME,
+				autoLoadModels: true,
+				timezone: "Asia/Seoul",
+				synchronize: true,
+				// sync: { alter: true },
+				// sync: { force: true },
+		}),
 		VideoModule,
 		PostModule,
 		UserModule,
 		AuthModule,
-		HashtagModule,
+		// HashtagModule,
 		SubscriptionModule,
 		PlaylistModule,
-		SequelizeModule.forRoot(sequelizeOptions),
-		KeywordModule,
-		// ConfigModule.forRoot({
-		// 	envFilePath: ".env",
-		// }),
 	],
-	controllers: [PlaylistContentsController],
+	controllers: [],
 	providers: [],
 })
 export class AppModule {

@@ -2,13 +2,13 @@ import { UUID } from "crypto";
 import { Table, Column, Model } from "sequelize-typescript";
 
 @Table({ freezeTableName: true })
-export class Hashtag extends Model {
+export class PlaylistContents extends Model {
 	// Columns
 	@Column({ primaryKey: true })
-	id: UUID;
+	video_id: UUID;
 
 	@Column
-	name: string;
+	playlist_id: number;
 
 	// Relationship
 }

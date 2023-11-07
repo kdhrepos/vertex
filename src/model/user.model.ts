@@ -8,6 +8,9 @@ export class User extends Model {
 	id: UUID;
 
 	@Column
+	provider_id: string;
+
+	@Column({ allowNull: true })
 	password: string;
 
 	@IsEmail

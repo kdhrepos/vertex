@@ -1,7 +1,7 @@
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { INestApplication } from "@nestjs/common";
 
-export class SwaggerDocument {
+export class Swagger {
 	public static swaggerSetup = (app: INestApplication) => {
 		const config = new DocumentBuilder()
 			.setTitle("Vertex")

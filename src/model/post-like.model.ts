@@ -2,13 +2,11 @@ import { UUID } from "crypto";
 import { Table, Column, Model } from "sequelize-typescript";
 
 @Table({ freezeTableName: true })
-export class PlaylistContents extends Model {
+export class PostLike extends Model {
 	// Columns
 	@Column({ primaryKey: true })
-	video_id: UUID;
+	user_id: UUID;
 
-	@Column
-	playlist_id: UUID;
-
-	// Relationship
+	@Column({ primaryKey: true })
+	post_id: UUID;
 }
