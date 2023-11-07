@@ -4,7 +4,7 @@ import {
 	Response,
 	Request,
 	UseGuards,
-	Redirect,
+	Redirect,	
 } from "@nestjs/common";
 import { GoogleAuthGuard } from "./auth.guard";
 import { ApiOperation } from "@nestjs/swagger";
@@ -24,6 +24,4 @@ export class AuthController {
 
 		return user;
 	}
-
-	
 }
