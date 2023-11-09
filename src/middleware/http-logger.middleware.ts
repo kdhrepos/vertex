@@ -8,7 +8,8 @@ export class HTTPLoggerMiddleware implements NestMiddleware {
 	use(request: Request, response: Response, next: NextFunction): void {
 		const { ip, method, originalUrl, body, query } = request;
 
-		this.logger.log(`Request [${method}] ${originalUrl}`, body);
+		// this.logger.log(`Request [${method}] ${originalUrl}`, body || query);
+		this.logger.log(`Request [${method}] ${originalUrl}`);
 
 		next();
 	}

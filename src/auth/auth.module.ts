@@ -7,6 +7,9 @@ import { UserService } from "src/user/user.service";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { User } from "src/model/user.model";
 import { SessionSerializer } from "./session.serializer";
+import { AuthenticatedGuard, LocalAuthGuard } from "./auth.guard";
+import { LocalStrategy } from "./local.strategy";
+import { AuthService } from "./auth.service";
 
 @Module({
 	imports: [
@@ -14,7 +17,15 @@ import { SessionSerializer } from "./session.serializer";
 		UserModule,
 		PassportModule.register({ session: true }),
 	],
-	providers: [UserService, GoogleStrategy, SessionSerializer],
+	providers: [
+		AuthService,
+		UserService,
+		GoogleStrategy,
+		LocalStrategy,
+		SessionSerializer,
+		LocalAuthGuard,
+		AuthenticatedGuard,
+	],
 	controllers: [AuthController],
 })
 export class AuthModule {}

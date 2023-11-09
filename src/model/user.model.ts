@@ -4,10 +4,10 @@ import { Table, Column, Model, IsEmail } from "sequelize-typescript";
 @Table({ freezeTableName: true })
 export class User extends Model {
 	// Columns
-	@Column({ primaryKey: true })
-	id: UUID;
+	@Column({ primaryKey: true, autoIncrement: true })
+	id: number;
 
-	@Column
+	@Column({ allowNull: true })
 	provider_id: string;
 
 	@Column({ allowNull: true })

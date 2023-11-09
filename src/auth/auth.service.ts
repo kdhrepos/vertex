@@ -8,17 +8,25 @@ export class AuthService {
 
 	// private readonly logger = new Logger("Auth Service");
 
+	async signIn() {}
+
 	async validateUser(email: string, password: string) {
 		const user = await this.userService.getUser(email);
 
-		if (!user) {
-			return null;
-		}
+		// if (!user) {
+		// 	return null;
+		// }
 
-		const { password: hashedPassword, ...userInfo } = user;
+		// const { password: hashedPassword, ...userInfo } = user;
 
-		if (bcrypt.compareSync(password, hashedPassword)) {
-			return userInfo;
+		// if (bcrypt.compareSync(password, hashedPassword)) {
+		// 	return userInfo;
+		// }
+		// return null;
+
+		if (user && user.password === password) {
+			const { password, ...result } = user;
+			return result;
 		}
 		return null;
 	}
