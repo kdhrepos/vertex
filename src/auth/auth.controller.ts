@@ -4,11 +4,12 @@ import {
 	Response,
 	Request,
 	UseGuards,
-	Redirect,
+	Post,
 } from "@nestjs/common";
-import { GoogleAuthGuard } from "./auth.guard";
-import { ApiOperation } from "@nestjs/swagger";
+import { GoogleAuthGuard, LocalAuthGuard } from "./auth.guard";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 
+@ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
 	@ApiOperation({ description: "구글 소셜 로그인 접근 Route" })
@@ -25,5 +26,10 @@ export class AuthController {
 		return user;
 	}
 
-	
+	@ApiOperation({ description: "일반 로그인 접근 Route" })
+	@Post("login/local")
+	@UseGuards(LocalAuthGuard)
+	localAuth(@Request() req: any) {
+		return req.user;
+	}
 }
