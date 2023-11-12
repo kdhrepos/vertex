@@ -4,6 +4,7 @@ import { CreateUserDto } from "src/auth/dto/create-user.dto";
 import * as bcrypt from "bcrypt";
 
 import { User } from "src/model/user.model";
+import { DeleteUserDto } from "src/auth/dto/delete-user.dto";
 
 @Injectable()
 export class UserService {
@@ -87,6 +88,56 @@ export class UserService {
 			delete createdUser.dataValues.password;
 
 			return createdUser;
+		} catch (error) {
+			this.logger.error(`${functionName} :  ${error}`);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	async deleteUser(deleteUserDto: DeleteUserDto) {
+		const functionName = UserService.prototype.deleteUser.name;
+		try {
+			const { email, password } = deleteUserDto;
+
+			const existedUser = await this.userModel.findOne({
+				where: { email: email },
+				raw: true,
+			});
+
+			if (!existedUser) {
+				this.logger.error(`${functionName} : Wrong Email`);
+				throw new HttpException("Wrong Email", HttpStatus.BAD_REQUEST);
+			}
+
+			// 소셜 로그인은 여기서 삭제
+			if (existedUser.provider_id) {
+				/*
+				유저가 생성했던 비디오, post 모두 deleted 상태로 돌려야 함
+				*/
+				await this.userModel.destroy({
+					where: {
+						email: existedUser.email,
+					},
+				});
+				return true;
+			}
+
+			if (!bcrypt.compareSync(password, existedUser.password)) {
+				this.logger.error(`${functionName} : Wrong Password`);
+				throw new HttpException("Wrong Password", HttpStatus.BAD_REQUEST);
+			}
+
+			// 일반 로그인은 여기서 삭제
+			/*
+				유저가 생성했던 비디오, post 모두 deleted 상태로 돌려야 함
+			*/
+			await this.userModel.destroy({
+				where: {
+					email: existedUser.email,
+				},
+			});
+
+			return true;
 		} catch (error) {
 			this.logger.error(`${functionName} :  ${error}`);
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);

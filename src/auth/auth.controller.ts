@@ -8,21 +8,36 @@ import {
 	Body,
 	UploadedFile,
 	UseInterceptors,
+	Delete,
 } from "@nestjs/common";
 import {
 	AuthenticatedGuard,
 	GoogleAuthGuard,
 	LocalAuthGuard,
 } from "./auth.guard";
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+	ApiBadRequestResponse,
+	ApiBody,
+	ApiExtraModels,
+	ApiOkResponse,
+	ApiOperation,
+	ApiResponse,
+	ApiTags,
+	getSchemaPath,
+} from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { UserService } from "src/user/user.service";
+import { DeleteUserDto } from "./dto/delete-user.dto";
 
 @ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
-	constructor(private authService: AuthService) {}
+	constructor(
+		private authService: AuthService,
+		private userService: UserService,
+	) {}
 
 	@ApiOperation({ description: "구글 소셜 로그인 접근 Route" })
 	@Get("login/google")
@@ -61,13 +76,39 @@ export class AuthController {
 		return res.send(user);
 	}
 
-	@ApiOperation({ description: "" })
+	@ApiOperation({
+		description: "소셜 로그인을 통한 회원가입이 아닌 일반 회원가입",
+	})
+	@ApiExtraModels(CreateUserDto)
+	@ApiOkResponse({
+		status: 200,
+		description: "성공 시 DB에 생성된 유저 정보 반환",
+	})
+	@ApiBadRequestResponse({
+		status: 400,
+		description: "에러 반환",
+	})
 	@Post("signin/local")
 	@UseInterceptors(FileInterceptor("profile-image", {}))
 	async signin(
 		@Body() createUserDto: CreateUserDto,
 		@UploadedFile() profileImage: Express.Multer.File,
 	) {
-		return await this.authService.registerUser(createUserDto, profileImage);
+		return await this.userService.createUser(createUserDto, profileImage);
+	}
+
+	@ApiOperation({ description: "소셜, 일반 모두 포함한 회원탈퇴 기능" })
+	@ApiExtraModels(DeleteUserDto)
+	@ApiOkResponse({
+		status: 200,
+		description: "회원 탈퇴 성공 시 boolean 값 true 반환 (문자열 x)",
+	})
+	@ApiBadRequestResponse({
+		status: 400,
+		description: "에러 반환",
+	})
+	@Delete("signout")
+	async signout(@Body() deleteUserDto: DeleteUserDto) {
+		return await this.userService.deleteUser(deleteUserDto);
 	}
 }
