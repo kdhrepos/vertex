@@ -54,7 +54,6 @@ export class VideoController {
 	@UseInterceptors(FileInterceptor("video", {}))
 	@Post("/create")
 	async createVideo(@UploadedFile() video: Express.Multer.File) {
-		console.log(video);
 		return await this.firebaseService.uploadVideo("a", video);
 	}
 

@@ -1,6 +1,7 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { UserService } from "src/user/user.service";
 import { bcrypt } from "bcrypt";
+import { CreateUserDto } from "./dto/create-user.dto";
 
 @Injectable()
 export class AuthService {
@@ -8,26 +9,30 @@ export class AuthService {
 
 	// private readonly logger = new Logger("Auth Service");
 
-	async signIn() {}
+	async registerUser(
+		createUserDto: CreateUserDto,
+		profileImage: Express.Multer.File,
+	) {
+		return this.userService.createUser(createUserDto, profileImage);
+	}
+
+	async unregisterUser() {}
 
 	async validateUser(email: string, password: string) {
 		const user = await this.userService.getUser(email);
 
-		// if (!user) {
-		// 	return null;
-		// }
+		if (!user) {
+			return null;
+		}
 
-		// const { password: hashedPassword, ...userInfo } = user;
+		const { password: hashedPassword, ...userInfo } = user;
 
 		// if (bcrypt.compareSync(password, hashedPassword)) {
 		// 	return userInfo;
 		// }
-		// return null;
-
-		if (user && user.password === password) {
-			const { password, ...result } = user;
-			return result;
+		if (password === hashedPassword) {
+			return userInfo;
 		}
-		return null;
+		return new UnauthorizedException();
 	}
 }

@@ -20,6 +20,13 @@ import { HTTPLoggerMiddleware } from "./middleware/http-logger.middleware";
 // import { HashtagModule } from "./hashtag/hashtag.module";
 import { PlaylistModule } from "./playlist/playlist.module";
 
+import * as session from "express-session";
+import * as cookieParser from "cookie-parser";
+import * as MySQLStore from "express-mysql-session";
+import * as mysql2 from "mysql2/promise";
+import { RedisService } from "./redis/redis.service";
+import { RedisModule } from "./redis/redis.module";
+
 @Module({
 	imports: [
 		ConfigModule.forRoot({
@@ -29,11 +36,11 @@ import { PlaylistModule } from "./playlist/playlist.module";
 		}),
 		SequelizeModule.forRoot({
 			dialect: "mysql",
-			host: process.env.DATABASE_HOST,
-			port: Number(process.env.DATABASE_PORT),
-			username: process.env.DATABASE_USER,
-			password: process.env.DATABASE_PASSWORD,
-			database: process.env.DATABASE_NAME,
+			host: process.env.MYSQL_HOST,
+			port: Number(process.env.MYSQL_PORT),
+			username: process.env.MYSQL_USER,
+			password: process.env.MYSQL_PASSWORD,
+			database: process.env.MYSQL_NAME,
 			autoLoadModels: true,
 			timezone: "Asia/Seoul",
 			synchronize: true,
@@ -44,9 +51,9 @@ import { PlaylistModule } from "./playlist/playlist.module";
 		PostModule,
 		UserModule,
 		AuthModule,
-		// HashtagModule,
 		SubscriptionModule,
 		PlaylistModule,
+		RedisModule,
 	],
 	controllers: [],
 	providers: [],
