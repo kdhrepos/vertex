@@ -1,20 +1,24 @@
 import { UUID } from "crypto";
 import { Table, Column, Model, ForeignKey } from "sequelize-typescript";
 
+/*
+	트리거 참조
+    What should happen when the referenced key is deleted. One of CASCADE, RESTRICT, SET DEFAULT, SET NULL or
+    NO ACTION
+   
+  	onDelete?: string;
+*/
 @Table({ freezeTableName: true })
 export class Video extends Model {
 	// Columns
 	@Column({ primaryKey: true })
-	id: UUID;
-
-	@Column
-	user_id: UUID;
-
-	@Column
-	thumbnail_image_path: string;
-
-	@Column
 	video_path: string;
+
+	@Column
+	user_email: string;
+
+	@Column({ allowNull: false })
+	thumbnail_path: string;
 
 	@Column
 	title: string;

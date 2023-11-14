@@ -14,6 +14,7 @@ import { VideoComment } from "src/model/video-comment.model";
 import { VideoLike } from "src/model/video-like.model";
 import { VideoRecord } from "src/model/video-record.model";
 import { FirebaseService } from "src/firebase/firebase.service";
+import { FirebaseModule } from "src/firebase/firebase.module";
 
 @Module({
 	imports: [

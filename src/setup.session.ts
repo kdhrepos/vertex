@@ -12,18 +12,17 @@ export function setUpSession(app: INestApplication): void {
 
 	app.use(
 		session({
-			secret: "secret", // 세션에 사용될 시크릿 값. 감춰두자.
+			secret: "secret",
 			saveUninitialized: false,
 			resave: false,
 			store: new RedisStore({
-				// 세션 스토어 설정. 여기서 RedisStore를 설정해서 client에 위에서 설정한 레디스를 입력하자.
 				client: client,
-				ttl: 30, // time to live
+				ttl: 30,
 			}),
 			cookie: {
 				// httpOnly: true,
 				// secure: true,
-				maxAge: 3600000, //세션이 redis에 저장되는 기간은 maxAge로 조절한다.(ms)
+				maxAge: 3600000,
 			},
 		}),
 	);

@@ -9,12 +9,21 @@ import {
 	Response,
 	UseInterceptors,
 	UploadedFile,
+	Body,
+	UseGuards,
+	Optional,
+	UploadedFiles,
 } from "@nestjs/common";
 import { VideoService } from "./video.service";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 
-import { FileInterceptor } from "@nestjs/platform-express";
+import {
+	FileFieldsInterceptor,
+	FileInterceptor,
+} from "@nestjs/platform-express";
 import { FirebaseService } from "src/firebase/firebase.service";
+import { AuthenticatedGuard } from "src/auth/auth.guard";
+import { UploadVideoDto } from "./dto/upload-video.dto";
 
 @ApiTags("Video")
 @Controller("video")
@@ -51,10 +60,25 @@ export class VideoController {
 	}
 
 	@ApiOperation({ description: "비디오 업로드" })
-	@UseInterceptors(FileInterceptor("video", {}))
-	@Post("/create")
-	async createVideo(@UploadedFile() video: Express.Multer.File) {
-		return await this.firebaseService.uploadVideo("a", video);
+	@UseGuards(AuthenticatedGuard)
+	@UseInterceptors(
+		FileFieldsInterceptor([{ name: "video" }, { name: "thumbnail" }]),
+	)
+	@Post("upload")
+	async uploadVideo(
+		@Body() uploadVideoDto: UploadVideoDto,
+		@UploadedFiles()
+		files: {
+			video: Express.Multer.File[];
+			thumbnail?: Express.Multer.File[];
+		},
+	) {
+		console.log(files);
+		return await this.firebaseService.uploadVideo(
+			uploadVideoDto,
+			files.video[0],
+			files.thumbnail[0],
+		);
 	}
 
 	@ApiOperation({ description: "비디오 수정" })

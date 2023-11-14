@@ -89,7 +89,7 @@ export class UserService {
 
 			return createdUser;
 		} catch (error) {
-			this.logger.error(`${functionName} :  ${error}`);
+			this.logger.error(`${functionName} : ${error}`);
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

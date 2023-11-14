@@ -1,14 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { PassportSerializer } from "@nestjs/passport";
+import { User } from "src/model/user.model";
 import { RedisService } from "src/redis/redis.service";
 import { UserService } from "src/user/user.service";
 
 @Injectable()
 export class SessionSerializer extends PassportSerializer {
-	constructor(
-		private userService: UserService,
-		private redisService: RedisService,
-	) {
+	constructor() {
 		super();
 	}
 
@@ -17,7 +15,7 @@ export class SessionSerializer extends PassportSerializer {
 	 * @param user
 	 * @param done
 	 */
-	serializeUser(user: any, done: Function): any {
+	serializeUser(user: User, done: Function): any {
 		console.log("serializeUser");
 		done(null, user.email);
 	}

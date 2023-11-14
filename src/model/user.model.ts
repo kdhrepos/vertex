@@ -3,19 +3,16 @@ import { Table, Column, Model, IsEmail } from "sequelize-typescript";
 
 @Table({ freezeTableName: true })
 export class User extends Model {
-	// Columns
-	@Column({ primaryKey: true, autoIncrement: true })
-	id: number;
+	@IsEmail
+	@Column({ primaryKey: true })
+	email: string;
 
+	// Columns
 	@Column({ allowNull: true })
 	provider_id: string;
 
 	@Column({ allowNull: true })
 	password: string;
-
-	@IsEmail
-	@Column({ unique: true })
-	email: string;
 
 	@Column
 	name: string;

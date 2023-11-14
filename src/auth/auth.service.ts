@@ -1,13 +1,13 @@
 import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { UserService } from "src/user/user.service";
-import { bcrypt } from "bcrypt";
+import * as bcrypt from "bcrypt";
 import { CreateUserDto } from "./dto/create-user.dto";
 
 @Injectable()
 export class AuthService {
 	constructor(private userService: UserService) {}
 
-	// private readonly logger = new Logger("Auth Service");
+	private readonly logger = new Logger("Auth Service");
 
 	async registerUser(
 		createUserDto: CreateUserDto,
@@ -27,10 +27,7 @@ export class AuthService {
 
 		const { password: hashedPassword, ...userInfo } = user;
 
-		// if (bcrypt.compareSync(password, hashedPassword)) {
-		// 	return userInfo;
-		// }
-		if (password === hashedPassword) {
+		if (bcrypt.compareSync(password, hashedPassword)) {
 			return userInfo;
 		}
 		return new UnauthorizedException();

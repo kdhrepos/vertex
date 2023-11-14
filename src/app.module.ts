@@ -26,6 +26,7 @@ import * as MySQLStore from "express-mysql-session";
 import * as mysql2 from "mysql2/promise";
 import { RedisService } from "./redis/redis.service";
 import { RedisModule } from "./redis/redis.module";
+import { FirebaseModule } from "./firebase/firebase.module";
 
 @Module({
 	imports: [
@@ -54,6 +55,7 @@ import { RedisModule } from "./redis/redis.module";
 		SubscriptionModule,
 		PlaylistModule,
 		RedisModule,
+		FirebaseModule,
 	],
 	controllers: [],
 	providers: [],
