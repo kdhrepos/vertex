@@ -6,12 +6,12 @@ import { PostLikeService } from "./post-like.service";
 
 import { SequelizeModule } from "@nestjs/sequelize";
 import { Post } from "src/model/post.model";
-import { PostLike } from "src/model/post-like.model";
-import { PostComment } from "src/model/post-comment.model";
 import { PostService } from "./post.service";
+import { Comment } from "src/model/commet.model";
+import { Like } from "src/model/like.model";
 
 @Module({
-	imports: [SequelizeModule.forFeature([Post, PostLike, PostComment])],
+	imports: [SequelizeModule.forFeature([Post, Like, Comment])],
 	controllers: [PostController],
 	providers: [PostService, PostLikeService, PostCommentService],
 })

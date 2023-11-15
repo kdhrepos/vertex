@@ -1,41 +1,35 @@
+import { UUID } from "crypto";
 import {
 	Table,
 	Column,
 	Model,
-	ForeignKey,
 	BelongsTo,
-	PrimaryKey,
+	ForeignKey,
 } from "sequelize-typescript";
-import { Video } from "./video.model";
 import { User } from "./user.model";
+import { Video } from "./video.model";
+import { Post } from "./post.model";
 
 @Table({ freezeTableName: true })
-export class VideoRecord extends Model {
+export class Like extends Model {
 	// Columns
 	@ForeignKey(() => User)
 	@Column({
 		primaryKey: true,
-		references: {
-			model: User,
-			key: "email",
-		},
 	})
 	user_email: string;
 
 	@ForeignKey(() => Video)
 	@Column({
 		primaryKey: true,
-		references: {
-			model: Video,
-			key: "video_path",
-		},
 	})
-	video_id: string;
+	contents_id: string;
 
-	// Relationship
+	// Relationships
 	@BelongsTo(() => User, "user_email")
 	user: User;
 
-	@BelongsTo(() => Video, "video_id")
-	video: Video;
+	@BelongsTo(() => Video || Post, "contents_id")
+	contents: Video;
+	// contents: Video || Post;
 }

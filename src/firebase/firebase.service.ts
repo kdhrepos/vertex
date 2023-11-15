@@ -39,13 +39,33 @@ export class FirebaseService {
 		try {
 			if (!video) {
 				this.logger.error(`${functionName} : Invalid Video Object`);
-				return;
+				return new HttpException(
+					"Invalid Video Object",
+					HttpStatus.BAD_REQUEST,
+				);
 			}
 
 			const { email, title, description } = uploadVideoDto;
+			const duplicatedVideo = await this.videoModel.findOne({
+				where: {
+					user_email: email,
+					title: title,
+				},
+			});
+
+			if (duplicatedVideo) {
+				this.logger.error(`${functionName} : Duplicated Video Title`);
+				return new HttpException(
+					"Duplicated Video Title",
+					HttpStatus.BAD_REQUEST,
+				);
+			}
+
 			const hashedFilePath = bcrypt
 				.hashSync(`${email}${title}${video.originalname}`, 12)
 				.replace(/\//g, "_");
+
+			console.log(hashedFilePath);
 
 			// Firebase Storage 내 Video 파일 경로 생성
 			let videoPath = "videos/";
@@ -76,13 +96,13 @@ export class FirebaseService {
 
 				return true;
 			}
-			throw new HttpException(
+			return new HttpException(
 				"Video Upload Error",
 				HttpStatus.INTERNAL_SERVER_ERROR,
 			);
 		} catch (error) {
 			this.logger.error(`${functionName} : ${error}`);
-			throw new HttpException(
+			return new HttpException(
 				"Video Upload Error",
 				HttpStatus.INTERNAL_SERVER_ERROR,
 			);

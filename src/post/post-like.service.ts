@@ -1,15 +1,15 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { PostLike } from "src/model/post-like.model";
+import { Like } from "src/model/like.model";
 
 @Injectable()
 export class PostLikeService {
 	constructor(
-		@InjectModel(PostLike)
-		private postLikeModel: typeof PostLike,
+		@InjectModel(Like)
+		private likeModel: typeof Like,
 	) {}
 
-	private readonly logger = new Logger("Post Like Service");
+	private readonly logger = new Logger("Like Service");
 
 	async put() {}
 }

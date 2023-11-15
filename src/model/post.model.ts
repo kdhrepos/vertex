@@ -1,5 +1,6 @@
 import { UUID } from "crypto";
-import { Table, Column, Model } from "sequelize-typescript";
+import { Table, Column, Model, BelongsTo } from "sequelize-typescript";
+import { User } from "./user.model";
 
 @Table({ freezeTableName: true })
 export class Post extends Model {
@@ -7,8 +8,13 @@ export class Post extends Model {
 	@Column({ primaryKey: true })
 	id: UUID;
 
-	@Column
-	user_id: UUID;
+	@Column({
+		references: {
+			model: User,
+			key: "email",
+		},
+	})
+	user_email: string;
 
 	@Column
 	title: string;
@@ -29,4 +35,6 @@ export class Post extends Model {
 	is_deleted: boolean;
 
 	// Relationship
+	@BelongsTo(() => User, "user_email")
+	user: User;
 }

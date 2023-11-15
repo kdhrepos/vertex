@@ -73,7 +73,6 @@ export class VideoController {
 			thumbnail?: Express.Multer.File[];
 		},
 	) {
-		console.log(files);
 		return await this.firebaseService.uploadVideo(
 			uploadVideoDto,
 			files.video[0],

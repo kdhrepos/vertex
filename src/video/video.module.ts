@@ -10,16 +10,13 @@ import { VideoCommentService } from "./video-comment.service";
 // Database
 import { SequelizeModule } from "@nestjs/sequelize";
 import { Video } from "src/model/video.model";
-import { VideoComment } from "src/model/video-comment.model";
-import { VideoLike } from "src/model/video-like.model";
+import { Like } from "src/model/like.model";
 import { VideoRecord } from "src/model/video-record.model";
 import { FirebaseService } from "src/firebase/firebase.service";
-import { FirebaseModule } from "src/firebase/firebase.module";
+import { Comment } from "src/model/commet.model";
 
 @Module({
-	imports: [
-		SequelizeModule.forFeature([Video, VideoComment, VideoLike, VideoRecord]),
-	],
+	imports: [SequelizeModule.forFeature([Video, Comment, Like, VideoRecord])],
 	controllers: [VideoController],
 	providers: [
 		VideoService,
