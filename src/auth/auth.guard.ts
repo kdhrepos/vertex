@@ -1,11 +1,15 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
+import { RedisService } from "src/redis/redis.service";
 
 @Injectable()
 export class GoogleAuthGuard extends AuthGuard("google") {
 	async canActivate(context: any): Promise<boolean> {
+		// Execute GoogleStrategy
 		const result = (await super.canActivate(context)) as boolean;
 		const request = context.switchToHttp().getRequest();
+
+		// Execute Serializer
 		await super.logIn(request);
 		return result;
 	}
@@ -25,9 +29,8 @@ export class LocalAuthGuard extends AuthGuard("local") {
 }
 
 @Injectable()
-export class AuthenticatedGuard implements CanActivate {
+export class AuthenticatedGuard extends AuthGuard("session") {
 	canActivate(context: ExecutionContext): boolean {
-		console.log("hello123");
 		const request = context.switchToHttp().getRequest();
 		return request.isAuthenticated();
 	}

@@ -1,16 +1,23 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
-import { Swagger } from "./swagger";
+import { swaggerSetup } from "./swagger";
 import * as passport from "passport";
 import * as session from "express-session";
 import * as cookieParser from "cookie-parser";
+import * as mysql2 from "mysql2/promise";
+import * as MySQLStore from "express-mysql-session";
+import { setUpSession } from "./setup.session";
+import { RedisService } from "./redis/redis.service";
 
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule, { bodyParser: true });
+	const app = await NestFactory.create(AppModule, {
+		bodyParser: true,
+		cors: true,
+	});
 
 	// Swagger Documentation
-	Swagger.swaggerSetup(app);
+	swaggerSetup(app);
 
 	// Validation Pipe
 	app.useGlobalPipes(
@@ -23,21 +30,14 @@ async function bootstrap() {
 		}),
 	);
 
+	// Enable Cookie
 	app.use(cookieParser());
 
 	// Session
-	app.use(
-		session({
-			secret: process.env.SESSION_KEY,
-			resave: false,
-			cookie: { maxAge: 3600000, httpOnly: true },
-		}),
-	);
-	app.use(passport.initialize());
-	app.use(passport.session());
+	setUpSession(app);
 
 	// CORS
-	app.enableCors();
+	// app.enableCors();
 
 	await app.listen(process.env.SERVER_PORT);
 }

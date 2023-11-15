@@ -28,6 +28,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
 			providerId,
 		);
 
+		if (!user) {
+			return null;
+		}
 		return user;
 	}
 }
