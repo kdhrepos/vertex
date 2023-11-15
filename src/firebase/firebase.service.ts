@@ -100,6 +100,54 @@ export class FirebaseService {
 		}
 	}
 
+	async updateVideo(
+		videoData: Video,
+		video: Express.Multer.File,
+		thumbnail?: Express.Multer.File,
+	) {
+		const functionName = FirebaseService.prototype.uploadVideo.name;
+		try {
+			if (!video) {
+				this.logger.error(`${functionName} : Invalid Video Object`);
+				return new HttpException(
+					"Invalid Video Object",
+					HttpStatus.BAD_REQUEST,
+				);
+			}
+
+			const {
+				user_email: email,
+				title,
+				description,
+				video_file_extension: videoFileExtension,
+				thumbnail_file_extension: thumbnailFileExtension,
+				file_path: filePath,
+			} = videoData;
+
+			// Firebase Storage 내 Video 파일 경로 생성
+			let videoPath = "videos/";
+			videoPath += filePath;
+			videoPath += videoFileExtension;
+
+			// Firebase Storage 내 Thumbnail 이미지 경로 생성
+			let thumbnailPath = "thumbnail/";
+			thumbnailPath += filePath;
+			thumbnailPath += thumbnailFileExtension;
+
+			const videoDirRef = ref(this.firebaseStorage, videoPath);
+			const thumbnailDirRef = ref(this.firebaseStorage, thumbnailPath);
+
+			uploadBytes(videoDirRef, video.buffer);
+			uploadBytes(thumbnailDirRef, thumbnail.buffer);
+		} catch (error) {
+			this.logger.error(`${functionName} : ${error}`);
+			return new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
+
 	async findVideo(res: Response, video: Video) {
 		const functionName = FirebaseService.prototype.findVideo.name;
 		try {

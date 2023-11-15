@@ -38,6 +38,7 @@ export class CreateUserDto {
 	})
 	password: string;
 
+	@IsString({ always: false })
 	@ApiProperty({
 		example: "Hello I'm Kim",
 		description: "사용자의 채널 설명으로, 필수 요건 아님",

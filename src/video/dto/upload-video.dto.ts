@@ -18,6 +18,7 @@ export class UploadVideoDto {
 	})
 	title: string;
 
+	@IsString({ always: false })
 	@ApiProperty({
 		required: false,
 		description: "비디오 설명",
