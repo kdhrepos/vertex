@@ -8,21 +8,17 @@ export class Playlist extends Model {
 	@Column({ primaryKey: true })
 	id: number;
 
-	@Column({
-		references: {
-			model: User,
-			key: "email",
-		},
-	})
+	@Column({})
 	user_email: string;
 
 	@Column
 	list_name: string;
 
-	// Relationship
-	@BelongsTo(() => User, "user_email")
-	user: User;
+	/**
+	 * Relationship
+	 */
 
-	@HasMany(() => PlaylistContents, "video_id" && "playlist_id")
-	playlistContents: PlaylistContents[];
+	/* Belongs */
+
+	/* Has */
 }

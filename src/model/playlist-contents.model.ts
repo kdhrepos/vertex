@@ -12,7 +12,11 @@ export class PlaylistContents extends Model {
 	@Column({ primaryKey: true })
 	playlist_id: number;
 
-	// Relationship
-	@BelongsTo(() => Playlist, "playlist_id")
-	playlist: Playlist;
+	/**
+	 * Relationship
+	 */
+
+	/* Belongs */
+
+	/* Has */
 }

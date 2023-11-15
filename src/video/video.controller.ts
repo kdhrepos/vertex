@@ -5,14 +5,15 @@ import {
 	Post,
 	Delete,
 	Patch,
-	Request,
-	Response,
+	Res,
 	UseInterceptors,
-	UploadedFile,
 	Body,
 	UseGuards,
-	Optional,
 	UploadedFiles,
+	Request,
+	HttpException,
+	HttpStatus,
+	Query,
 } from "@nestjs/common";
 import { VideoService } from "./video.service";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
@@ -24,6 +25,9 @@ import {
 import { FirebaseService } from "src/firebase/firebase.service";
 import { AuthenticatedGuard } from "src/auth/auth.guard";
 import { UploadVideoDto } from "./dto/upload-video.dto";
+import { FindVideoDto } from "./dto/find-video.dto";
+import { DeleteVideoDto } from "./dto/delete-video.dto";
+import { Response } from "express";
 
 @ApiTags("Video")
 @Controller("video")
@@ -38,13 +42,18 @@ export class VideoController {
 	// async findVideosByAlgorithm() {}
 
 	@ApiOperation({ description: "하나의 비디오 시청을 위해 비디오 요청" })
-	@Get("watch/:video_id")
+	@Get("watch")
 	async streamVideoById(
-		@Request() req,
-		@Response() res,
-		@Param("video_id") video_id,
+		@Res() res: Response,
+		@Query() findVideoDto: FindVideoDto,
 	) {
-		return this.videoService.findOne(req, res, video_id);
+		const { email, title } = findVideoDto;
+		const video = await this.videoService.findOne(email, title);
+		if (video) {
+			return await this.firebaseService.findVideo(res, video);
+		} else {
+			return new HttpException("Video Does Not Exist", HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@ApiOperation({
@@ -73,11 +82,23 @@ export class VideoController {
 			thumbnail?: Express.Multer.File[];
 		},
 	) {
-		return await this.firebaseService.uploadVideo(
-			uploadVideoDto,
-			files.video[0],
-			files.thumbnail[0],
-		);
+		if (
+			!(await this.videoService.findOne(
+				uploadVideoDto.email,
+				uploadVideoDto.title,
+			))
+		) {
+			return await this.firebaseService.uploadVideo(
+				uploadVideoDto,
+				files.video[0],
+				files.thumbnail[0],
+			);
+		} else {
+			return new HttpException(
+				"Duplicated Video Title",
+				HttpStatus.BAD_REQUEST,
+			);
+		}
 	}
 
 	@ApiOperation({ description: "비디오 수정" })
@@ -85,9 +106,15 @@ export class VideoController {
 	async updateVideo() {}
 
 	@ApiOperation({ description: "비디오 삭제" })
-	@Delete("/:video_id")
-	async deleteVideo() {
-		return "This deletes a video";
+	@UseGuards(AuthenticatedGuard)
+	@Delete("/delete")
+	async deleteVideo(@Body() deleteVideoDto: DeleteVideoDto) {
+		const { email, title } = deleteVideoDto;
+		const existedVideo = await this.videoService.findOne(email, title);
+		if (existedVideo) {
+			await this.videoService.deleteOne(email, title);
+			return await this.firebaseService.deleteVideo(existedVideo);
+		}
 	}
 
 	@ApiOperation({ description: "비디오 다운로드 요청" })

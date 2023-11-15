@@ -8,4 +8,12 @@ export class Hashtag extends Model {
 
 	@Column
 	name: string;
+
+	/**
+	 * Relationship
+	 */
+
+	/* Belongs */
+
+	/* Has */
 }

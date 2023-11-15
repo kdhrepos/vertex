@@ -13,10 +13,11 @@ export class Subscription extends Model {
 	@Column
 	channel_email: string;
 
-	// Relationship
-	// @BelongsTo(() => User, "user_email")
-	// user: User;
+	/**
+	 * Relationship
+	 */
 
-	// @BelongsTo(() => User, "user_email")
-	// user: User;
+	/* Belongs */
+
+	/* Has */
 }

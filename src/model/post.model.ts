@@ -8,12 +8,7 @@ export class Post extends Model {
 	@Column({ primaryKey: true })
 	id: UUID;
 
-	@Column({
-		references: {
-			model: User,
-			key: "email",
-		},
-	})
+	@Column({})
 	user_email: string;
 
 	@Column
@@ -34,7 +29,11 @@ export class Post extends Model {
 	@Column({ defaultValue: false })
 	is_deleted: boolean;
 
-	// Relationship
-	@BelongsTo(() => User, "user_email")
-	user: User;
+	/**
+	 * Relationship
+	 */
+
+	/* Belongs */
+
+	/* Has */
 }

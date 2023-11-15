@@ -43,13 +43,11 @@ export class Comment extends Model {
 	@Column
 	is_video: number;
 
-	//Relationship
-	// @BelongsTo(() => User, "user_email")
-	// user: User;
+	/**
+	 * Relationship
+	 */
 
-	// @BelongsTo(() => Video, "video_id")
-	// video: Video;
+	/* Belongs */
 
-	// @BelongsTo(() => Comment, "video_id")
-	// comment: Comment;
+	/* Has */
 }

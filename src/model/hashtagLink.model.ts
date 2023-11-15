@@ -25,10 +25,11 @@ export class HashtagLink extends Model {
 	@Column
 	is_video: boolean;
 
-	// Relationship
-	// @BelongsTo(() => Hashtag, "hashtag_id")
-	// hashtag: Hashtag[];
+	/**
+	 * Relationship
+	 */
 
-	// @BelongsTo(() => Post || Video)
-	// contents: Model;
+	/* Belongs */
+
+	/* Has */
 }

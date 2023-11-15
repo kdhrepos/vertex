@@ -27,19 +27,11 @@ export class User extends Model {
 	@Column({ allowNull: true })
 	description: string;
 
-	// Relationship
-	@HasMany(() => Video, "video_path")
-	videos: Video[];
+	/**
+	 * Relationship
+	 */
 
-	@HasMany(() => VideoRecord, "video_id" && "user_email")
-	videoRecords: VideoRecord[];
+	/* Belongs */
 
-	@HasMany(() => Post, "post_id")
-	posts: Post[];
-
-	@HasMany(() => Playlist, "id")
-	playlists: Playlist[];
-
-	@HasMany(() => Like, "user_email" && "contents_id")
-	likes: Like[];
+	/* Has */
 }

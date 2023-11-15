@@ -22,17 +22,13 @@ import { Like } from "./like.model";
 @Table({ freezeTableName: true })
 export class Video extends Model {
 	// Columns
-	@Column({ primaryKey: true })
-	video_path: string;
+	@Column
+	file_path: string;
 
-	@ForeignKey(() => User)
-	@Column({})
+	@Column({ primaryKey: true })
 	user_email: string;
 
-	@Column({ allowNull: false })
-	thumbnail_path: string;
-
-	@Column
+	@Column({ primaryKey: true })
 	title: string;
 
 	@Column({ allowNull: true })
@@ -44,27 +40,17 @@ export class Video extends Model {
 	@Column({ defaultValue: 0 })
 	view_count: number;
 
-	@Column({ defaultValue: false })
-	is_deleted: boolean;
+	@Column
+	video_file_extension: string;
+
+	@Column
+	thumbnail_file_extension: string;
 
 	/**
 	 * Relationship
 	 */
 
 	/* Belongs */
-	@BelongsTo(() => User, "user_email")
-	user: User;
 
 	/* Has */
-	// @HasMany(() => Comment, "id")
-	// comment: Comment[];
-
-	// @HasMany(() => HashtagLink)
-	// hashtagLink: HashtagLink[];
-
-	@HasMany(() => VideoRecord, "video_id" && "user_email")
-	videoRecord: VideoRecord[];
-
-	@HasMany(() => Like, "user_email" && "contents_id")
-	likes: Like[];
 }
