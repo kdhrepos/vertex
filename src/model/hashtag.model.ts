@@ -1,6 +1,6 @@
 import { Table, Column, Model } from "sequelize-typescript";
 
-@Table({ freezeTableName: true })
+@Table({ freezeTableName: true, initialAutoIncrement: "1" })
 export class Hashtag extends Model {
 	// Columns
 	@Column({ primaryKey: true, autoIncrement: true })

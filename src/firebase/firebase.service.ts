@@ -14,6 +14,7 @@ import * as path from "path";
 import { VideoService } from "src/video/video.service";
 import { Response } from "express";
 import { generateId } from "src/generate-id";
+import { FindVideoDto } from "src/video/dto/video-dto/find-video.dto";
 
 @Injectable()
 export class FirebaseService {
@@ -188,6 +189,7 @@ export class FirebaseService {
 		}
 	}
 
+	async downloadVideo(findVideoDto: FindVideoDto) {}
 	async findThumbnail() {}
 
 	async uploadImage(img: Express.Multer.File, imgPath: string) {

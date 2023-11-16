@@ -24,19 +24,22 @@ import {
 import { FirebaseService } from "src/firebase/firebase.service";
 import { AuthenticatedGuard } from "src/auth/auth.guard";
 import { Response } from "express";
-import * as bcrypt from "bcrypt";
-import * as crypto from "crypto";
 import { generateId } from "src/generate-id";
 import { FindVideoDto } from "./dto/video-dto/find-video.dto";
 import { UploadVideoDto } from "./dto/video-dto/upload-video.dto";
 import { UpdateVideoDto } from "./dto/video-dto/update-video.dto";
 import { DeleteVideoDto } from "./dto/video-dto/delete-video.dto";
+import { UploadCommentDto } from "./dto/comment-dto/upload-comment.dto";
+import { VideoCommentService } from "./video-comment.service";
+import { FindCommentDto } from "./dto/comment-dto/find-comment.dto";
+import { UpdateCommentDto } from "./dto/comment-dto/update-comment.dto";
 
 @ApiTags("Video")
 @Controller("video")
 export class VideoController {
 	constructor(
 		private videoService: VideoService,
+		private videoCommentService: VideoCommentService,
 		private firebaseService: FirebaseService,
 	) {}
 
@@ -74,7 +77,7 @@ export class VideoController {
 		const hashedFilePath = generateId(
 			`${email}${title}${files.video[0].originalname}`,
 		);
-		console.log(hashedFilePath);
+
 		if (!(await this.videoService.findOne(hashedFilePath))) {
 			return await this.firebaseService.uploadVideo(
 				uploadVideoDto,
@@ -103,7 +106,7 @@ export class VideoController {
 			thumbnail?: Express.Multer.File[];
 		},
 	) {
-		const { email, title, path } = updateVideoDto;
+		const { path } = updateVideoDto;
 
 		const videoData = await this.videoService.findOne(path);
 		if (videoData) {
@@ -143,23 +146,36 @@ export class VideoController {
 	}
 
 	@ApiOperation({ description: "비디오 다운로드 요청" })
-	@Get("/download/:video_id")
-	async downloadVideo() {}
+	@Get("/download")
+	async downloadVideo(@Query() findVideoDto: FindVideoDto) {
+		const { path } = findVideoDto;
+		if (await this.videoService.findOne(path)) {
+			return await this.firebaseService.downloadVideo(findVideoDto);
+		} else {
+			return new HttpException(
+				"Video Download Error",
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
 
 	@ApiOperation({ description: "특정 비디오의 댓글 가져오기" })
-	@Get("/comment/:video_id")
-	async getCommentFromVideo() {}
+	@Get("comment")
+	async getCommentFromVideo(@Query() findCommentDto: FindCommentDto) {
+		return await this.videoCommentService.findAll(findCommentDto);
+	}
 
 	@ApiOperation({ description: "비디오에 댓글 등록" })
-	@Post("/comment/:video_id")
-	async createCommentToVideo(@Param("video_id") params) {
-		return params;
+	@Post("comment")
+	async createCommentToVideo(@Body() uploadCommentDto: UploadCommentDto) {
+		return await this.videoCommentService.create(uploadCommentDto);
 	}
 
 	@ApiOperation({ description: "비디오에 댓글 수정" })
-	@Patch("/comment/:video_id")
-	async updateCommentToVideo(@Param("video_id") params) {
-		return params;
+	@UseGuards(AuthenticatedGuard)
+	@Patch("comment")
+	async updateCommentToVideo(@Body() updateCommentDto: UpdateCommentDto) {
+		return await this.videoCommentService.update(updateCommentDto);
 	}
 
 	@ApiOperation({ description: "비디오 좋아요/싫어요 누르기" })

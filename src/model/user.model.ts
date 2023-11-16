@@ -4,6 +4,7 @@ import { VideoRecord } from "./video-record.model";
 import { Post } from "./post.model";
 import { Playlist } from "./playlist.model";
 import { Like } from "./like.model";
+import { Comment } from "./commet.model";
 
 @Table({ freezeTableName: true })
 export class User extends Model {
@@ -34,4 +35,6 @@ export class User extends Model {
 	/* Belongs */
 
 	/* Has */
+	@HasMany(() => Comment)
+	comments: Comment[];
 }

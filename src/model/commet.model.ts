@@ -9,10 +9,10 @@ import { User } from "./user.model";
 import { Video } from "./video.model";
 import { Post } from "./post.model";
 
-@Table({ freezeTableName: true })
+@Table({ freezeTableName: true, initialAutoIncrement: "1" })
 export class Comment extends Model {
 	// Columns
-	@Column({ primaryKey: true })
+	@Column({ primaryKey: true, autoIncrement: true })
 	id: number;
 
 	@ForeignKey(() => User)
@@ -21,19 +21,15 @@ export class Comment extends Model {
 	})
 	user_email: string;
 
-	@ForeignKey(() => Video || Post)
+	// @ForeignKey(() => Video || Post)
 	@Column({
 		primaryKey: true,
 	})
 	contents_id: string;
 
-	@ForeignKey(() => Comment)
+	// @ForeignKey(() => Comment)
 	@Column({
 		allowNull: true,
-		references: {
-			model: Comment,
-			key: "id",
-		},
 	})
 	parent_id: number;
 
@@ -48,6 +44,8 @@ export class Comment extends Model {
 	 */
 
 	/* Belongs */
+	@BelongsTo(() => User, "user_email")
+	user: User;
 
 	/* Has */
 }
