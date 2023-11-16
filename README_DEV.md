@@ -9,7 +9,7 @@
 
 ## Database
 
-### Variable
+### Columns
 
 - 데이터 베이스와 관련된 변수들은 모두 Snake Case를 이용할 것
   - ex) contents_id

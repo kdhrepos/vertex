@@ -29,6 +29,9 @@ export class Post extends Model {
 	@Column({ defaultValue: false })
 	is_deleted: boolean;
 
+	@Column
+	channel_email : string;
+
 	/**
 	 * Relationship
 	 */

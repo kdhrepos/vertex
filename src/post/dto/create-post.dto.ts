@@ -1,14 +1,15 @@
-import { IsString, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 
 export class CreatePostDto {
+    @IsNotEmpty()
+    @IsString()
+    email: string;
 
-//   @IsString()
-//   readonly title: string;
+    @IsNotEmpty()
+    @IsString()
+    title: string;
 
-//   @IsNumber()
-//   readonly year: number;
-
-//   @IsOptional()
-//   @IsString({ each: true })
-//   readonly genres: string[];
+    @IsNotEmpty()
+    @IsString()
+    contents: string;
 }

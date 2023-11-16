@@ -15,6 +15,7 @@ import * as path from "path";
 import { VideoService } from "src/video/video.service";
 import { Response } from "express";
 import { generateId } from "src/generate-id";
+import { CreatePostDto } from "src/post/dto/create-post.dto";
 
 @Injectable()
 export class FirebaseService {
@@ -33,7 +34,9 @@ export class FirebaseService {
 
 	private readonly logger = new Logger("Firebase Service");
 
-	constructor(private videoService: VideoService) {
+	constructor(
+		private videoService: VideoService
+	) {
 		this.firebase = initializeApp(this.firebaseConfiguration);
 		this.firebaseStorage = getStorage(this.firebase);
 	}
@@ -190,4 +193,47 @@ export class FirebaseService {
 	}
 
 	async findThumbnail() {}
+
+	async uploadImage(
+		img: Express.Multer.File,
+		imgPath: string
+	) {
+		const functionName = FirebaseService.prototype.uploadVideo.name;
+		try {	
+			if (!img) {
+				this.logger.error(`${functionName} : Invalid Image Object`);
+				throw new HttpException(
+					"Invalid Imgae Object",
+					HttpStatus.BAD_REQUEST,
+				);
+			}
+
+			let imagePath = "images/";
+			imagePath += imgPath;
+			imagePath += path.extname(img.originalname);
+
+			const imgDirRef = ref(this.firebaseStorage, imagePath);
+			const imgResult = uploadBytes(imgDirRef, img.buffer);
+
+			if (!imgResult) {
+				throw new HttpException(
+					"Video Upload Error",
+					HttpStatus.INTERNAL_SERVER_ERROR,
+				);
+			}
+			return true;
+		} catch(error) {
+			this.logger.error(`${functionName} : ${error}`);
+			throw new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
+	async deleteImage() {
+
+	}
+	async findImage() {
+
+	}
 }
