@@ -15,7 +15,7 @@ import {
 	Query,
 } from "@nestjs/common";
 import { VideoService } from "./video.service";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiExtraModels, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import {
 	FileFieldsInterceptor,
@@ -27,6 +27,10 @@ import { UploadVideoDto } from "./dto/upload-video.dto";
 import { FindVideoDto } from "./dto/find-video.dto";
 import { DeleteVideoDto } from "./dto/delete-video.dto";
 import { Response } from "express";
+import * as bcrypt from "bcrypt";
+import * as crypto from "crypto";
+import { generateId } from "src/generate-id";
+import { UpdateVideoDto } from "./dto/update-video.dto";
 
 @ApiTags("Video")
 @Controller("video")
@@ -42,12 +46,9 @@ export class VideoController {
 
 	@ApiOperation({ description: "하나의 비디오 시청을 위해 비디오 요청" })
 	@Get("watch")
-	async streamVideoById(
-		@Res() res: Response,
-		@Query() findVideoDto: FindVideoDto,
-	) {
-		const { email, title } = findVideoDto;
-		const video = await this.videoService.findOne(email, title);
+	async streamVideo(@Res() res: Response, @Query() findVideoDto: FindVideoDto) {
+		const { videoPath } = findVideoDto;
+		const video = await this.videoService.findOne(videoPath);
 		if (video) {
 			return await this.firebaseService.findVideo(res, video);
 		} else {
@@ -70,7 +71,11 @@ export class VideoController {
 		},
 	) {
 		const { email, title } = uploadVideoDto;
-		if (!(await this.videoService.findOne(email, title))) {
+		const hashedFilePath = generateId(
+			`${email}${title}${files.video[0].originalname}`,
+		);
+		console.log(hashedFilePath);
+		if (!(await this.videoService.findOne(hashedFilePath))) {
 			return await this.firebaseService.uploadVideo(
 				uploadVideoDto,
 				files.video[0],
@@ -91,17 +96,18 @@ export class VideoController {
 	)
 	@Patch("/update")
 	async updateVideo(
-		@Body() uploadVideoDto: UploadVideoDto,
+		@Body() updateVideoDto: UpdateVideoDto,
 		@UploadedFiles()
 		files: {
 			video: Express.Multer.File[];
 			thumbnail?: Express.Multer.File[];
 		},
 	) {
-		const { email, title } = uploadVideoDto;
-		const videoData = await this.videoService.findOne(email, title);
+		const { email, title, videoPath } = updateVideoDto;
+
+		const videoData = await this.videoService.findOne(videoPath);
 		if (videoData) {
-			this.videoService.updateOne(uploadVideoDto);
+			this.videoService.updateOne(updateVideoDto);
 			return await this.firebaseService.updateVideo(
 				videoData,
 				files.video[0],
@@ -116,10 +122,10 @@ export class VideoController {
 	@UseGuards(AuthenticatedGuard)
 	@Delete("/delete")
 	async deleteVideo(@Body() deleteVideoDto: DeleteVideoDto) {
-		const { email, title } = deleteVideoDto;
-		const existedVideo = await this.videoService.findOne(email, title);
+		const { email, title, videoPath } = deleteVideoDto;
+		const existedVideo = await this.videoService.findOne(videoPath);
 		if (existedVideo) {
-			await this.videoService.deleteOne(email, title);
+			await this.videoService.deleteOne(videoPath, email, title);
 			return await this.firebaseService.deleteVideo(existedVideo);
 		}
 	}
@@ -140,8 +146,12 @@ export class VideoController {
 	@Get("/download/:video_id")
 	async downloadVideo() {}
 
-	@ApiOperation({ description: "비디오에 댓글 등록" })
+	@ApiOperation({ description: "특정 비디오의 댓글 가져오기" })
 	@Get("/comment/:video_id")
+	async getCommentFromVideo() {}
+
+	@ApiOperation({ description: "비디오에 댓글 등록" })
+	@Post("/comment/:video_id")
 	async createCommentToVideo(@Param("video_id") params) {
 		return params;
 	}

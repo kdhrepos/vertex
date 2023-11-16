@@ -12,9 +12,9 @@ A Video Platform Project with [Nest](https://github.com/nestjs/nest) framework
 # development
 $ npm run start
 
-# watch mode
-$ npm run start:dev
+# watch mode on local
+$ npm run start:local
 
-# production mode
-$ npm run start:prod
+# watch mode on global
+$ npm run start:global
 ```

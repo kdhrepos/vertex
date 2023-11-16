@@ -14,6 +14,7 @@ import { UploadVideoDto } from "src/video/dto/upload-video.dto";
 import * as path from "path";
 import { VideoService } from "src/video/video.service";
 import { Response } from "express";
+import { generateId } from "src/generate-id";
 
 @Injectable()
 export class FirebaseService {
@@ -54,9 +55,9 @@ export class FirebaseService {
 
 			const { email, title, description } = uploadVideoDto;
 
-			const hashedFilePath = bcrypt
-				.hashSync(`${email}${title}${video.originalname}`, 12)
-				.replace(/\//g, "_");
+			const hashedFilePath = generateId(
+				`${email}${title}${video.originalname}`,
+			);
 
 			// Firebase Storage 내 Video 파일 경로 생성
 			let videoPath = "videos/";

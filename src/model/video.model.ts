@@ -22,13 +22,13 @@ import { Like } from "./like.model";
 @Table({ freezeTableName: true })
 export class Video extends Model {
 	// Columns
-	@Column
+	@Column({ primaryKey: true })
 	file_path: string;
 
-	@Column({ primaryKey: true })
+	@Column
 	user_email: string;
 
-	@Column({ primaryKey: true })
+	@Column
 	title: string;
 
 	@Column({ allowNull: true })

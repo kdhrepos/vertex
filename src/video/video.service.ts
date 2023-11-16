@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { Video } from "../model/video.model";
 import { InjectModel } from "@nestjs/sequelize";
 import { UploadVideoDto } from "./dto/upload-video.dto";
+import { UpdateVideoDto } from "./dto/update-video.dto";
 
 @Injectable()
 export class VideoService {
@@ -12,14 +13,10 @@ export class VideoService {
 
 	private readonly logger = new Logger("Video Service");
 
-	async findOne(email: string, title: string): Promise<any> {
+	async findOne(videoPath: string): Promise<any> {
 		const functionName = VideoService.prototype.findOne.name;
 		try {
-			const existedVideo = await this.videoModel.findOne({
-				where: {
-					user_email: email,
-					title: title,
-				},
+			const existedVideo = await this.videoModel.findByPk(videoPath, {
 				raw: true,
 			});
 			if (existedVideo) {
@@ -64,14 +61,15 @@ export class VideoService {
 		}
 	}
 
-	async updateOne(uploadVideoDto: UploadVideoDto) {
+	async updateOne(updateVideoDto: UpdateVideoDto) {
 		const functionName = VideoService.prototype.updateOne.name;
 		try {
-			const { email, title, description } = uploadVideoDto;
+			const { email, title, description, videoPath } = updateVideoDto;
 			await this.videoModel.update(
 				{ user_email: email, title: title, description: description },
 				{
 					where: {
+						file_path: videoPath,
 						user_email: email,
 						title: title,
 					},
@@ -86,11 +84,12 @@ export class VideoService {
 		}
 	}
 
-	async deleteOne(email: string, title: string) {
+	async deleteOne(videoPath: string, email: string, title: string) {
 		const functionName = VideoService.prototype.deleteOne.name;
 		try {
 			const existedVideo = await this.videoModel.findOne({
 				where: {
+					file_path: videoPath,
 					user_email: email,
 					title: title,
 				},
