@@ -4,9 +4,6 @@ import {
 	Response,
 	Request,
 	UseGuards,
-<<<<<<< HEAD
-	Redirect,	
-=======
 	Post,
 	Body,
 	UploadedFile,
@@ -59,8 +56,6 @@ export class AuthController {
 		}
 		return res.send(user);
 	}
-<<<<<<< HEAD
-=======
 
 	@ApiOperation({ description: "일반 로그인 접근 Route" })
 	@Post("login/local")
@@ -68,5 +63,52 @@ export class AuthController {
 	localAuth(@Request() req: any) {
 		console.log(req.user);
 		return req.user;
+	}
+
+	@ApiOperation({ description: "이미 로그인한 사용자가 확인하는 Route" })
+	@Get("login/authenticated")
+	@UseGuards(AuthenticatedGuard)
+	authenticated(@Request() req: any, @Response() res: any) {
+		const { user } = req;
+		if (!user) {
+			return res.send(user);
+		}
+		return res.send(user);
+	}
+
+	@ApiOperation({
+		description: "소셜 로그인을 통한 회원가입이 아닌 일반 회원가입",
+	})
+	@ApiExtraModels(CreateUserDto)
+	@ApiOkResponse({
+		status: 200,
+		description: "성공 시 DB에 생성된 유저 정보 반환",
+	})
+	@ApiBadRequestResponse({
+		status: 400,
+		description: "에러 반환",
+	})
+	@Post("signin/local")
+	@UseInterceptors(FileInterceptor("profile-image", {}))
+	async signin(
+		@Body() createUserDto: CreateUserDto,
+		@UploadedFile() profileImage: Express.Multer.File,
+	) {
+		return await this.userService.createUser(createUserDto, profileImage);
+	}
+
+	@ApiOperation({ description: "소셜, 일반 모두 포함한 회원탈퇴 기능" })
+	@ApiExtraModels(DeleteUserDto)
+	@ApiOkResponse({
+		status: 200,
+		description: "회원 탈퇴 성공 시 boolean 값 true 반환 (문자열 x)",
+	})
+	@ApiBadRequestResponse({
+		status: 400,
+		description: "에러 반환",
+	})
+	@Delete("signout")
+	async signout(@Body() deleteUserDto: DeleteUserDto) {
+		return await this.userService.deleteUser(deleteUserDto);
 	}
 }
