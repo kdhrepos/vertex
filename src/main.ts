@@ -2,13 +2,8 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { swaggerSetup } from "./swagger";
-import * as passport from "passport";
-import * as session from "express-session";
 import * as cookieParser from "cookie-parser";
-import * as mysql2 from "mysql2/promise";
-import * as MySQLStore from "express-mysql-session";
 import { setUpSession } from "./setup.session";
-import { RedisService } from "./redis/redis.service";
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule, {

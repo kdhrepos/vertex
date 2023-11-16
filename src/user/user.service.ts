@@ -73,7 +73,7 @@ export class UserService {
 			}
 
 			const profileImagePath =
-				profileImage === null
+				profileImage === null || profileImage === undefined
 					? null
 					: `profile-${email}-${profileImage.originalname}`;
 

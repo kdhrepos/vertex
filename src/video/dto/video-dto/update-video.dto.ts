@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsString } from "class-validator";
 
-export class UploadVideoDto {
+export class UpdateVideoDto {
 	@IsEmail()
 	@ApiProperty({
 		required: true,
@@ -18,6 +18,7 @@ export class UploadVideoDto {
 	})
 	title: string;
 
+	@IsString({ always: false })
 	@ApiProperty({
 		required: false,
 		description: "비디오 설명",
@@ -25,17 +26,11 @@ export class UploadVideoDto {
 	})
 	description: string;
 
+	@IsString()
 	@ApiProperty({
 		required: true,
-		example: "mp4 etc...",
-		description: "동영상",
+		description: "DB 상에서 비디오의 ID",
+		example: "92e46fc92fb5527cd73639a99246eedf35946afa06deb9f7e73d787ce17fe60b",
 	})
-	video: Express.Multer.File;
-
-	@ApiProperty({
-		required: false,
-		example: "jpg/jpeg/png etc...",
-		description: "동영상 썸네일",
-	})
-	thumbnail: Express.Multer.File;
+	path: string;
 }

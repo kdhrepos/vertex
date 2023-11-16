@@ -14,22 +14,26 @@ import { Post } from "./post.model";
 export class Like extends Model {
 	// Columns
 	@ForeignKey(() => User)
-	@Column({
-		primaryKey: true,
-	})
+	@Column({ primaryKey: true, onDelete: "CASCADE" })
 	user_email: string;
 
+	@ForeignKey(() => Post)
 	@ForeignKey(() => Video)
-	@Column({
-		primaryKey: true,
-	})
+	@Column({ primaryKey: true, onDelete: "CASCADE" })
 	contents_id: string;
 
-	// Relationships
+	/**
+	 * Relationship
+	 */
+
+	/* Belongs */
 	@BelongsTo(() => User, "user_email")
 	user: User;
 
-	@BelongsTo(() => Video || Post, "contents_id")
-	contents: Video;
-	// contents: Video || Post;
+	@BelongsTo(() => Post, "contents_id")
+	post: Post;
+
+	@BelongsTo(() => Video, "contents_id")
+	video: Video;
+	/* Has */
 }

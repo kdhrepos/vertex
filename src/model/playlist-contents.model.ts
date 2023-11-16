@@ -1,18 +1,27 @@
 import { UUID } from "crypto";
-import { Table, Column, Model, BelongsTo } from "sequelize-typescript";
+import {
+	Table,
+	Column,
+	Model,
+	BelongsTo,
+	ForeignKey,
+} from "sequelize-typescript";
 import { Playlist } from "./playlist.model";
 import { Video } from "./video.model";
 
 @Table({ freezeTableName: true })
 export class PlaylistContents extends Model {
 	// Columns
-	@Column({ primaryKey: true })
+	@Column({ primaryKey: true, onDelete: "CASCADE" })
 	video_id: string;
 
-	@Column({ primaryKey: true })
+	@Column({ primaryKey: true, onDelete: "CASCADE" })
 	playlist_id: number;
 
-	// Relationship
-	@BelongsTo(() => Playlist, "playlist_id")
-	playlist: Playlist;
+	/**
+	 * Relationship
+	 */
+
+	/* Belongs */
+	/* Has */
 }

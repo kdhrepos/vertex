@@ -1,6 +1,18 @@
 import { UUID } from "crypto";
-import { Table, Column, Model, BelongsTo } from "sequelize-typescript";
+import {
+	Table,
+	Column,
+	Model,
+	BelongsTo,
+	ForeignKey,
+	HasMany,
+	BelongsToMany,
+} from "sequelize-typescript";
 import { User } from "./user.model";
+import { Like } from "./like.model";
+import { Comment } from "./comment.model";
+import { Hashtag } from "./hashtag.model";
+import { HashtagLink } from "./hashtagLink.model";
 
 @Table({ freezeTableName: true })
 export class Post extends Model {
@@ -8,12 +20,8 @@ export class Post extends Model {
 	@Column({ primaryKey: true })
 	id: UUID;
 
-	@Column({
-		references: {
-			model: User,
-			key: "email",
-		},
-	})
+	@ForeignKey(() => User)
+	@Column({ onDelete: "CASCADE" })
 	user_email: string;
 
 	@Column
@@ -22,7 +30,7 @@ export class Post extends Model {
 	@Column
 	contents: string;
 
-	@Column
+	@Column({ allowNull: true })
 	contents_image_path: string;
 
 	@Column({ defaultValue: 0 })
@@ -34,7 +42,28 @@ export class Post extends Model {
 	@Column({ defaultValue: false })
 	is_deleted: boolean;
 
-	// Relationship
+	@ForeignKey(() => User)
+	@Column
+	channel_email: string;
+
+	/**
+	 * Relationship
+	 */
+
+	/* Belongs */
 	@BelongsTo(() => User, "user_email")
 	user: User;
+
+	@BelongsTo(() => User, "channel_email")
+	channel: User;
+
+	@BelongsToMany(() => Hashtag, () => HashtagLink, "id", "id")
+	hashtagLink: HashtagLink;
+
+	/* Has */
+	@HasMany(() => Like)
+	likes: Like[];
+
+	@HasMany(() => Comment)
+	comments: Comment[];
 }

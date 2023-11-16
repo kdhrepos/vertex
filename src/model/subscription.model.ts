@@ -1,22 +1,30 @@
-import { UUID } from "crypto";
-import { Table, Column, Model, BelongsTo } from "sequelize-typescript";
+import {
+	Table,
+	Column,
+	Model,
+	BelongsTo,
+	ForeignKey,
+} from "sequelize-typescript";
 import { User } from "./user.model";
 
 @Table({ freezeTableName: true })
 export class Subscription extends Model {
 	// Columns
-	@Column({
-		primaryKey: true,
-	})
+	@ForeignKey(() => User)
+	@Column({ primaryKey: true, onDelete: "CASCADE" })
 	user_email: string;
 
-	@Column
+	@ForeignKey(() => User)
+	@Column({ primaryKey: true, onDelete: "CASCADE" })
 	channel_email: string;
 
-	// Relationship
-	// @BelongsTo(() => User, "user_email")
-	// user: User;
+	/**
+	 * Relationship
+	 */
 
+	/* Belongs */
 	// @BelongsTo(() => User, "user_email")
-	// user: User;
+	// user: User[];
+
+	/* Has */
 }

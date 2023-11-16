@@ -9,7 +9,7 @@
 
 ## Database
 
-### Variable
+### Columns
 
 - 데이터 베이스와 관련된 변수들은 모두 Snake Case를 이용할 것
   - ex) contents_id
@@ -24,6 +24,7 @@
 
 - Sequelize 통해서 DB에 있는 데이터 가져올 때 옵션으로 raw:true 붙여야 쓸데없는 데이터까지 안나옴
   - ex) user.findAll({where : {~~},raw : true})
+  - 하지만, 이 방식은 update 쿼리 날릴 수가 없으므로 주의
 
 ## File Name : Code
 

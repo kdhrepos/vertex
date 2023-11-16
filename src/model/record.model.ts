@@ -10,32 +10,34 @@ import { Video } from "./video.model";
 import { User } from "./user.model";
 
 @Table({ freezeTableName: true })
-export class VideoRecord extends Model {
+export class Record extends Model {
 	// Columns
 	@ForeignKey(() => User)
 	@Column({
 		primaryKey: true,
-		references: {
-			model: User,
-			key: "email",
-		},
+		onDelete: "CASCADE",
 	})
 	user_email: string;
 
 	@ForeignKey(() => Video)
 	@Column({
 		primaryKey: true,
-		references: {
-			model: Video,
-			key: "video_path",
-		},
+		onDelete: "CASCADE",
 	})
 	video_id: string;
 
-	// Relationship
-	@BelongsTo(() => User, "user_email")
+	/**
+	 * Relationship
+	 */
+
+	/* Belongs */
+	@BelongsTo(() => User)
 	user: User;
 
-	@BelongsTo(() => Video, "video_id")
+	@BelongsTo(() => Video)
 	video: Video;
+
+	// @BelongsTo(() => Video)
+	// video: Video;
+	/* Has */
 }

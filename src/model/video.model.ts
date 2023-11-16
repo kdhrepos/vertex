@@ -5,12 +5,16 @@ import {
 	ForeignKey,
 	BelongsTo,
 	HasMany,
+	BelongsToMany,
 } from "sequelize-typescript";
 import { User } from "./user.model";
-import { Comment } from "./commet.model";
+import { Comment } from "./comment.model";
 import { HashtagLink } from "./hashtagLink.model";
-import { VideoRecord } from "./video-record.model";
+import { Record } from "./record.model";
 import { Like } from "./like.model";
+import { PlaylistContents } from "./playlist-contents.model";
+import { Playlist } from "./playlist.model";
+import { Hashtag } from "./hashtag.model";
 
 /*
 	트리거 참조
@@ -23,14 +27,11 @@ import { Like } from "./like.model";
 export class Video extends Model {
 	// Columns
 	@Column({ primaryKey: true })
-	video_path: string;
+	file_path: string;
 
 	@ForeignKey(() => User)
-	@Column({})
+	@Column({ onDelete: "CASCADE" })
 	user_email: string;
-
-	@Column({ allowNull: false })
-	thumbnail_path: string;
 
 	@Column
 	title: string;
@@ -44,27 +45,36 @@ export class Video extends Model {
 	@Column({ defaultValue: 0 })
 	view_count: number;
 
-	@Column({ defaultValue: false })
-	is_deleted: boolean;
+	@Column
+	video_file_extension: string;
+
+	@Column
+	thumbnail_file_extension: string;
 
 	/**
 	 * Relationship
 	 */
 
 	/* Belongs */
-	@BelongsTo(() => User, "user_email")
+	@BelongsTo(() => User)
 	user: User;
 
+	@BelongsToMany(() => Playlist, () => PlaylistContents, "file_path", "id")
+	playlistContents: PlaylistContents;
+
+	@BelongsToMany(() => Hashtag, () => HashtagLink, "file_path", "id")
+	hashtagLink: HashtagLink;
+
 	/* Has */
-	// @HasMany(() => Comment, "id")
-	// comment: Comment[];
-
-	// @HasMany(() => HashtagLink)
-	// hashtagLink: HashtagLink[];
-
-	@HasMany(() => VideoRecord, "video_id" && "user_email")
-	videoRecord: VideoRecord[];
-
-	@HasMany(() => Like, "user_email" && "contents_id")
+	@HasMany(() => Like)
 	likes: Like[];
+
+	@HasMany(() => Comment)
+	comments: Comment[];
+
+	@HasMany(() => HashtagLink)
+	hashtagLinks: HashtagLink[];
+
+	@HasMany(() => Record)
+	records: Record[];
 }

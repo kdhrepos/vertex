@@ -25,14 +25,14 @@ import { FirebaseModule } from "./firebase/firebase.module";
 import { User } from "./model/user.model";
 import { Video } from "./model/video.model";
 import { Like } from "./model/like.model";
-import { VideoRecord } from "./model/video-record.model";
+import { Record } from "./model/record.model";
 import { Subscription } from "./model/subscription.model";
 import { Post } from "./model/post.model";
 import { Playlist } from "./model/playlist.model";
 import { PlaylistContents } from "./model/playlist-contents.model";
 import { HashtagLink } from "./model/hashtagLink.model";
 import { Hashtag } from "./model/hashtag.model";
-import { Comment } from "./model/commet.model";
+import { Comment } from "./model/comment.model";
 
 @Module({
 	imports: [
@@ -56,7 +56,7 @@ import { Comment } from "./model/commet.model";
 				Comment,
 				Like,
 				Subscription,
-				VideoRecord,
+				Record,
 				Playlist,
 				PlaylistContents,
 				Hashtag,
@@ -64,11 +64,11 @@ import { Comment } from "./model/commet.model";
 			],
 			timezone: "Asia/Seoul",
 			synchronize: true,
-			sync: { alter: true },
+			// sync: { alter: true },
 			// sync: { force: true },
 		}),
-		VideoModule,
 		PostModule,
+		VideoModule,
 		UserModule,
 		AuthModule,
 		SubscriptionModule,
