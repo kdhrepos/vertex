@@ -9,17 +9,24 @@ import {
 	UploadedFile,
 	UseGuards,
 	UseInterceptors,
+	HttpException,
+	HttpStatus,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { PostService } from "./post.service";
 import { AuthenticatedGuard } from "src/auth/auth.guard";
 import { CreatePostDto } from "./dto/create-post.dto";
+import { FirebaseService } from "src/firebase/firebase.service";
+import { generateId } from "src/generate-id";
 
 @ApiTags("Community")
 @Controller("community")
 export class PostController {
-	constructor(private postService: PostService) {}
+	constructor(
+		private postService: PostService,
+		private firebaseService: FirebaseService
+	) {}
 
 	@ApiOperation({ description: "게시글 고유 아이디를 통해 하나의 게시글 검색" })
 	@Get("/:creator_id/post/:post_id")
@@ -34,11 +41,34 @@ export class PostController {
 	}
 
 	@ApiOperation({ description: "한 채널에 게시글 업로드" })
-	@Post("/aaa")
+	@Post("/create")
 	@UseGuards(AuthenticatedGuard)
 	@UseInterceptors(FileInterceptor("img", {}))
-	async createPost(@UploadedFile() img: Express.Multer.File, @Body() createPostDto: CreatePostDto) {
-		return this.postService.createPost(img, createPostDto);
+	async createPost(
+		@Body() createPostDto: CreatePostDto,
+		@UploadedFile() img: Express.Multer.File
+	) {
+		const {email, title} = createPostDto;
+		const imgPath = generateId(`${email}${title}${img.originalname}`)
+		
+		if(!(await this.postService.findOnePost(imgPath))) {
+			const resultFirebase = await this.firebaseService.uploadImage(img, imgPath);
+			const resultPostServ = await this.postService.createPost(createPostDto, imgPath);
+
+			if(resultFirebase && resultPostServ) return true;
+			else {
+				return new HttpException(
+					"Failed to createPost or uploadImage on DataBase",
+					HttpStatus.FAILED_DEPENDENCY
+				);
+			}
+		}
+		else {
+			throw new HttpException(
+				"Duplicated Video Title",
+				HttpStatus.BAD_REQUEST,
+			);
+		}
 	}
 
 	@ApiOperation({ description: "한 채널의 게시글 수정" })

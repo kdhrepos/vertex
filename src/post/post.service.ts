@@ -14,19 +14,22 @@ export class PostService {
 
 	async findPostList() {}
 
-	async findOnePost() {}
-
-	async createPost(img: Express.Multer.File, createPostDto : CreatePostDto) {
+	async findOnePost(imgPath) {
 		try {
-			
+			return true;
+		} catch(error) {
+			return false;
+		}
+	}
 
-			const {title, contents} = createPostDto;
+	async createPost(createPostDto : CreatePostDto, imgPath: string) {
+		try {
+			const {email, title, contents} = createPostDto;
 			const value = {
-				id : ,
-				user_id : ,
+				user_email : email,
 				title: title,
 				contents: contents,
-				contents_image_path: ,
+				contents_image_path: imgPath,
 				like_count: 0,
 				view_count: 0,
 				is_deleted: false
@@ -34,6 +37,7 @@ export class PostService {
 
 			this.postModel.create(value);
 
+			return true;
 		} catch(error) {
 			this.logger.error(`${error}`);
 			throw new HttpException(
