@@ -17,16 +17,22 @@ import { SubscriptionModule } from "./subscription/subscription.module";
 // Logger
 import { HTTPLoggerMiddleware } from "./middleware/http-logger.middleware";
 
-// import { HashtagModule } from "./hashtag/hashtag.module";
 import { PlaylistModule } from "./playlist/playlist.module";
 
-import * as session from "express-session";
-import * as cookieParser from "cookie-parser";
-import * as MySQLStore from "express-mysql-session";
-import * as mysql2 from "mysql2/promise";
-import { RedisService } from "./redis/redis.service";
+// Model
 import { RedisModule } from "./redis/redis.module";
 import { FirebaseModule } from "./firebase/firebase.module";
+import { User } from "./model/user.model";
+import { Video } from "./model/video.model";
+import { Like } from "./model/like.model";
+import { VideoRecord } from "./model/video-record.model";
+import { Subscription } from "./model/subscription.model";
+import { Post } from "./model/post.model";
+import { Playlist } from "./model/playlist.model";
+import { PlaylistContents } from "./model/playlist-contents.model";
+import { HashtagLink } from "./model/hashtagLink.model";
+import { Hashtag } from "./model/hashtag.model";
+import { Comment } from "./model/commet.model";
 
 @Module({
 	imports: [
@@ -43,6 +49,19 @@ import { FirebaseModule } from "./firebase/firebase.module";
 			password: process.env.MYSQL_PASSWORD,
 			database: process.env.MYSQL_NAME,
 			autoLoadModels: true,
+			models: [
+				User,
+				Video,
+				Post,
+				Comment,
+				Like,
+				Subscription,
+				VideoRecord,
+				Playlist,
+				PlaylistContents,
+				Hashtag,
+				HashtagLink,
+			],
 			timezone: "Asia/Seoul",
 			synchronize: true,
 			// sync: { alter: true },

@@ -89,10 +89,10 @@ export class AuthController {
 		description: "에러 반환",
 	})
 	@Post("signin/local")
-	@UseInterceptors(FileInterceptor("profile-image", {}))
+	@UseInterceptors(FileInterceptor("profile", {}))
 	async signin(
 		@Body() createUserDto: CreateUserDto,
-		@UploadedFile() profileImage: Express.Multer.File,
+		@UploadedFile() profileImage?: Express.Multer.File,
 	) {
 		return await this.userService.createUser(createUserDto, profileImage);
 	}

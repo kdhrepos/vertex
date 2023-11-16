@@ -1,12 +1,10 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { PostComment } from "src/model/post-comment.model";
+import { Comment } from "src/model/commet.model";
 
 @Injectable()
 export class PostCommentService {
-	constructor(
-		@InjectModel(PostComment) private postCommentModel: typeof PostComment,
-	) {}
+	constructor(@InjectModel(Comment) private commentModel: typeof Comment) {}
 
 	private readonly logger = new Logger("Post Comment Service");
 

@@ -1,29 +1,29 @@
+import { UUID } from "crypto";
 import {
 	Table,
 	Column,
 	Model,
 	BelongsTo,
-	BelongsToMany,
+	ForeignKey,
 } from "sequelize-typescript";
+import { User } from "./user.model";
 import { Video } from "./video.model";
 import { Post } from "./post.model";
-import { Hashtag } from "./hashtag.model";
 
 @Table({ freezeTableName: true })
-export class HashtagLink extends Model {
-	// Columns;
+export class Like extends Model {
+	// Columns
+	// @ForeignKey(() => User)
+	@Column({
+		primaryKey: true,
+	})
+	user_email: string;
+
+	// @ForeignKey(() => Video)
 	@Column({
 		primaryKey: true,
 	})
 	contents_id: string;
-
-	@Column({
-		primaryKey: true,
-	})
-	hashtag_id: number;
-
-	@Column
-	is_video: boolean;
 
 	/**
 	 * Relationship

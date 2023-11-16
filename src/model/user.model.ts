@@ -1,5 +1,9 @@
-import { UUID } from "crypto";
-import { Table, Column, Model, IsEmail } from "sequelize-typescript";
+import { Table, Column, Model, IsEmail, HasMany } from "sequelize-typescript";
+import { Video } from "./video.model";
+import { VideoRecord } from "./video-record.model";
+import { Post } from "./post.model";
+import { Playlist } from "./playlist.model";
+import { Like } from "./like.model";
 
 @Table({ freezeTableName: true })
 export class User extends Model {
@@ -23,5 +27,11 @@ export class User extends Model {
 	@Column({ allowNull: true })
 	description: string;
 
-	// Relationship
+	/**
+	 * Relationship
+	 */
+
+	/* Belongs */
+
+	/* Has */
 }

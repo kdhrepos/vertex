@@ -1,4 +1,3 @@
-import { UUID } from "crypto";
 import { Table, Column, Model } from "sequelize-typescript";
 
 @Table({ freezeTableName: true })
@@ -10,5 +9,11 @@ export class Hashtag extends Model {
 	@Column
 	name: string;
 
-	// Relationship
+	/**
+	 * Relationship
+	 */
+
+	/* Belongs */
+
+	/* Has */
 }

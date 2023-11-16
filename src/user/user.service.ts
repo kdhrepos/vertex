@@ -63,18 +63,17 @@ export class UserService {
 		try {
 			const { email, name, password, description } = createUserDto;
 
-			const duplicatedUser = await this.userModel.findOne({
-				where: { email: email },
+			const duplicatedUser = await this.userModel.findByPk(email, {
 				raw: true,
 			});
 
 			if (duplicatedUser) {
 				this.logger.error(`${functionName} : Duplicated Email`);
-				throw new HttpException("Duplicated Email", HttpStatus.BAD_REQUEST);
+				return new HttpException("Duplicated Email", HttpStatus.BAD_REQUEST);
 			}
 
 			const profileImagePath =
-				profileImage === null
+				profileImage === null || profileImage === undefined
 					? null
 					: `profile-${email}-${profileImage.originalname}`;
 
@@ -90,7 +89,7 @@ export class UserService {
 			return createdUser;
 		} catch (error) {
 			this.logger.error(`${functionName} : ${error}`);
-			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -106,7 +105,7 @@ export class UserService {
 
 			if (!existedUser) {
 				this.logger.error(`${functionName} : Wrong Email`);
-				throw new HttpException("Wrong Email", HttpStatus.BAD_REQUEST);
+				return new HttpException("Wrong Email", HttpStatus.BAD_REQUEST);
 			}
 
 			// 소셜 로그인은 여기서 삭제
@@ -124,7 +123,7 @@ export class UserService {
 
 			if (!bcrypt.compareSync(password, existedUser.password)) {
 				this.logger.error(`${functionName} : Wrong Password`);
-				throw new HttpException("Wrong Password", HttpStatus.BAD_REQUEST);
+				return new HttpException("Wrong Password", HttpStatus.BAD_REQUEST);
 			}
 
 			// 일반 로그인은 여기서 삭제
@@ -140,7 +139,7 @@ export class UserService {
 			return true;
 		} catch (error) {
 			this.logger.error(`${functionName} :  ${error}`);
-			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

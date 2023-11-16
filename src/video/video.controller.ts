@@ -5,17 +5,17 @@ import {
 	Post,
 	Delete,
 	Patch,
-	Request,
-	Response,
+	Res,
 	UseInterceptors,
-	UploadedFile,
 	Body,
 	UseGuards,
-	Optional,
 	UploadedFiles,
+	HttpException,
+	HttpStatus,
+	Query,
 } from "@nestjs/common";
 import { VideoService } from "./video.service";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiExtraModels, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import {
 	FileFieldsInterceptor,
@@ -24,6 +24,13 @@ import {
 import { FirebaseService } from "src/firebase/firebase.service";
 import { AuthenticatedGuard } from "src/auth/auth.guard";
 import { UploadVideoDto } from "./dto/upload-video.dto";
+import { FindVideoDto } from "./dto/find-video.dto";
+import { DeleteVideoDto } from "./dto/delete-video.dto";
+import { Response } from "express";
+import * as bcrypt from "bcrypt";
+import * as crypto from "crypto";
+import { generateId } from "src/generate-id";
+import { UpdateVideoDto } from "./dto/update-video.dto";
 
 @ApiTags("Video")
 @Controller("video")
@@ -38,25 +45,15 @@ export class VideoController {
 	// async findVideosByAlgorithm() {}
 
 	@ApiOperation({ description: "하나의 비디오 시청을 위해 비디오 요청" })
-	@Get("watch/:video_id")
-	async streamVideoById(
-		@Request() req,
-		@Response() res,
-		@Param("video_id") video_id,
-	) {
-		return this.videoService.findOne(req, res, video_id);
-	}
-
-	@ApiOperation({
-		description: "한 크리에이터의 채널에 들어갔을때 비디오 요청",
-	})
-	@Get("channel/:creator_id")
-	async getChannelById() {}
-
-	@ApiOperation({ description: "검색을 통해 비디오 요청" })
-	@Get("search/:search_query")
-	async findVideosBySearch(@Param("search_query") params) {
-		return params;
+	@Get("watch")
+	async streamVideo(@Res() res: Response, @Query() findVideoDto: FindVideoDto) {
+		const { videoPath } = findVideoDto;
+		const video = await this.videoService.findOne(videoPath);
+		if (video) {
+			return await this.firebaseService.findVideo(res, video);
+		} else {
+			return new HttpException("Video Does Not Exist", HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@ApiOperation({ description: "비디오 업로드" })
@@ -73,30 +70,88 @@ export class VideoController {
 			thumbnail?: Express.Multer.File[];
 		},
 	) {
-		console.log(files);
-		return await this.firebaseService.uploadVideo(
-			uploadVideoDto,
-			files.video[0],
-			files.thumbnail[0],
+		const { email, title } = uploadVideoDto;
+		const hashedFilePath = generateId(
+			`${email}${title}${files.video[0].originalname}`,
 		);
+		console.log(hashedFilePath);
+		if (!(await this.videoService.findOne(hashedFilePath))) {
+			return await this.firebaseService.uploadVideo(
+				uploadVideoDto,
+				files.video[0],
+				files.thumbnail[0],
+			);
+		} else {
+			return new HttpException(
+				"Duplicated Video Title",
+				HttpStatus.BAD_REQUEST,
+			);
+		}
 	}
 
 	@ApiOperation({ description: "비디오 수정" })
-	@Patch("/:video_id")
-	async updateVideo() {}
+	@UseGuards(AuthenticatedGuard)
+	@UseInterceptors(
+		FileFieldsInterceptor([{ name: "video" }, { name: "thumbnail" }]),
+	)
+	@Patch("/update")
+	async updateVideo(
+		@Body() updateVideoDto: UpdateVideoDto,
+		@UploadedFiles()
+		files: {
+			video: Express.Multer.File[];
+			thumbnail?: Express.Multer.File[];
+		},
+	) {
+		const { email, title, videoPath } = updateVideoDto;
+
+		const videoData = await this.videoService.findOne(videoPath);
+		if (videoData) {
+			this.videoService.updateOne(updateVideoDto);
+			return await this.firebaseService.updateVideo(
+				videoData,
+				files.video[0],
+				files.thumbnail[0],
+			);
+		} else {
+			return new HttpException("Video Does Not Exist", HttpStatus.BAD_REQUEST);
+		}
+	}
 
 	@ApiOperation({ description: "비디오 삭제" })
-	@Delete("/:video_id")
-	async deleteVideo() {
-		return "This deletes a video";
+	@UseGuards(AuthenticatedGuard)
+	@Delete("/delete")
+	async deleteVideo(@Body() deleteVideoDto: DeleteVideoDto) {
+		const { email, title, videoPath } = deleteVideoDto;
+		const existedVideo = await this.videoService.findOne(videoPath);
+		if (existedVideo) {
+			await this.videoService.deleteOne(videoPath, email, title);
+			return await this.firebaseService.deleteVideo(existedVideo);
+		}
+	}
+
+	@ApiOperation({
+		description: "한 크리에이터의 채널에 들어갔을때 비디오 요청",
+	})
+	@Get("channel/:creator_id")
+	async getChannelById() {}
+
+	@ApiOperation({ description: "검색을 통해 비디오 요청" })
+	@Get("search/:search_query")
+	async findVideosBySearch(@Param("search_query") params) {
+		return params;
 	}
 
 	@ApiOperation({ description: "비디오 다운로드 요청" })
 	@Get("/download/:video_id")
 	async downloadVideo() {}
 
-	@ApiOperation({ description: "비디오에 댓글 등록" })
+	@ApiOperation({ description: "특정 비디오의 댓글 가져오기" })
 	@Get("/comment/:video_id")
+	async getCommentFromVideo() {}
+
+	@ApiOperation({ description: "비디오에 댓글 등록" })
+	@Post("/comment/:video_id")
 	async createCommentToVideo(@Param("video_id") params) {
 		return params;
 	}

@@ -1,5 +1,16 @@
-import { UUID } from "crypto";
-import { Table, Column, Model, ForeignKey } from "sequelize-typescript";
+import {
+	Table,
+	Column,
+	Model,
+	ForeignKey,
+	BelongsTo,
+	HasMany,
+} from "sequelize-typescript";
+import { User } from "./user.model";
+import { Comment } from "./commet.model";
+import { HashtagLink } from "./hashtagLink.model";
+import { VideoRecord } from "./video-record.model";
+import { Like } from "./like.model";
 
 /*
 	트리거 참조
@@ -12,13 +23,10 @@ import { Table, Column, Model, ForeignKey } from "sequelize-typescript";
 export class Video extends Model {
 	// Columns
 	@Column({ primaryKey: true })
-	video_path: string;
+	file_path: string;
 
 	@Column
 	user_email: string;
-
-	@Column({ allowNull: false })
-	thumbnail_path: string;
 
 	@Column
 	title: string;
@@ -32,8 +40,17 @@ export class Video extends Model {
 	@Column({ defaultValue: 0 })
 	view_count: number;
 
-	@Column({ defaultValue: false })
-	is_deleted: boolean;
+	@Column
+	video_file_extension: string;
 
-	// Relationship
+	@Column
+	thumbnail_file_extension: string;
+
+	/**
+	 * Relationship
+	 */
+
+	/* Belongs */
+
+	/* Has */
 }
