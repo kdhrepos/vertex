@@ -25,8 +25,8 @@ export class VideoRecordService {
 
 			const existedRecord = await this.recordModel.findOne({
 				where: {
-					email: email,
-					filePath: filePath,
+					user_email: email,
+					video_id: filePath,
 				},
 			});
 

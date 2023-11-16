@@ -18,7 +18,7 @@ import { Subscription } from "./subscription.model";
 
 @Table({ freezeTableName: true })
 export class User extends Model {
-	@ForeignKey(() => User)
+	// @ForeignKey(() => User)
 	@IsEmail
 	@Column({ primaryKey: true })
 	email: string;
@@ -44,8 +44,8 @@ export class User extends Model {
 	 */
 
 	/* Belongs */
-	@BelongsToMany(() => User, () => Subscription, "email", "email")
-	subscription: Subscription;
+	// @BelongsToMany(() => User, () => Subscription, "email", "email")
+	// subscription: Subscription;
 
 	/* Has */
 	@HasMany(() => Comment)

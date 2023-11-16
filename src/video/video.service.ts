@@ -113,7 +113,7 @@ export class VideoService {
 	}
 
 	async updateView(video: Video) {
-		const functionName = VideoService.prototype.deleteOne.name;
+		const functionName = VideoService.prototype.updateView.name;
 		try {
 			const { file_path: filePath, view_count: viewCount } = video;
 			await this.videoModel.update(
