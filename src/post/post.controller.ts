@@ -25,7 +25,7 @@ import { generateId } from "src/generate-id";
 export class PostController {
 	constructor(
 		private postService: PostService,
-		private firebaseService: FirebaseService
+		private firebaseService: FirebaseService,
 	) {}
 
 	@ApiOperation({ description: "게시글 고유 아이디를 통해 하나의 게시글 검색" })
@@ -46,28 +46,31 @@ export class PostController {
 	@UseInterceptors(FileInterceptor("img", {}))
 	async createPost(
 		@Body() createPostDto: CreatePostDto,
-		@UploadedFile() img: Express.Multer.File
+		@UploadedFile() img: Express.Multer.File,
 	) {
-		const {email, title} = createPostDto;
-		const imgPath = generateId(`${email}${title}${img.originalname}`)
-		
-		if(!(await this.postService.findOnePost(imgPath))) {
-			const resultFirebase = await this.firebaseService.uploadImage(img, imgPath);
-			const resultPostServ = await this.postService.createPost(createPostDto, imgPath);
+		const { email, title } = createPostDto;
+		const imgPath = generateId(`${email}${title}${img.originalname}`);
 
-			if(resultFirebase && resultPostServ) return true;
+		if (!(await this.postService.findOne(imgPath))) {
+			const resultFirebase = await this.firebaseService.uploadImage(
+				img,
+				imgPath,
+			);
+
+			const resultPostServ = await this.postService.createPost(
+				createPostDto,
+				imgPath,
+			);
+
+			if (resultFirebase && resultPostServ) return true;
 			else {
 				return new HttpException(
 					"Failed to createPost or uploadImage on DataBase",
-					HttpStatus.FAILED_DEPENDENCY
+					HttpStatus.FAILED_DEPENDENCY,
 				);
 			}
-		}
-		else {
-			throw new HttpException(
-				"Duplicated Video Title",
-				HttpStatus.BAD_REQUEST,
-			);
+		} else {
+			throw new HttpException("Duplicated Post Title", HttpStatus.BAD_REQUEST);
 		}
 	}
 

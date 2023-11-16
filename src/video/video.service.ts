@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { Video } from "../model/video.model";
 import { InjectModel } from "@nestjs/sequelize";
-import { UploadVideoDto } from "./dto/upload-video.dto";
-import { UpdateVideoDto } from "./dto/update-video.dto";
+import { UploadVideoDto } from "./dto/video-dto/upload-video.dto";
+import { UpdateVideoDto } from "./dto/video-dto/update-video.dto";
 
 @Injectable()
 export class VideoService {
@@ -64,12 +64,12 @@ export class VideoService {
 	async updateOne(updateVideoDto: UpdateVideoDto) {
 		const functionName = VideoService.prototype.updateOne.name;
 		try {
-			const { email, title, description, videoPath } = updateVideoDto;
+			const { email, title, description, path } = updateVideoDto;
 			await this.videoModel.update(
 				{ user_email: email, title: title, description: description },
 				{
 					where: {
-						file_path: videoPath,
+						file_path: path,
 						user_email: email,
 						title: title,
 					},

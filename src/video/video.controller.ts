@@ -23,14 +23,14 @@ import {
 } from "@nestjs/platform-express";
 import { FirebaseService } from "src/firebase/firebase.service";
 import { AuthenticatedGuard } from "src/auth/auth.guard";
-import { UploadVideoDto } from "./dto/upload-video.dto";
-import { FindVideoDto } from "./dto/find-video.dto";
-import { DeleteVideoDto } from "./dto/delete-video.dto";
 import { Response } from "express";
 import * as bcrypt from "bcrypt";
 import * as crypto from "crypto";
 import { generateId } from "src/generate-id";
-import { UpdateVideoDto } from "./dto/update-video.dto";
+import { FindVideoDto } from "./dto/video-dto/find-video.dto";
+import { UploadVideoDto } from "./dto/video-dto/upload-video.dto";
+import { UpdateVideoDto } from "./dto/video-dto/update-video.dto";
+import { DeleteVideoDto } from "./dto/video-dto/delete-video.dto";
 
 @ApiTags("Video")
 @Controller("video")
@@ -47,8 +47,8 @@ export class VideoController {
 	@ApiOperation({ description: "하나의 비디오 시청을 위해 비디오 요청" })
 	@Get("watch")
 	async streamVideo(@Res() res: Response, @Query() findVideoDto: FindVideoDto) {
-		const { videoPath } = findVideoDto;
-		const video = await this.videoService.findOne(videoPath);
+		const { path } = findVideoDto;
+		const video = await this.videoService.findOne(path);
 		if (video) {
 			return await this.firebaseService.findVideo(res, video);
 		} else {
@@ -103,9 +103,9 @@ export class VideoController {
 			thumbnail?: Express.Multer.File[];
 		},
 	) {
-		const { email, title, videoPath } = updateVideoDto;
+		const { email, title, path } = updateVideoDto;
 
-		const videoData = await this.videoService.findOne(videoPath);
+		const videoData = await this.videoService.findOne(path);
 		if (videoData) {
 			this.videoService.updateOne(updateVideoDto);
 			return await this.firebaseService.updateVideo(
@@ -122,10 +122,10 @@ export class VideoController {
 	@UseGuards(AuthenticatedGuard)
 	@Delete("/delete")
 	async deleteVideo(@Body() deleteVideoDto: DeleteVideoDto) {
-		const { email, title, videoPath } = deleteVideoDto;
-		const existedVideo = await this.videoService.findOne(videoPath);
+		const { email, title, path } = deleteVideoDto;
+		const existedVideo = await this.videoService.findOne(path);
 		if (existedVideo) {
-			await this.videoService.deleteOne(videoPath, email, title);
+			await this.videoService.deleteOne(path, email, title);
 			return await this.firebaseService.deleteVideo(existedVideo);
 		}
 	}

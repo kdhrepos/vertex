@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Post } from "src/model/post.model";
 import { CreatePostDto } from "./dto/create-post.dto";
+import * as uuid from "uuid";
 
 @Injectable()
 export class PostService {
@@ -14,36 +15,34 @@ export class PostService {
 
 	async findPostList() {}
 
-	async findOnePost(imgPath) {
+	async findOne(imgPath) {
 		try {
-			return true;
-		} catch(error) {
+			return false;
+		} catch (error) {
 			return false;
 		}
 	}
 
-	async createPost(createPostDto : CreatePostDto, imgPath: string) {
+	async createPost(createPostDto: CreatePostDto, imgPath: string) {
 		try {
-			const {email, title, contents} = createPostDto;
+			const { email, title, contents } = createPostDto;
 			const value = {
-				user_email : email,
+				id: uuid.v4(),
+				user_email: email,
 				title: title,
 				contents: contents,
 				contents_image_path: imgPath,
 				like_count: 0,
 				view_count: 0,
-				is_deleted: false
-			}
+				is_deleted: false,
+			};
 
 			this.postModel.create(value);
 
 			return true;
-		} catch(error) {
+		} catch (error) {
 			this.logger.error(`${error}`);
-			throw new HttpException(
-				`${error}`, 
-				HttpStatus.INTERNAL_SERVER_ERROR
-			);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
