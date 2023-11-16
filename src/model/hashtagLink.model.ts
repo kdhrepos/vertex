@@ -19,6 +19,7 @@ export class HashtagLink extends Model {
 	@Column({ primaryKey: true })
 	contents_id: string;
 
+	@ForeignKey(() => Hashtag)
 	@Column({ primaryKey: true })
 	hashtag_id: number;
 
@@ -30,10 +31,10 @@ export class HashtagLink extends Model {
 	 */
 
 	/* Belongs */
-	@BelongsTo(() => Post, "contents_id")
-	post: Post;
+	// @BelongsTo(() => Post, "contents_id")
+	// post: Post;
 
-	@BelongsTo(() => Video, "contents_id")
-	video: Video;
+	// @BelongsTo(() => Video, "contents_id")
+	// video: Video;
 	/* Has */
 }

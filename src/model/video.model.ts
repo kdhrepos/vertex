@@ -14,6 +14,7 @@ import { Record } from "./record.model";
 import { Like } from "./like.model";
 import { PlaylistContents } from "./playlist-contents.model";
 import { Playlist } from "./playlist.model";
+import { Hashtag } from "./hashtag.model";
 
 /*
 	트리거 참조
@@ -60,6 +61,9 @@ export class Video extends Model {
 
 	@BelongsToMany(() => Playlist, () => PlaylistContents, "file_path", "id")
 	playlistContents: PlaylistContents;
+
+	@BelongsToMany(() => Hashtag, () => HashtagLink, "file_path", "id")
+	hashtagLink: HashtagLink;
 
 	/* Has */
 	@HasMany(() => Like)

@@ -6,10 +6,13 @@ import {
 	BelongsTo,
 	ForeignKey,
 	HasMany,
+	BelongsToMany,
 } from "sequelize-typescript";
 import { User } from "./user.model";
 import { Like } from "./like.model";
 import { Comment } from "./comment.model";
+import { Hashtag } from "./hashtag.model";
+import { HashtagLink } from "./hashtagLink.model";
 
 @Table({ freezeTableName: true })
 export class Post extends Model {
@@ -53,6 +56,9 @@ export class Post extends Model {
 
 	@BelongsTo(() => User, "channel_email")
 	channel: User;
+
+	@BelongsToMany(() => Hashtag, () => HashtagLink, "id", "id")
+	hashtagLink: HashtagLink;
 
 	/* Has */
 	@HasMany(() => Like)
