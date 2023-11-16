@@ -33,6 +33,8 @@ import { UploadCommentDto } from "./dto/comment-dto/upload-comment.dto";
 import { VideoCommentService } from "./video-comment.service";
 import { FindCommentDto } from "./dto/comment-dto/find-comment.dto";
 import { UpdateCommentDto } from "./dto/comment-dto/update-comment.dto";
+import { VideoRecordService } from "./video-record.service";
+import { DeleteCommentDto } from "./dto/comment-dto/delete-comment.dto";
 
 @ApiTags("Video")
 @Controller("video")
@@ -40,6 +42,7 @@ export class VideoController {
 	constructor(
 		private videoService: VideoService,
 		private videoCommentService: VideoCommentService,
+		private videoRecordService: VideoRecordService,
 		private firebaseService: FirebaseService,
 	) {}
 
@@ -53,6 +56,9 @@ export class VideoController {
 		const { path } = findVideoDto;
 		const video = await this.videoService.findOne(path);
 		if (video) {
+			// 조회수 갱신, 비디오 기록 후 비디오 스트리밍
+			this.videoService.updateView(video);
+			this.videoRecordService.create(video);
 			return await this.firebaseService.findVideo(res, video);
 		} else {
 			return new HttpException("Video Does Not Exist", HttpStatus.BAD_REQUEST);
@@ -133,12 +139,6 @@ export class VideoController {
 		}
 	}
 
-	@ApiOperation({
-		description: "한 크리에이터의 채널에 들어갔을때 비디오 요청",
-	})
-	@Get("channel/:creator_id")
-	async getChannelById() {}
-
 	@ApiOperation({ description: "비디오 다운로드 요청" })
 	@Get("/download")
 	async downloadVideo(
@@ -159,12 +159,6 @@ export class VideoController {
 		}
 	}
 
-	@ApiOperation({ description: "검색을 통해 비디오 요청" })
-	@Get("search/:search_query")
-	async findVideosBySearch(@Param("search_query") params) {
-		return params;
-	}
-
 	@ApiOperation({ description: "특정 비디오의 댓글 가져오기" })
 	@Get("comment")
 	async getCommentFromVideo(@Query() findCommentDto: FindCommentDto) {
@@ -177,16 +171,33 @@ export class VideoController {
 		return await this.videoCommentService.create(uploadCommentDto);
 	}
 
-	@ApiOperation({ description: "비디오에 댓글 수정" })
+	@ApiOperation({ description: "비디오 댓글 수정" })
 	@UseGuards(AuthenticatedGuard)
 	@Patch("comment")
 	async updateCommentToVideo(@Body() updateCommentDto: UpdateCommentDto) {
 		return await this.videoCommentService.update(updateCommentDto);
 	}
 
+	@ApiOperation({ description: "비디오 댓글 삭제" })
+	@UseGuards(AuthenticatedGuard)
+	@Delete("comment")
+	async deleteCommentToVideo(@Body() deleteCommentDto: DeleteCommentDto) {
+		return await this.videoCommentService.delete(deleteCommentDto);
+	}
+
 	@ApiOperation({ description: "비디오 좋아요/싫어요 누르기" })
-	@Post("/like/:video_id")
-	async likeToVideo(@Param("video_id") params) {
+	@Post("/like")
+	async likeToVideo() {}
+
+	@ApiOperation({
+		description: "한 크리에이터의 채널에 들어갔을때 비디오 요청",
+	})
+	@Get("channel/:creator_id")
+	async getChannelById() {}
+
+	@ApiOperation({ description: "검색을 통해 비디오 요청" })
+	@Get("search/:search_query")
+	async findVideosBySearch(@Param("search_query") params) {
 		return params;
 	}
 }

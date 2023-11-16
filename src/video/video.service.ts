@@ -111,4 +111,25 @@ export class VideoService {
 			);
 		}
 	}
+
+	async updateView(video: Video) {
+		const functionName = VideoService.prototype.deleteOne.name;
+		try {
+			const { file_path: filePath, view_count: viewCount } = video;
+			await this.videoModel.update(
+				{ view_count: viewCount + 1 },
+				{
+					where: {
+						file_path: filePath,
+					},
+				},
+			);
+		} catch (error) {
+			this.logger.error(`${functionName} : ${error}`);
+			return new HttpException(
+				`${functionName} ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
 }

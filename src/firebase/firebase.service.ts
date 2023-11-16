@@ -209,7 +209,25 @@ export class FirebaseService {
 		}
 	}
 
-	async findThumbnail() {}
+	async findThumbnail() {
+		const functionName = FirebaseService.prototype.findThumbnail.name;
+		try {
+			// const { file_path: filePath, video_file_extension: videoFileExtension } =
+			// 	video;
+			// 	let thumbnailPath = "thumbnail/";
+			// 	thumbnailPath += hashedFilePath;
+			// 	thumbnailPath += path.extname(thumbnail.originalname);
+			// res.setHeader("Content-Type", "video/mp4");
+			// res.setHeader("Content-Disposition", 'inline; filename="video.mp4"');
+			// videoStream.pipe(res);
+		} catch (error) {
+			this.logger.error(`${functionName} : ${error}`);
+			return new HttpException(
+				`${functionName} ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
 
 	async uploadImage(img: Express.Multer.File, imgPath: string) {
 		const functionName = FirebaseService.prototype.uploadImage.name;

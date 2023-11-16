@@ -5,6 +5,7 @@ import { UploadCommentDto } from "./dto/comment-dto/upload-comment.dto";
 import { FindCommentDto } from "./dto/comment-dto/find-comment.dto";
 import { User } from "src/model/user.model";
 import { UpdateCommentDto } from "./dto/comment-dto/update-comment.dto";
+import { DeleteCommentDto } from "./dto/comment-dto/delete-comment.dto";
 
 @Injectable()
 export class VideoCommentService {
@@ -90,5 +91,35 @@ export class VideoCommentService {
 		}
 	}
 
-	async delete() {}
+	async delete(deleteCommentDto: DeleteCommentDto) {
+		const functionName = VideoCommentService.prototype.delete.name;
+		try {
+			const { id, email, path, isVideo } = deleteCommentDto;
+
+			const existedVideo = await this.commentModel.findOne({
+				where: {
+					id: id,
+					user_email: email,
+					contents_id: path,
+					is_video: isVideo,
+				},
+			});
+
+			if (!existedVideo) {
+				this.logger.error(`${functionName} : Video Does Not Exist`);
+				return new HttpException(
+					`${functionName} : Video Does Not Exist`,
+					HttpStatus.BAD_REQUEST,
+				);
+			}
+
+			await existedVideo.destroy();
+		} catch (error) {
+			this.logger.error(`${functionName} : ${error}`);
+			return new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
 }

@@ -17,7 +17,7 @@ export class Post extends Model {
 	@Column
 	contents: string;
 
-	@Column
+	@Column({ allowNull: true })
 	contents_image_path: string;
 
 	@Column({ defaultValue: 0 })
@@ -30,7 +30,7 @@ export class Post extends Model {
 	is_deleted: boolean;
 
 	@Column
-	channel_email : string;
+	channel_email: string;
 
 	/**
 	 * Relationship
