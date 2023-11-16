@@ -15,12 +15,14 @@ export class Record extends Model {
 	@ForeignKey(() => User)
 	@Column({
 		primaryKey: true,
+		onDelete: "CASCADE",
 	})
 	user_email: string;
 
 	@ForeignKey(() => Video)
 	@Column({
 		primaryKey: true,
+		onDelete: "CASCADE",
 	})
 	video_id: string;
 

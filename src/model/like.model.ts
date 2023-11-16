@@ -14,12 +14,12 @@ import { Post } from "./post.model";
 export class Like extends Model {
 	// Columns
 	@ForeignKey(() => User)
-	@Column({ primaryKey: true })
+	@Column({ primaryKey: true, onDelete: "CASCADE" })
 	user_email: string;
 
 	@ForeignKey(() => Post)
 	@ForeignKey(() => Video)
-	@Column({ primaryKey: true })
+	@Column({ primaryKey: true, onDelete: "CASCADE" })
 	contents_id: string;
 
 	/**

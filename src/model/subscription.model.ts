@@ -11,11 +11,11 @@ import { User } from "./user.model";
 export class Subscription extends Model {
 	// Columns
 	@ForeignKey(() => User)
-	@Column({ primaryKey: true })
+	@Column({ primaryKey: true, onDelete: "CASCADE" })
 	user_email: string;
 
 	@ForeignKey(() => User)
-	@Column({ primaryKey: true })
+	@Column({ primaryKey: true, onDelete: "CASCADE" })
 	channel_email: string;
 
 	/**
@@ -23,8 +23,8 @@ export class Subscription extends Model {
 	 */
 
 	/* Belongs */
-	@BelongsTo(() => User, "user_email")
-	user: User[];
+	// @BelongsTo(() => User, "user_email")
+	// user: User[];
 
 	/* Has */
 }

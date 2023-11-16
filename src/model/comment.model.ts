@@ -22,11 +22,14 @@ export class Comment extends Model {
 
 	@ForeignKey(() => Video)
 	@ForeignKey(() => Post)
-	@Column({ primaryKey: true })
+	@Column({ primaryKey: true, onDelete: "CASCADE" })
 	contents_id: string;
 
 	@ForeignKey(() => Comment)
-	@Column({ allowNull: true })
+	@Column({
+		allowNull: true,
+		// onDelete:"CASCADE"
+	})
 	parent_id: number;
 
 	@Column
@@ -43,7 +46,7 @@ export class Comment extends Model {
 	@BelongsTo(() => User, "user_email")
 	user: User;
 
-	@BelongsTo(() => User, "contents_id")
+	@BelongsTo(() => Video, "contents_id")
 	video: Video;
 
 	@BelongsTo(() => Post, "contents_id")

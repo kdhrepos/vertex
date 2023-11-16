@@ -21,7 +21,7 @@ export class Post extends Model {
 	id: UUID;
 
 	@ForeignKey(() => User)
-	@Column({})
+	@Column({ onDelete: "CASCADE" })
 	user_email: string;
 
 	@Column

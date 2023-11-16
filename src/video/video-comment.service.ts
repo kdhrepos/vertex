@@ -28,13 +28,13 @@ export class VideoCommentService {
 				where: {
 					contents_id: path,
 				},
+				attributes: ["content", "createdAt"],
 				include: [
 					{
 						model: User,
 						attributes: ["name"],
 					},
 				],
-				attributes: ["content", "createdAt"],
 			});
 		} catch (error) {
 			this.logger.error(`${error}`);

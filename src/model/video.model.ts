@@ -30,7 +30,7 @@ export class Video extends Model {
 	file_path: string;
 
 	@ForeignKey(() => User)
-	@Column
+	@Column({ onDelete: "CASCADE" })
 	user_email: string;
 
 	@Column

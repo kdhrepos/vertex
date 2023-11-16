@@ -18,7 +18,7 @@ export class Playlist extends Model {
 	id: number;
 
 	@ForeignKey(() => User)
-	@Column({})
+	@Column({ onDelete: "CASCADE" })
 	user_email: string;
 
 	@Column

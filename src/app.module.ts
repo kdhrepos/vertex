@@ -65,7 +65,7 @@ import { Comment } from "./model/comment.model";
 			timezone: "Asia/Seoul",
 			synchronize: true,
 			// sync: { alter: true },
-			sync: { force: true },
+			// sync: { force: true },
 		}),
 		PostModule,
 		VideoModule,

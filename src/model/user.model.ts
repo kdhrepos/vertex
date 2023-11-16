@@ -44,13 +44,12 @@ export class User extends Model {
 	 */
 
 	/* Belongs */
-	/* Has */
+	@BelongsToMany(() => User, () => Subscription, "email", "email")
+	subscription: Subscription;
 
+	/* Has */
 	@HasMany(() => Comment)
 	comments: Comment[];
-
-	@HasMany(() => Subscription)
-	subscriptions: Subscription[];
 
 	@HasMany(() => Post)
 	posts: Post[];

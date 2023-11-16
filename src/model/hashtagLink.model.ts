@@ -16,11 +16,11 @@ export class HashtagLink extends Model {
 
 	@ForeignKey(() => Video)
 	@ForeignKey(() => Post)
-	@Column({ primaryKey: true })
+	@Column({ primaryKey: true, onDelete: "CASCADE" })
 	contents_id: string;
 
 	@ForeignKey(() => Hashtag)
-	@Column({ primaryKey: true })
+	@Column({ primaryKey: true, onDelete: "CASCADE" })
 	hashtag_id: number;
 
 	@Column
