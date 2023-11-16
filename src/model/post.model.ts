@@ -1,6 +1,15 @@
 import { UUID } from "crypto";
-import { Table, Column, Model, BelongsTo } from "sequelize-typescript";
+import {
+	Table,
+	Column,
+	Model,
+	BelongsTo,
+	ForeignKey,
+	HasMany,
+} from "sequelize-typescript";
 import { User } from "./user.model";
+import { Like } from "./like.model";
+import { Comment } from "./comment.model";
 
 @Table({ freezeTableName: true })
 export class Post extends Model {
@@ -8,6 +17,7 @@ export class Post extends Model {
 	@Column({ primaryKey: true })
 	id: UUID;
 
+	@ForeignKey(() => User)
 	@Column({})
 	user_email: string;
 
@@ -29,6 +39,7 @@ export class Post extends Model {
 	@Column({ defaultValue: false })
 	is_deleted: boolean;
 
+	@ForeignKey(() => User)
 	@Column
 	channel_email: string;
 
@@ -37,6 +48,16 @@ export class Post extends Model {
 	 */
 
 	/* Belongs */
+	@BelongsTo(() => User, "user_email")
+	user: User;
+
+	@BelongsTo(() => User, "channel_email")
+	channel: User;
 
 	/* Has */
+	@HasMany(() => Like)
+	likes: Like[];
+
+	@HasMany(() => Comment)
+	comments: Comment[];
 }

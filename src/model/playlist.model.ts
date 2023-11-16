@@ -1,13 +1,23 @@
-import { Table, Column, Model, BelongsTo, HasMany } from "sequelize-typescript";
+import {
+	Table,
+	Column,
+	Model,
+	BelongsTo,
+	HasMany,
+	ForeignKey,
+	BelongsToMany,
+} from "sequelize-typescript";
 import { User } from "./user.model";
 import { PlaylistContents } from "./playlist-contents.model";
+import { Video } from "./video.model";
 
-@Table({ freezeTableName: true })
+@Table({ freezeTableName: true, initialAutoIncrement: "1" })
 export class Playlist extends Model {
 	// Columns
-	@Column({ primaryKey: true })
+	@Column({ primaryKey: true, autoIncrement: true })
 	id: number;
 
+	@ForeignKey(() => User)
 	@Column({})
 	user_email: string;
 
@@ -19,6 +29,11 @@ export class Playlist extends Model {
 	 */
 
 	/* Belongs */
+	@BelongsTo(() => User, "user_email")
+	user: User;
+
+	@BelongsToMany(() => Video, () => PlaylistContents, "id", "file_path")
+	playlistContents: PlaylistContents;
 
 	/* Has */
 }

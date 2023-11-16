@@ -4,6 +4,7 @@ import {
 	Model,
 	ForeignKey,
 	BelongsTo,
+	HasMany,
 } from "sequelize-typescript";
 import { User } from "./user.model";
 import { Video } from "./video.model";
@@ -16,21 +17,16 @@ export class Comment extends Model {
 	id: number;
 
 	@ForeignKey(() => User)
-	@Column({
-		primaryKey: true,
-	})
+	@Column({ primaryKey: true })
 	user_email: string;
 
-	// @ForeignKey(() => Video || Post)
-	@Column({
-		primaryKey: true,
-	})
+	@ForeignKey(() => Video)
+	@ForeignKey(() => Post)
+	@Column({ primaryKey: true })
 	contents_id: string;
 
-	// @ForeignKey(() => Comment)
-	@Column({
-		allowNull: true,
-	})
+	@ForeignKey(() => Comment)
+	@Column({ allowNull: true })
 	parent_id: number;
 
 	@Column
@@ -47,5 +43,16 @@ export class Comment extends Model {
 	@BelongsTo(() => User, "user_email")
 	user: User;
 
+	@BelongsTo(() => User, "contents_id")
+	video: Video;
+
+	@BelongsTo(() => Post, "contents_id")
+	post: Post;
+
+	@BelongsTo(() => Comment, "parent_id")
+	parent: Comment;
+
 	/* Has */
+	@HasMany(() => Comment)
+	comments: Comment[];
 }

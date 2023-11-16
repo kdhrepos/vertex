@@ -4,6 +4,7 @@ import {
 	Model,
 	BelongsTo,
 	BelongsToMany,
+	ForeignKey,
 } from "sequelize-typescript";
 import { Video } from "./video.model";
 import { Post } from "./post.model";
@@ -12,14 +13,13 @@ import { Hashtag } from "./hashtag.model";
 @Table({ freezeTableName: true })
 export class HashtagLink extends Model {
 	// Columns;
-	@Column({
-		primaryKey: true,
-	})
+
+	@ForeignKey(() => Video)
+	@ForeignKey(() => Post)
+	@Column({ primaryKey: true })
 	contents_id: string;
 
-	@Column({
-		primaryKey: true,
-	})
+	@Column({ primaryKey: true })
 	hashtag_id: number;
 
 	@Column
@@ -30,6 +30,10 @@ export class HashtagLink extends Model {
 	 */
 
 	/* Belongs */
+	@BelongsTo(() => Post, "contents_id")
+	post: Post;
 
+	@BelongsTo(() => Video, "contents_id")
+	video: Video;
 	/* Has */
 }

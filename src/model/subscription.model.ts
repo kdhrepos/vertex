@@ -1,16 +1,21 @@
-import { UUID } from "crypto";
-import { Table, Column, Model, BelongsTo } from "sequelize-typescript";
+import {
+	Table,
+	Column,
+	Model,
+	BelongsTo,
+	ForeignKey,
+} from "sequelize-typescript";
 import { User } from "./user.model";
 
 @Table({ freezeTableName: true })
 export class Subscription extends Model {
 	// Columns
-	@Column({
-		primaryKey: true,
-	})
+	@ForeignKey(() => User)
+	@Column({ primaryKey: true })
 	user_email: string;
 
-	@Column
+	@ForeignKey(() => User)
+	@Column({ primaryKey: true })
 	channel_email: string;
 
 	/**
@@ -18,6 +23,8 @@ export class Subscription extends Model {
 	 */
 
 	/* Belongs */
+	@BelongsTo(() => User, "user_email")
+	user: User[];
 
 	/* Has */
 }

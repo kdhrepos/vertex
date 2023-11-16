@@ -1,5 +1,11 @@
 import { UUID } from "crypto";
-import { Table, Column, Model, BelongsTo } from "sequelize-typescript";
+import {
+	Table,
+	Column,
+	Model,
+	BelongsTo,
+	ForeignKey,
+} from "sequelize-typescript";
 import { Playlist } from "./playlist.model";
 import { Video } from "./video.model";
 
@@ -17,6 +23,5 @@ export class PlaylistContents extends Model {
 	 */
 
 	/* Belongs */
-
 	/* Has */
 }

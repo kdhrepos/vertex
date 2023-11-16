@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { Comment } from "src/model/commet.model";
+import { Comment } from "src/model/comment.model";
 
 @Injectable()
 export class PostCommentService {

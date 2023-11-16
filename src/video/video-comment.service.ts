@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { Comment } from "src/model/commet.model";
+import { Comment } from "src/model/comment.model";
 import { UploadCommentDto } from "./dto/comment-dto/upload-comment.dto";
 import { FindCommentDto } from "./dto/comment-dto/find-comment.dto";
 import { User } from "src/model/user.model";

@@ -13,16 +13,13 @@ import { Post } from "./post.model";
 @Table({ freezeTableName: true })
 export class Like extends Model {
 	// Columns
-	// @ForeignKey(() => User)
-	@Column({
-		primaryKey: true,
-	})
+	@ForeignKey(() => User)
+	@Column({ primaryKey: true })
 	user_email: string;
 
-	// @ForeignKey(() => Video)
-	@Column({
-		primaryKey: true,
-	})
+	@ForeignKey(() => Post)
+	@ForeignKey(() => Video)
+	@Column({ primaryKey: true })
 	contents_id: string;
 
 	/**
@@ -30,6 +27,13 @@ export class Like extends Model {
 	 */
 
 	/* Belongs */
+	@BelongsTo(() => User, "user_email")
+	user: User;
 
+	@BelongsTo(() => Post, "contents_id")
+	post: Post;
+
+	@BelongsTo(() => Video, "contents_id")
+	video: Video;
 	/* Has */
 }

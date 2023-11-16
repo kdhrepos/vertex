@@ -1,13 +1,13 @@
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { VideoRecord } from "src/model/video-record.model";
+import { Record } from "src/model/record.model";
 import { Video } from "src/model/video.model";
 
 @Injectable()
 export class VideoRecordService {
 	constructor(
-		@InjectModel(VideoRecord)
-		private videoRecordModel: typeof VideoRecord,
+		@InjectModel(Record)
+		private recordModel: typeof Record,
 	) {}
 
 	private readonly logger = new Logger("Video Record Service");
@@ -23,7 +23,7 @@ export class VideoRecordService {
 		try {
 			const { user_email: email, file_path: filePath } = video;
 
-			const existedRecord = await this.videoRecordModel.findOne({
+			const existedRecord = await this.recordModel.findOne({
 				where: {
 					email: email,
 					filePath: filePath,
@@ -34,7 +34,7 @@ export class VideoRecordService {
 				return;
 			}
 
-			await this.videoRecordModel.create({
+			await this.recordModel.create({
 				user_email: email,
 				video_id: filePath,
 			});
