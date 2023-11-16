@@ -139,24 +139,30 @@ export class VideoController {
 	@Get("channel/:creator_id")
 	async getChannelById() {}
 
-	@ApiOperation({ description: "검색을 통해 비디오 요청" })
-	@Get("search/:search_query")
-	async findVideosBySearch(@Param("search_query") params) {
-		return params;
-	}
-
 	@ApiOperation({ description: "비디오 다운로드 요청" })
 	@Get("/download")
-	async downloadVideo(@Query() findVideoDto: FindVideoDto) {
+	async downloadVideo(
+		@Res() res: Response,
+		@Query() findVideoDto: FindVideoDto,
+	) {
 		const { path } = findVideoDto;
-		if (await this.videoService.findOne(path)) {
-			return await this.firebaseService.downloadVideo(findVideoDto);
+		const existedVideo = await this.videoService.findOne(path);
+		if (existedVideo) {
+			const downloadURL =
+				await this.firebaseService.downloadVideo(existedVideo);
+			return res.redirect(downloadURL);
 		} else {
 			return new HttpException(
 				"Video Download Error",
 				HttpStatus.INTERNAL_SERVER_ERROR,
 			);
 		}
+	}
+
+	@ApiOperation({ description: "검색을 통해 비디오 요청" })
+	@Get("search/:search_query")
+	async findVideosBySearch(@Param("search_query") params) {
+		return params;
 	}
 
 	@ApiOperation({ description: "특정 비디오의 댓글 가져오기" })

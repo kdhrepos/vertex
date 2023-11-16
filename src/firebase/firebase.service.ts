@@ -3,6 +3,7 @@ import { FirebaseApp, initializeApp } from "firebase/app";
 import {
 	FirebaseStorage,
 	deleteObject,
+	getDownloadURL,
 	getStorage,
 	getStream,
 	ref,
@@ -189,7 +190,25 @@ export class FirebaseService {
 		}
 	}
 
-	async downloadVideo(findVideoDto: FindVideoDto) {}
+	async downloadVideo(video: Video): Promise<string> {
+		const functionName = FirebaseService.prototype.downloadVideo.name;
+		try {
+			const { file_path: filePath, video_file_extension: videoFileExtension } =
+				video;
+
+			const videoPath = "videos/" + filePath + videoFileExtension;
+			const videoDirRef = ref(this.firebaseStorage, videoPath);
+			const downloadURL = await getDownloadURL(videoDirRef);
+			return downloadURL;
+		} catch (error) {
+			this.logger.error(`${functionName} : ${error}`);
+			throw new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
+
 	async findThumbnail() {}
 
 	async uploadImage(img: Express.Multer.File, imgPath: string) {
