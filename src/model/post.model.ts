@@ -9,10 +9,10 @@ import {
 	BelongsToMany,
 } from "sequelize-typescript";
 import { User } from "./user.model";
-import { Like } from "./like.model";
 import { Comment } from "./comment.model";
 import { Hashtag } from "./hashtag.model";
 import { HashtagLink } from "./hashtagLink.model";
+import { Like } from "./like.model";
 
 @Table({ freezeTableName: true })
 export class Post extends Model {
@@ -57,13 +57,9 @@ export class Post extends Model {
 	@BelongsTo(() => User, "channel_email")
 	channel: User;
 
-	@BelongsToMany(() => Hashtag, () => HashtagLink, "id", "id")
+	@BelongsToMany(() => Hashtag, () => HashtagLink, "post_id")
 	hashtagLink: HashtagLink;
 
-	/* Has */
-	@HasMany(() => Like)
-	likes: Like[];
-
-	@HasMany(() => Comment)
-	comments: Comment[];
+	@BelongsToMany(() => User, () => Like, "post_id")
+	like: Like;
 }

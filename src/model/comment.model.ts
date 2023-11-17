@@ -17,26 +17,26 @@ export class Comment extends Model {
 	id: number;
 
 	@ForeignKey(() => User)
-	@Column({ primaryKey: true })
+	@Column({})
 	user_email: string;
 
 	@ForeignKey(() => Video)
+	@Column({ allowNull: true, onDelete: "CASCADE" })
+	video_id: string;
+
 	@ForeignKey(() => Post)
-	@Column({ primaryKey: true, onDelete: "CASCADE" })
-	contents_id: string;
+	@Column({ allowNull: true, onDelete: "CASCADE" })
+	post_id: string;
 
 	@ForeignKey(() => Comment)
 	@Column({
 		allowNull: true,
-		// onDelete:"CASCADE"
+		onDelete: "CASCADE",
 	})
 	parent_id: number;
 
 	@Column
 	content: string;
-
-	@Column
-	is_video: number;
 
 	/**
 	 * Relationship
@@ -46,16 +46,12 @@ export class Comment extends Model {
 	@BelongsTo(() => User, "user_email")
 	user: User;
 
-	@BelongsTo(() => Video, "contents_id")
+	@BelongsTo(() => Video, "video_id")
 	video: Video;
 
-	@BelongsTo(() => Post, "contents_id")
+	@BelongsTo(() => Post, "post_id")
 	post: Post;
 
 	@BelongsTo(() => Comment, "parent_id")
 	parent: Comment;
-
-	/* Has */
-	@HasMany(() => Comment)
-	comments: Comment[];
 }

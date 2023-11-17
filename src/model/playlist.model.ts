@@ -32,7 +32,7 @@ export class Playlist extends Model {
 	@BelongsTo(() => User, "user_email")
 	user: User;
 
-	@BelongsToMany(() => Video, () => PlaylistContents, "id", "file_path")
+	@BelongsToMany(() => Video, () => PlaylistContents, "playlist_id")
 	playlistContents: PlaylistContents;
 
 	/* Has */

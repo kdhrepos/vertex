@@ -30,7 +30,7 @@ export class UpdateVideoDto {
 	@ApiProperty({
 		required: true,
 		description: "DB 상에서 비디오의 ID",
-		example: "92e46fc92fb5527cd73639a99246eedf35946afa06deb9f7e73d787ce17fe60b",
+		example: "e51017a0ac8c793be6b07fdcb447267abfb5acbee87e585d81823af67e8681a0",
 	})
 	path: string;
 }

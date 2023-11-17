@@ -5,32 +5,24 @@ export class DeleteCommentDto {
 	@IsNumber()
 	@ApiProperty({
 		required: true,
-		description: "1",
-		example: "댓글의 id",
+		description: "댓글의 id",
+		example: "1",
 	})
 	id: number;
 
 	@IsEmail()
 	@ApiProperty({
 		required: true,
-		description: "asd@naver.com",
-		example: "유저의 이메일",
+		description: "유저의 이메일",
+		example: "asd@naver.com",
 	})
 	email: string;
-
-	@IsBoolean()
-	@ApiProperty({
-		required: true,
-		description: "비디오 댓글인지 게시글 댓글인지 표시",
-		example: "true / false",
-	})
-	isVideo: boolean;
 
 	@IsString()
 	@ApiProperty({
 		required: true,
 		description: "DB 상에서 비디오의 ID",
-		example: "$2b$12$s1O5h66GFZ0oXR3eLDiuF.J9uglYTEXus71.BMFAp5zcTqgjXz9M2",
+		example: "e51017a0ac8c793be6b07fdcb447267abfb5acbee87e585d81823af67e8681a0",
 	})
 	path: string;
 }

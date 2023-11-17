@@ -1,4 +1,3 @@
-import { UUID } from "crypto";
 import {
 	Table,
 	Column,
@@ -10,17 +9,23 @@ import { User } from "./user.model";
 import { Video } from "./video.model";
 import { Post } from "./post.model";
 
-@Table({ freezeTableName: true })
+@Table({ freezeTableName: true, initialAutoIncrement: "1" })
 export class Like extends Model {
 	// Columns
+	@Column({ primaryKey: true, autoIncrement: true })
+	id: number;
+
 	@ForeignKey(() => User)
-	@Column({ primaryKey: true, onDelete: "CASCADE" })
+	@Column({ unique: true, allowNull: false, onDelete: "CASCADE" })
 	user_email: string;
 
-	@ForeignKey(() => Post)
 	@ForeignKey(() => Video)
-	@Column({ primaryKey: true, onDelete: "CASCADE" })
-	contents_id: string;
+	@Column({ unique: true, allowNull: true, onDelete: "CASCADE" })
+	video_id: string;
+
+	@ForeignKey(() => Post)
+	@Column({ unique: true, allowNull: true, onDelete: "CASCADE" })
+	post_id: string;
 
 	/**
 	 * Relationship

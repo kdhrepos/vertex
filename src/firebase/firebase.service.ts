@@ -78,7 +78,7 @@ export class FirebaseService {
 
 			// 비디오가 올바르게 업로드 되었다면 메타 데이터를 DB에 저장
 			if (videoResult) {
-				this.videoService.create(
+				await this.videoService.create(
 					hashedFilePath,
 					title,
 					description,
@@ -180,7 +180,9 @@ export class FirebaseService {
 
 			const videoDirRef = ref(this.firebaseStorage, videoPath);
 
-			deleteObject(videoDirRef);
+			deleteObject(videoDirRef).catch(error => {
+				this.logger.error(`${functionName} : ${error}`);
+			});
 		} catch (error) {
 			this.logger.error(`${functionName} : ${error}`);
 			return new HttpException(

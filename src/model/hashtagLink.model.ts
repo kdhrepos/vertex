@@ -10,21 +10,24 @@ import { Video } from "./video.model";
 import { Post } from "./post.model";
 import { Hashtag } from "./hashtag.model";
 
-@Table({ freezeTableName: true })
+@Table({ freezeTableName: true, initialAutoIncrement: "1" })
 export class HashtagLink extends Model {
 	// Columns;
 
+	@Column({ primaryKey: true, autoIncrement: true })
+	id: number;
+
 	@ForeignKey(() => Video)
+	@Column({ unique: true, allowNull: true, onDelete: "CASCADE" })
+	video_id: string;
+
 	@ForeignKey(() => Post)
-	@Column({ primaryKey: true, onDelete: "CASCADE" })
-	contents_id: string;
+	@Column({ unique: true, allowNull: true, onDelete: "CASCADE" })
+	post_id: string;
 
 	@ForeignKey(() => Hashtag)
-	@Column({ primaryKey: true, onDelete: "CASCADE" })
+	@Column({ unique: true, allowNull: false, onDelete: "CASCADE" })
 	hashtag_id: number;
-
-	@Column
-	is_video: boolean;
 
 	/**
 	 * Relationship
