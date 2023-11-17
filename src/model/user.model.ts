@@ -47,22 +47,9 @@ export class User extends Model {
 	// @BelongsToMany(() => User, () => Subscription, "email", "email")
 	// subscription: Subscription;
 
-	/* Has */
-	@HasMany(() => Comment)
-	comments: Comment[];
+	@BelongsToMany(() => Video, () => Like, "user_email")
+	videoLike: Like;
 
-	@HasMany(() => Post)
-	posts: Post[];
-
-	@HasMany(() => Like)
-	likes: Like[];
-
-	@HasMany(() => Video)
-	videos: Video[];
-
-	@HasMany(() => Playlist)
-	playlists: Playlist[];
-
-	@HasMany(() => Record)
-	records: Record[];
+	@BelongsToMany(() => Post, () => Like, "user_email")
+	postLike: Like;
 }

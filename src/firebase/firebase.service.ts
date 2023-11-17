@@ -6,6 +6,7 @@ import {
 	getDownloadURL,
 	getStorage,
 	getStream,
+	getBytes,
 	ref,
 	uploadBytes,
 } from "firebase/storage";
@@ -78,7 +79,7 @@ export class FirebaseService {
 
 			// 비디오가 올바르게 업로드 되었다면 메타 데이터를 DB에 저장
 			if (videoResult) {
-				this.videoService.create(
+				await this.videoService.create(
 					hashedFilePath,
 					title,
 					description,
@@ -180,7 +181,9 @@ export class FirebaseService {
 
 			const videoDirRef = ref(this.firebaseStorage, videoPath);
 
-			deleteObject(videoDirRef);
+			deleteObject(videoDirRef).catch(error => {
+				this.logger.error(`${functionName} : ${error}`);
+			});
 		} catch (error) {
 			this.logger.error(`${functionName} : ${error}`);
 			return new HttpException(
@@ -229,6 +232,25 @@ export class FirebaseService {
 		}
 	}
 
+	async findImage(imgPath : string, imgExt : string) {
+		// img가 없는 게시글의 경우
+		if(imgPath === null) return true;
+
+		const functionName = FirebaseService.prototype.uploadImage.name;
+		try {
+			const imagePath = "images/" + imgPath + imgExt;
+			const imgDirRef = ref(this.firebaseStorage, imagePath);
+			const imgByte = getBytes(imgDirRef);
+
+			return imgByte;
+		} catch (error) {
+			this.logger.error(`${functionName} : ${error}`);
+			throw new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
 	async uploadImage(img: Express.Multer.File, imgPath: string) {
 		const functionName = FirebaseService.prototype.uploadImage.name;
 		try {
@@ -237,10 +259,7 @@ export class FirebaseService {
 				throw new HttpException("Invalid Image Object", HttpStatus.BAD_REQUEST);
 			}
 
-			let imagePath = "images/";
-			imagePath += imgPath;
-			imagePath += path.extname(img.originalname);
-
+			const imagePath = "images/" + imgPath + path.extname(img.originalname);
 			const imgDirRef = ref(this.firebaseStorage, imagePath);
 			const imgResult = uploadBytes(imgDirRef, img.buffer);
 
@@ -259,6 +278,41 @@ export class FirebaseService {
 			);
 		}
 	}
-	async deleteImage() {}
-	async findImage() {}
+	async updateImage(img: Express.Multer.File, imgPath: string) {
+		const functionName = FirebaseService.prototype.uploadImage.name;
+		try {
+			
+		} catch(error) {
+			this.logger.error(`${functionName} : ${error}`);
+			throw new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
+	async deleteImage(imgPath : string, imgExt: string) {
+		const functionName = FirebaseService.prototype.uploadImage.name;
+		try {
+			if (!imgPath) return "No imgPath";
+
+			const imagePath = "images/" + imgPath + imgExt;
+			const imgDirRef = ref(this.firebaseStorage, imagePath);
+			const imgResult = deleteObject(imgDirRef);
+
+			if (!imgResult) {
+				throw new HttpException(
+					"Image Delete Error",
+					HttpStatus.INTERNAL_SERVER_ERROR,
+				);
+			}
+
+			return true;
+		} catch(error) {
+			this.logger.error(`${functionName} : ${error}`);
+			throw new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
 }

@@ -13,6 +13,7 @@ import {
 	HttpException,
 	HttpStatus,
 	Query,
+	Session,
 } from "@nestjs/common";
 import { VideoService } from "./video.service";
 import { ApiExtraModels, ApiOperation, ApiTags } from "@nestjs/swagger";
@@ -35,6 +36,8 @@ import { FindCommentDto } from "./dto/comment-dto/find-comment.dto";
 import { UpdateCommentDto } from "./dto/comment-dto/update-comment.dto";
 import { VideoRecordService } from "./video-record.service";
 import { DeleteCommentDto } from "./dto/comment-dto/delete-comment.dto";
+import { session } from "passport";
+import { VideoLikeService } from "./video-like.service";
 
 @ApiTags("Video")
 @Controller("video")
@@ -43,6 +46,7 @@ export class VideoController {
 		private videoService: VideoService,
 		private videoCommentService: VideoCommentService,
 		private videoRecordService: VideoRecordService,
+		private videoLikeService: VideoLikeService,
 		private firebaseService: FirebaseService,
 	) {}
 
@@ -78,6 +82,7 @@ export class VideoController {
 			video: Express.Multer.File[];
 			thumbnail?: Express.Multer.File[];
 		},
+		@Session() session,
 	) {
 		const { email, title } = uploadVideoDto;
 		const hashedFilePath = generateId(
@@ -111,6 +116,7 @@ export class VideoController {
 			video: Express.Multer.File[];
 			thumbnail?: Express.Multer.File[];
 		},
+		@Session() session,
 	) {
 		const { path } = updateVideoDto;
 
@@ -130,7 +136,10 @@ export class VideoController {
 	@ApiOperation({ description: "비디오 삭제" })
 	@UseGuards(AuthenticatedGuard)
 	@Delete("/delete")
-	async deleteVideo(@Body() deleteVideoDto: DeleteVideoDto) {
+	async deleteVideo(
+		@Body() deleteVideoDto: DeleteVideoDto,
+		@Session() session,
+	) {
 		const { email, title, path } = deleteVideoDto;
 		const existedVideo = await this.videoService.findOne(path); // 여기에서 find해서 존재하면 삭제를 진행하는데 Service에 deleteOne에서 또 존재하는지 보는게 조금 비효율적인거같음.
 		if (existedVideo) {
@@ -144,6 +153,7 @@ export class VideoController {
 	async downloadVideo(
 		@Res() res: Response,
 		@Query() findVideoDto: FindVideoDto,
+		@Session() session,
 	) {
 		const { path } = findVideoDto;
 		const existedVideo = await this.videoService.findOne(path);
@@ -167,27 +177,46 @@ export class VideoController {
 
 	@ApiOperation({ description: "비디오에 댓글 등록" })
 	@Post("comment")
-	async createCommentToVideo(@Body() uploadCommentDto: UploadCommentDto) {
+	async createCommentToVideo(
+		@Body() uploadCommentDto: UploadCommentDto,
+		@Session() session,
+	) {
 		return await this.videoCommentService.create(uploadCommentDto);
 	}
 
 	@ApiOperation({ description: "비디오 댓글 수정" })
 	@UseGuards(AuthenticatedGuard)
 	@Patch("comment")
-	async updateCommentToVideo(@Body() updateCommentDto: UpdateCommentDto) {
+	async updateCommentToVideo(
+		@Body() updateCommentDto: UpdateCommentDto,
+		@Session() session,
+	) {
 		return await this.videoCommentService.update(updateCommentDto);
 	}
 
 	@ApiOperation({ description: "비디오 댓글 삭제" })
 	@UseGuards(AuthenticatedGuard)
 	@Delete("comment")
-	async deleteCommentToVideo(@Body() deleteCommentDto: DeleteCommentDto) {
+	async deleteCommentToVideo(
+		@Body() deleteCommentDto: DeleteCommentDto,
+		@Session() session,
+	) {
 		return await this.videoCommentService.delete(deleteCommentDto);
 	}
 
 	@ApiOperation({ description: "비디오 좋아요/싫어요 누르기" })
+	@UseGuards(AuthenticatedGuard)
 	@Post("/like")
-	async likeToVideo() {}
+	async likeToVideo(@Body("path") path: string, @Session() session: any) {
+		const video = await this.videoService.findOne(path);
+
+		if (video) {
+			const liked = await this.videoLikeService.create(path, session);
+			this.videoService.updateLike(path, video, liked);
+		} else {
+			return new HttpException("Video Does Not Exist", HttpStatus.BAD_REQUEST);
+		}
+	}
 
 	@ApiOperation({
 		description: "한 크리에이터의 채널에 들어갔을때 비디오 요청",

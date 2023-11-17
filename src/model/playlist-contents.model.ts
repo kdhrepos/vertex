@@ -12,9 +12,11 @@ import { Video } from "./video.model";
 @Table({ freezeTableName: true })
 export class PlaylistContents extends Model {
 	// Columns
+	@ForeignKey(() => Video)
 	@Column({ primaryKey: true, onDelete: "CASCADE" })
 	video_id: string;
 
+	@ForeignKey(() => Playlist)
 	@Column({ primaryKey: true, onDelete: "CASCADE" })
 	playlist_id: number;
 

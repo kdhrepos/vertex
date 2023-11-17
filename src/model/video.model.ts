@@ -8,13 +8,12 @@ import {
 	BelongsToMany,
 } from "sequelize-typescript";
 import { User } from "./user.model";
-import { Comment } from "./comment.model";
-import { HashtagLink } from "./hashtagLink.model";
 import { Record } from "./record.model";
-import { Like } from "./like.model";
 import { PlaylistContents } from "./playlist-contents.model";
 import { Playlist } from "./playlist.model";
 import { Hashtag } from "./hashtag.model";
+import { Like } from "./like.model";
+import { HashtagLink } from "./hashtagLink.model";
 
 /*
 	트리거 참조
@@ -59,22 +58,15 @@ export class Video extends Model {
 	@BelongsTo(() => User)
 	user: User;
 
-	@BelongsToMany(() => Playlist, () => PlaylistContents, "file_path", "id")
+	@BelongsToMany(() => Playlist, () => PlaylistContents, "video_id")
 	playlistContents: PlaylistContents;
 
-	@BelongsToMany(() => Hashtag, () => HashtagLink, "file_path", "id")
+	@BelongsToMany(() => Hashtag, () => HashtagLink, "video_id")
 	hashtagLink: HashtagLink;
 
-	/* Has */
-	@HasMany(() => Like)
-	likes: Like[];
+	@BelongsToMany(() => User, () => Like, "video_id")
+	like: Like;
 
-	@HasMany(() => Comment)
-	comments: Comment[];
-
-	@HasMany(() => HashtagLink)
-	hashtagLinks: HashtagLink[];
-
-	@HasMany(() => Record)
-	records: Record[];
+	@BelongsToMany(() => User, () => Record, "video_id")
+	record: Record;
 }

@@ -5,6 +5,7 @@ import {
 	ForeignKey,
 	BelongsTo,
 	PrimaryKey,
+	BelongsToMany,
 } from "sequelize-typescript";
 import { Video } from "./video.model";
 import { User } from "./user.model";
@@ -31,11 +32,6 @@ export class Record extends Model {
 	 */
 
 	/* Belongs */
-	@BelongsTo(() => User)
-	user: User;
-
-	@BelongsTo(() => Video)
-	video: Video;
 
 	// @BelongsTo(() => Video)
 	// video: Video;

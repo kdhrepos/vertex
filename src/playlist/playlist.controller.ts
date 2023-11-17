@@ -37,7 +37,7 @@ export class PlaylistController {
 	@ApiOperation({ description: "재생목록 리스트 생성" })
 	@Post(":playlist_id")
 	async createPlaylist(@Body() createPlaylistDto: CreatePlaylistDto) {
-		return this.playlistService.createOne(createPlaylistDto);
+		return this.playlistService.createPlaylist(createPlaylistDto);
 	}
 
 	@ApiOperation({ description: "재생목록 리스트 삭제" })

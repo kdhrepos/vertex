@@ -6,7 +6,7 @@ export class FindCommentDto {
 	@ApiProperty({
 		required: true,
 		description: "DB 상에서 비디오의 ID",
-		example: "$2b$12$s1O5h66GFZ0oXR3eLDiuF.J9uglYTEXus71.BMFAp5zcTqgjXz9M2",
+		example: "e51017a0ac8c793be6b07fdcb447267abfb5acbee87e585d81823af67e8681a0",
 	})
 	path: string;
 }

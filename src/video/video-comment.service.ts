@@ -26,9 +26,9 @@ export class VideoCommentService {
 
 			return await this.commentModel.findAll({
 				where: {
-					contents_id: path,
+					video_id: path,
 				},
-				attributes: ["content", "createdAt"],
+				attributes: ["content", "createdAt", "parent_id"],
 				include: [
 					{
 						model: User,
@@ -48,14 +48,13 @@ export class VideoCommentService {
 	async create(uploadCommentDto: UploadCommentDto) {
 		const functionName = VideoCommentService.prototype.create.name;
 		try {
-			const { email, content, parentId, isVideo, path } = uploadCommentDto;
+			const { email, content, parentId, path } = uploadCommentDto;
 
 			await this.commentModel.create({
 				user_email: email,
-				contents_id: path,
+				video_id: path,
 				content: content,
 				parent_id: parentId,
-				is_video: isVideo,
 			});
 		} catch (error) {
 			this.logger.error(`${functionName} : ${error}`);
@@ -78,7 +77,7 @@ export class VideoCommentService {
 				{
 					where: {
 						id: id,
-						contents_id: path,
+						video_id: path,
 					},
 				},
 			);
@@ -94,14 +93,13 @@ export class VideoCommentService {
 	async delete(deleteCommentDto: DeleteCommentDto) {
 		const functionName = VideoCommentService.prototype.delete.name;
 		try {
-			const { id, email, path, isVideo } = deleteCommentDto;
+			const { id, email, path } = deleteCommentDto;
 
 			const existedVideo = await this.commentModel.findOne({
 				where: {
 					id: id,
 					user_email: email,
-					contents_id: path,
-					is_video: isVideo,
+					video_id: path,
 				},
 			});
 

@@ -43,17 +43,15 @@ export class PlaylistService {
 		}
 	}
 
-	async createOne(
-		createPlaylistDto: CreatePlaylistDto
-	) {
-		const functionName = PlaylistService.prototype.createOne.name;
+
+	async createPlaylist(createPlaylist: CreatePlaylistDto) {
+		const functionName = PlaylistService.prototype.createPlaylist.name;
 		try {
-			const { email, title } = createPlaylistDto;
+			const { title } = createPlaylist;
 			const duplicatedPlaylist = await this.playlistModel.findOne({
 				where: {
-					list_name: title,
-				},
-			});
+					title: title,
+				
 			if (duplicatedPlaylist) {
 				this.logger.error(`${functionName} : Duplicated Playlist Title`);
 				throw new HttpException(

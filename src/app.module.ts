@@ -24,15 +24,15 @@ import { RedisModule } from "./redis/redis.module";
 import { FirebaseModule } from "./firebase/firebase.module";
 import { User } from "./model/user.model";
 import { Video } from "./model/video.model";
-import { Like } from "./model/like.model";
 import { Record } from "./model/record.model";
 import { Subscription } from "./model/subscription.model";
 import { Post } from "./model/post.model";
 import { Playlist } from "./model/playlist.model";
 import { PlaylistContents } from "./model/playlist-contents.model";
-import { HashtagLink } from "./model/hashtagLink.model";
 import { Hashtag } from "./model/hashtag.model";
 import { Comment } from "./model/comment.model";
+import { Like } from "./model/like.model";
+import { HashtagLink } from "./model/hashtagLink.model";
 
 @Module({
 	imports: [
