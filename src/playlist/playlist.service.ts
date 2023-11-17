@@ -22,7 +22,25 @@ export class PlaylistService {
 		console.log(playlist_id);
 	}
 
-	async findOne() {}
+	async findOne(playlist_id: string): Promise<any> {
+		const functionName = PlaylistService.prototype.findOne.name;
+		try {
+			const existedPlaylist = await this.playlistModel.findByPk(playlist_id, {
+				raw: true,
+			});
+			if (existedPlaylist) {
+				return existedPlaylist;
+			}
+			this.logger.error(`${functionName} : Playlist Does Not Exist`);
+			return false;
+		} catch (error) {
+			this.logger.error(`${error}`);
+			return new HttpException(
+				`${functionName} ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
 
 	async create(
 		createPlaylistDto: CreatePlaylistDto
