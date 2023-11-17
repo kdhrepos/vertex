@@ -9,6 +9,7 @@ import {
 import { InjectModel } from "@nestjs/sequelize";
 import { Playlist } from "src/model/playlist.model";
 import { CreatePlaylistDto } from "./dto/create-playlist.dto";
+import { DeletePlaylistDto } from "./dto/delete-playlist.dto";
 import * as uuid from "uuid";
 
 @Injectable()
@@ -54,7 +55,30 @@ export class PlaylistService {
 		}
 	}
 
-	async update() {}
-
-	async delete() {}
+	async deleteOne(email: string, title: string) {
+		const functionName = PlaylistService.prototype.deleteOne.name;
+		try {
+			const existedVideo = await this.playlistModel.findOne({
+				where: {
+					user_email: email,
+					title: title,
+				},
+			});
+			if (existedVideo) {
+				await existedVideo.destroy();
+				return;
+			}
+			this.logger.error(`${functionName} : Playlist does Not Exist`);
+			return new HttpException(
+				`${functionName} : Playlist Does Not Exist`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		} catch (error) {
+			this.logger.error(`${functionName} : ${error}`);
+			return new HttpException(
+				`${functionName} ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
 }

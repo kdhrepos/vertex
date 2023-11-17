@@ -132,7 +132,7 @@ export class VideoController {
 	@Delete("/delete")
 	async deleteVideo(@Body() deleteVideoDto: DeleteVideoDto) {
 		const { email, title, path } = deleteVideoDto;
-		const existedVideo = await this.videoService.findOne(path);
+		const existedVideo = await this.videoService.findOne(path); // 여기에서 find해서 존재하면 삭제를 진행하는데 Service에 deleteOne에서 또 존재하는지 보는게 조금 비효율적인거같음.
 		if (existedVideo) {
 			await this.videoService.deleteOne(path, email, title);
 			return await this.firebaseService.deleteVideo(existedVideo);

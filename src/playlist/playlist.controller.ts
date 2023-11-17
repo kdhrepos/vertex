@@ -12,6 +12,7 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { PlaylistService } from "./playlist.service";
 import { PlaylistContentsService } from "./playlist-contents.service";
 import { CreatePlaylistDto } from "./dto/create-playlist.dto";
+import { DeletePlaylistDto } from "./dto/delete-playlist.dto";
 
 @ApiTags("Playlist")
 @Controller("playlist")
@@ -34,14 +35,15 @@ export class PlaylistController {
 	@ApiOperation({ description: "재생목록 리스트 생성" })
 	@Post(":playlist_id")
 	async createPlaylist(@Body() createPlaylistDto: CreatePlaylistDto) {
-		const { email, title } = createPlaylistDto;
-
 		return this.playlistService.create(createPlaylistDto);
 	}
 
 	@ApiOperation({ description: "재생목록 리스트 삭제" })
 	@Delete(":playlist_id")
-	deletePlaylist() { }
+	async deletePlaylist(@Body() deleteVideoDto: DeletePlaylistDto) {
+		const { email, title } = deleteVideoDto;
+		await this.playlistService.deleteOne(email, title);
+	}
 
 	@ApiOperation({ description: "유저의 재생목록 내 컨텐츠 요청" })
 	@Get("contents/:playlist_id")
