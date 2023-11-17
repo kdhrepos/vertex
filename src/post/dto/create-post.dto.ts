@@ -6,6 +6,10 @@ export class CreatePostDto {
 	@IsString()
 	email: string;
 
+    @IsNotEmpty()
+	@IsString()
+	channelEmail: string;
+
 	@IsNotEmpty()
 	@IsString()
 	title: string;

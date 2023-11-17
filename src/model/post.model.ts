@@ -33,6 +33,9 @@ export class Post extends Model {
 	@Column({ allowNull: true })
 	contents_image_path: string;
 
+	@Column
+	contents_image_extension: string;
+
 	@Column({ defaultValue: 0 })
 	like_count: number;
 
