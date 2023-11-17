@@ -8,12 +8,14 @@ import {
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Playlist } from "src/model/playlist.model";
+import { PlaylistContents } from "src/model/playlist-contents.model";
 import { CreatePlaylistDto } from "./playlist-dto/create-playlist.dto";
+import { AddVideoToPlaylistDto } from "./playlist-contents-dto/add-video-to-playlist.dto";
 import * as uuid from "uuid";
 
 @Injectable()
 export class PlaylistService {
-	constructor(@InjectModel(Playlist) private playlistModel: typeof Playlist) {}
+	constructor(@InjectModel(Playlist) private playlistModel: typeof Playlist, private playlistContentsModel: typeof PlaylistContents) {}
 
 	private readonly logger = new Logger("Playlist Service");
 
@@ -41,10 +43,10 @@ export class PlaylistService {
 		}
 	}
 
-	async create(
+	async createOne(
 		createPlaylistDto: CreatePlaylistDto
 	) {
-		const functionName = PlaylistService.prototype.create.name;
+		const functionName = PlaylistService.prototype.createOne.name;
 		try {
 			const { email, title } = createPlaylistDto;
 			const duplicatedPlaylist = await this.playlistModel.findOne({
@@ -88,6 +90,59 @@ export class PlaylistService {
 			this.logger.error(`${functionName} : Playlist does Not Exist`);
 			return new HttpException(
 				`${functionName} : Playlist Does Not Exist`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		} catch (error) {
+			this.logger.error(`${functionName} : ${error}`);
+			return new HttpException(
+				`${functionName} ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
+
+	async addVideoToPlaylist(addVideoToPlaylistDto: AddVideoToPlaylistDto){
+		const functionName = PlaylistService.prototype.addVideoToPlaylist.name;
+		try {
+			const { playlist_id, video_id } = addVideoToPlaylistDto;
+			const duplicatedPlaylist = await this.playlistContentsModel.findOne({
+				where: {
+					video_id: video_id
+				},
+			});
+			if (duplicatedPlaylist) {
+				this.logger.error(`${functionName} : Duplicated video`);
+				throw new HttpException(
+					"Duplicated Video Title",
+					HttpStatus.BAD_REQUEST,
+				);
+			}
+			return await this.playlistContentsModel.create({
+				playlist_id: playlist_id,
+				video_id: video_id,
+			});
+		} catch (error) {
+			this.logger.error(
+				`${functionName} : Error add video - ${error.message}`,
+			);
+			throw new HttpException("Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	async deleteVideoToPlaylist(video_id: string){
+		const functionName = PlaylistService.prototype.deleteOne.name;
+		try {
+			const existedVideo = await this.playlistContentsModel.findOne({
+				where: {
+					video_id: video_id
+				},
+			});
+			if (existedVideo) {
+				await existedVideo.destroy();
+				return;
+			}
+			this.logger.error(`${functionName} : Video does Not Exist`);
+			return new HttpException(
+				`${functionName} : Video Does Not Exist`,
 				HttpStatus.INTERNAL_SERVER_ERROR,
 			);
 		} catch (error) {
