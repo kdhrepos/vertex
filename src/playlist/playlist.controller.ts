@@ -1,7 +1,17 @@
-import { Controller, Delete, Get, Post } from "@nestjs/common";
+import {
+	Controller,
+	Delete,
+	Get,
+	Param,
+	Post,
+	Request,
+	Response,
+	Body,
+} from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { PlaylistService } from "./playlist.service";
 import { PlaylistContentsService } from "./playlist-contents.service";
+import { CreatePlaylistDto } from "./dto/create-playlist.dto";
 
 @ApiTags("Playlist")
 @Controller("playlist")
@@ -13,11 +23,19 @@ export class PlaylistController {
 
 	@ApiOperation({ description: "유저의 재생목록 리스트 요청" })
 	@Get(":playlist_id")
-	findPlaylist() {}
+	async findPlaylist(
+		@Request() req,
+		@Response() res,
+		@Param("playlist_id") playlist_id,
+	) {
+		return this.playlistService.findAll(req, res, playlist_id);
+	}
 
 	@ApiOperation({ description: "재생목록 리스트 생성" })
 	@Post(":playlist_id")
-	createPlaylist() {}
+	async createPlaylist(@Body() createPlaylistDto: CreatePlaylistDto) {
+		return this.playlistService.createPlaylist(createPlaylistDto);
+	}
 
 	@ApiOperation({ description: "재생목록 리스트 삭제" })
 	@Delete(":playlist_id")
