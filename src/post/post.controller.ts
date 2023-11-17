@@ -119,19 +119,17 @@ export class PostController {
 	@ApiOperation({ description: "한 채널의 게시글 수정" })
 	@Patch("/:creator_id/post/:post_id")
 	@UseGuards(AuthenticatedGuard)
+	@UseInterceptors(FileInterceptor("img", {}))
 	async updatePost(
 		@Body() updatePostDto: UpdatePostDto,
 		@UploadedFile() img: Express.Multer.File,
 	) {
 		try{
 			// 기존 게시글 삭제
-			
-			// 기존 이미지 비교
-			// 새 이미지: 기존 이미지 삭제 후 이미지 업로드
-			// 기존 이미지: 게시글만 업로드
+			this.deletePost(updatePostDto);
 
-
-			
+			// 게시글 업데이트
+			this.createPost(updatePostDto, img);
 		} catch(error) {
 			throw new HttpException("Update failed", HttpStatus.BAD_REQUEST);
 		}
