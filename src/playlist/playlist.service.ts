@@ -15,7 +15,7 @@ import * as uuid from "uuid";
 
 @Injectable()
 export class PlaylistService {
-	constructor(@InjectModel(Playlist) private playlistModel: typeof Playlist, private playlistContentsModel: typeof PlaylistContents) {}
+	constructor(@InjectModel(Playlist) private playlistModel: typeof Playlist, private playlistContentsModel: typeof PlaylistContents) { }
 
 	private readonly logger = new Logger("Playlist Service");
 
@@ -101,7 +101,30 @@ export class PlaylistService {
 		}
 	}
 
-	async addVideoToPlaylist(addVideoToPlaylistDto: AddVideoToPlaylistDto){
+	async findVideosInPlaylist(@Request() req, @Response() res, playlist_id: string) {
+		const functionName = PlaylistService.prototype.findVideosInPlaylist.name;
+		try {
+			const existedVIdeo = await this.playlistContentsModel.findAll(
+				{
+					where: {
+						playlist_id: playlist_id
+					}
+				}
+			);
+			if (!existedVIdeo) {
+				console.log(null);
+			}
+			console.log(existedVIdeo);
+		} catch (error) {
+			this.logger.error(`${functionName} : Playlist does Not Exist`);
+			return new HttpException(
+				`${functionName} : Playlist Does Not Exist`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
+	
+	async addVideoToPlaylist(addVideoToPlaylistDto: AddVideoToPlaylistDto) {
 		const functionName = PlaylistService.prototype.addVideoToPlaylist.name;
 		try {
 			const { playlist_id, video_id } = addVideoToPlaylistDto;
@@ -128,7 +151,8 @@ export class PlaylistService {
 			throw new HttpException("Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	async deleteVideoToPlaylist(video_id: string){
+
+	async deleteVideoToPlaylist(video_id: string) {
 		const functionName = PlaylistService.prototype.deleteOne.name;
 		try {
 			const existedVideo = await this.playlistContentsModel.findOne({
