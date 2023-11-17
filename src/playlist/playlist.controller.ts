@@ -11,8 +11,8 @@ import {
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { PlaylistService } from "./playlist.service";
 import { PlaylistContentsService } from "./playlist-contents.service";
-import { CreatePlaylistDto } from "./dto/create-playlist.dto";
-import { DeletePlaylistDto } from "./dto/delete-playlist.dto";
+import { CreatePlaylistDto } from "./playlist-dto/create-playlist.dto";
+import { DeletePlaylistDto } from "./playlist-dto/delete-playlist.dto";
 
 @ApiTags("Playlist")
 @Controller("playlist")

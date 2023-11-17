@@ -8,7 +8,7 @@ import {
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Playlist } from "src/model/playlist.model";
-import { CreatePlaylistDto } from "./dto/create-playlist.dto";
+import { CreatePlaylistDto } from "./playlist-dto/create-playlist.dto";
 import * as uuid from "uuid";
 
 @Injectable()
