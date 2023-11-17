@@ -1,7 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString } from "class-validator";
+import { IsString, IsNotEmpty } from "class-validator";
 
 export class CreatePlaylistDto {
+	@IsNotEmpty()
+	@IsString()
+	email: string;
+
 	@IsString()
 	@ApiProperty({
 		required: true,
@@ -9,4 +13,6 @@ export class CreatePlaylistDto {
 		example: "박효신 노래 모음",
 	})
 	title: string;
+
+
 }

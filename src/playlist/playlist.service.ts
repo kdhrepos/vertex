@@ -9,6 +9,7 @@ import {
 import { InjectModel } from "@nestjs/sequelize";
 import { Playlist } from "src/model/playlist.model";
 import { CreatePlaylistDto } from "./dto/create-playlist.dto";
+import * as uuid from "uuid";
 
 @Injectable()
 export class PlaylistService {
@@ -22,13 +23,15 @@ export class PlaylistService {
 
 	async findOne() {}
 
-	async createPlaylist(createPlaylist: CreatePlaylistDto) {
-		const functionName = PlaylistService.prototype.createPlaylist.name;
+	async create(
+		createPlaylistDto: CreatePlaylistDto
+	) {
+		const functionName = PlaylistService.prototype.create.name;
 		try {
-			const { title } = createPlaylist;
+			const { email, title } = createPlaylistDto;
 			const duplicatedPlaylist = await this.playlistModel.findOne({
 				where: {
-					title: title,
+					list_name: title,
 				},
 			});
 			if (duplicatedPlaylist) {
@@ -38,10 +41,11 @@ export class PlaylistService {
 					HttpStatus.BAD_REQUEST,
 				);
 			}
-			const newPlaylist = await this.playlistModel.create({
-				title: title,
+			return await this.playlistModel.create({
+				id: uuid.v4(),
+				user_email: email,
+				list_name: title,
 			});
-			return newPlaylist;
 		} catch (error) {
 			this.logger.error(
 				`${functionName} : Error creating playlist - ${error.message}`,
