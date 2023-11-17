@@ -3,9 +3,10 @@ import { FirebaseApp, initializeApp } from "firebase/app";
 import {
 	FirebaseStorage,
 	deleteObject,
-	getBytes,
+	getDownloadURL,
 	getStorage,
 	getStream,
+	getBytes,
 	ref,
 	uploadBytes,
 } from "firebase/storage";
@@ -15,6 +16,7 @@ import * as path from "path";
 import { VideoService } from "src/video/video.service";
 import { Response } from "express";
 import { generateId } from "src/generate-id";
+import { FindVideoDto } from "src/video/dto/video-dto/find-video.dto";
 
 @Injectable()
 export class FirebaseService {
@@ -189,8 +191,64 @@ export class FirebaseService {
 		}
 	}
 
-	async findThumbnail() {}
+	async downloadVideo(video: Video): Promise<string> {
+		const functionName = FirebaseService.prototype.downloadVideo.name;
+		try {
+			const { file_path: filePath, video_file_extension: videoFileExtension } =
+				video;
 
+			const videoPath = "videos/" + filePath + videoFileExtension;
+			const videoDirRef = ref(this.firebaseStorage, videoPath);
+			const downloadURL = await getDownloadURL(videoDirRef);
+			return downloadURL;
+		} catch (error) {
+			this.logger.error(`${functionName} : ${error}`);
+			throw new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
+
+	async findThumbnail() {
+		const functionName = FirebaseService.prototype.findThumbnail.name;
+		try {
+			// const { file_path: filePath, video_file_extension: videoFileExtension } =
+			// 	video;
+			// 	let thumbnailPath = "thumbnail/";
+			// 	thumbnailPath += hashedFilePath;
+			// 	thumbnailPath += path.extname(thumbnail.originalname);
+			// res.setHeader("Content-Type", "video/mp4");
+			// res.setHeader("Content-Disposition", 'inline; filename="video.mp4"');
+			// videoStream.pipe(res);
+		} catch (error) {
+			this.logger.error(`${functionName} : ${error}`);
+			return new HttpException(
+				`${functionName} ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
+
+	async findImage(imgPath : string, imgExt : string) {
+		// img가 없는 게시글의 경우
+		if(imgPath === null) return true;
+
+		const functionName = FirebaseService.prototype.uploadImage.name;
+		try {
+			const imagePath = "images/" + imgPath + imgExt;
+			const imgDirRef = ref(this.firebaseStorage, imagePath);
+			const imgByte = getBytes(imgDirRef);
+
+			return imgByte;
+		} catch (error) {
+			this.logger.error(`${functionName} : ${error}`);
+			throw new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
 	async uploadImage(img: Express.Multer.File, imgPath: string) {
 		const functionName = FirebaseService.prototype.uploadImage.name;
 		try {
@@ -218,19 +276,36 @@ export class FirebaseService {
 			);
 		}
 	}
-	async deleteImage() {}
-	async findImage(imgPath : string, imgExt : string) {
-		// img가 없는 게시글의 경우
-		if(imgPath === null) return true;
-
+	async updateImage(img: Express.Multer.File, imgPath: string) {
 		const functionName = FirebaseService.prototype.uploadImage.name;
 		try {
+			
+		} catch(error) {
+			this.logger.error(`${functionName} : ${error}`);
+			throw new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
+	async deleteImage(imgPath : string, imgExt: string) {
+		const functionName = FirebaseService.prototype.uploadImage.name;
+		try {
+			if (!imgPath) return "No imgPath";
+
 			const imagePath = "images/" + imgPath + imgExt;
 			const imgDirRef = ref(this.firebaseStorage, imagePath);
-			const imgByte = getBytes(imgDirRef);
+			const imgResult = deleteObject(imgDirRef);
 
-			return imgByte;
-		} catch (error) {
+			if (!imgResult) {
+				throw new HttpException(
+					"Image Delete Error",
+					HttpStatus.INTERNAL_SERVER_ERROR,
+				);
+			}
+
+			return true;
+		} catch(error) {
 			this.logger.error(`${functionName} : ${error}`);
 			throw new HttpException(
 				`${functionName} : ${error}`,

@@ -1,9 +1,11 @@
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Post } from "src/model/post.model";
+import { generateId } from "src/generate-id";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { FindPostDto } from "./dto/find-post.dto";
-import { generateId } from "src/generate-id";
+import { DeletePostDto } from "./dto/delete-post.dto";
+import { UpdatePostDto } from "./dto/update-post.dto";
 
 @Injectable()
 export class PostService {
@@ -44,8 +46,8 @@ export class PostService {
 	async create(createPostDto: CreatePostDto, imgPath: string) {
 		try {
 			const { email, title, contents, channelEmail } = createPostDto;
-			const path = `${email}${title}${channelEmail}`
-			const id = generateId(path)
+			const path = `${email}${title}${channelEmail}`;
+			const id = generateId(path);
 			const value = {
 				id: id,
 				user_email: email,
@@ -67,7 +69,37 @@ export class PostService {
 		}
 	}
 
-	async update() {}
+	async update(updatePostDto: UpdatePostDto) {
 
-	async delete() {}
+	}
+
+	async delete(deletePostDto: DeletePostDto) {
+		const functionName = PostService.prototype.delete.name;
+		try {
+			const existedPost = await this.postModel.findOne({
+				where: {
+					email: deletePostDto.email,
+					title: deletePostDto.title,
+					channelEmail: deletePostDto.channelEmail,
+				},
+			});
+
+			if (existedPost) {
+				await existedPost.destroy();
+				return;
+			}
+
+			this.logger.error(`${functionName} : Post Does Not Exist`);
+			return new HttpException(
+				`${functionName} : Post Does Not Exist`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		} catch (error) {
+			this.logger.error(`${functionName} : ${error}`);
+			return new HttpException(
+				`${functionName} ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
 }

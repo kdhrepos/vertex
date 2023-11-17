@@ -20,10 +20,12 @@ import { AuthenticatedGuard } from "src/auth/auth.guard";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { PostService } from "./post.service";
 import { FirebaseService } from "src/firebase/firebase.service";
-import { CreatePostDto } from "./dto/create-post.dto";
-import { FindPostDto } from "./dto/find-post.dto";
-import { generateId } from "src/generate-id";
 import * as path from "path";
+import { generateId } from "src/generate-id";
+import { FindPostDto } from "./dto/find-post.dto";
+import { CreatePostDto } from "./dto/create-post.dto";
+import { UpdatePostDto } from "./dto/update-post.dto";
+import { DeletePostDto } from "./dto/delete-post.dto";
 
 @ApiTags("Community")
 @Controller("community")
@@ -51,8 +53,6 @@ export class PostController {
 		@Res() res: Response,
 		@Body() findPostDto: FindPostDto,
 	) {
-		const {email, title} = findPostDto;
-		
 		// find post, image
 		const findPostResult = await this.postService.findOne(findPostDto);
 		
@@ -89,6 +89,7 @@ export class PostController {
 		@Body() createPostDto: CreatePostDto,
 		@UploadedFile() img: Express.Multer.File,
 	) {
+		// 이미지 없는 경우에 대한 로직 추가
 		const { email, title } = createPostDto;
 		const imgPath = generateId(`${email}${title}${img.originalname}`);
 
@@ -119,19 +120,46 @@ export class PostController {
 	@Patch("/:creator_id/post/:post_id")
 	@UseGuards(AuthenticatedGuard)
 	async updatePost(
-		@Body() createPostDto: CreatePostDto,
+		@Body() updatePostDto: UpdatePostDto,
 		@UploadedFile() img: Express.Multer.File,
 	) {
+		try{
+			// 기존 게시글 삭제
+			
+			// 기존 이미지 비교
+			// 새 이미지: 기존 이미지 삭제 후 이미지 업로드
+			// 기존 이미지: 게시글만 업로드
 
+
+			
+		} catch(error) {
+			throw new HttpException("Update failed", HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@ApiOperation({ description: "한 채널의 게시글 삭제" })
 	@Delete("/:creator_id/post/:post_id")
 	@UseGuards(AuthenticatedGuard)
 	async deletePost(
-		@Body() createPostDto: CreatePostDto,
+		@Body() deletePostDto: DeletePostDto,
 	) {
+		try {
+			const findPostResult = await this.postService.findOne(deletePostDto);
+		
+			// post 잘 찾았는지 검사
+			if(!findPostResult) {
+				return new HttpException(
+					"Can't find Post",
+					HttpStatus.NOT_FOUND
+				);
+			}
+			const {contents_image_path, contents_image_extension} = findPostResult;
 
+			await this.firebaseService.deleteImage(contents_image_path, contents_image_extension);
+			await this.postService.delete(deletePostDto);
+		} catch(error) {
+			throw new HttpException("Delete failed", HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@ApiOperation({ description: "게시글에 댓글 등록" })

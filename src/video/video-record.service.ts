@@ -1,12 +1,13 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { VideoRecord } from "src/model/video-record.model";
+import { Record } from "src/model/record.model";
+import { Video } from "src/model/video.model";
 
 @Injectable()
 export class VideoRecordService {
 	constructor(
-		@InjectModel(VideoRecord)
-		private videoRecordModel: typeof VideoRecord,
+		@InjectModel(Record)
+		private recordModel: typeof Record,
 	) {}
 
 	private readonly logger = new Logger("Video Record Service");
@@ -17,11 +18,34 @@ export class VideoRecordService {
 	 */
 	async findAll(userId: string) {}
 
-	/**
-	 * @param userId
-	 * @description 유저가 영상을 시청하면 시청 목록에 추가
-	 */
-	async create(userId: string) {}
+	async create(video: Video) {
+		const functionName = VideoRecordService.prototype.create.name;
+		try {
+			const { user_email: email, file_path: filePath } = video;
+
+			const existedRecord = await this.recordModel.findOne({
+				where: {
+					user_email: email,
+					video_id: filePath,
+				},
+			});
+
+			if (existedRecord) {
+				return;
+			}
+
+			await this.recordModel.create({
+				user_email: email,
+				video_id: filePath,
+			});
+		} catch (error) {
+			this.logger.error(`${functionName} : ${error}`);
+			return new HttpException(
+				`${functionName} ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
 
 	/**
 	 * @param userId

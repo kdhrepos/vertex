@@ -7,7 +7,7 @@ import { PostLikeService } from "./post-like.service";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { Post } from "src/model/post.model";
 import { PostService } from "./post.service";
-import { Comment } from "src/model/commet.model";
+import { Comment } from "src/model/comment.model";
 import { Like } from "src/model/like.model";
 import { FirebaseService } from "src/firebase/firebase.service";
 import { VideoService } from "src/video/video.service";

@@ -5,12 +5,16 @@ import {
 	ForeignKey,
 	BelongsTo,
 	HasMany,
+	BelongsToMany,
 } from "sequelize-typescript";
 import { User } from "./user.model";
-import { Comment } from "./commet.model";
+import { Comment } from "./comment.model";
 import { HashtagLink } from "./hashtagLink.model";
-import { VideoRecord } from "./video-record.model";
+import { Record } from "./record.model";
 import { Like } from "./like.model";
+import { PlaylistContents } from "./playlist-contents.model";
+import { Playlist } from "./playlist.model";
+import { Hashtag } from "./hashtag.model";
 
 /*
 	트리거 참조
@@ -25,7 +29,8 @@ export class Video extends Model {
 	@Column({ primaryKey: true })
 	file_path: string;
 
-	@Column
+	@ForeignKey(() => User)
+	@Column({ onDelete: "CASCADE" })
 	user_email: string;
 
 	@Column
@@ -51,6 +56,25 @@ export class Video extends Model {
 	 */
 
 	/* Belongs */
+	@BelongsTo(() => User)
+	user: User;
+
+	@BelongsToMany(() => Playlist, () => PlaylistContents, "file_path", "id")
+	playlistContents: PlaylistContents;
+
+	@BelongsToMany(() => Hashtag, () => HashtagLink, "file_path", "id")
+	hashtagLink: HashtagLink;
 
 	/* Has */
+	@HasMany(() => Like)
+	likes: Like[];
+
+	@HasMany(() => Comment)
+	comments: Comment[];
+
+	@HasMany(() => HashtagLink)
+	hashtagLinks: HashtagLink[];
+
+	@HasMany(() => Record)
+	records: Record[];
 }
