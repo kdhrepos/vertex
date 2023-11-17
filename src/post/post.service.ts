@@ -70,7 +70,7 @@ export class PostService {
 	}
 
 	async update(updatePostDto: UpdatePostDto) {
-
+		await this.delete(updatePostDto);
 	}
 
 	async delete(deletePostDto: DeletePostDto) {

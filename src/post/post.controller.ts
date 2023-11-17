@@ -126,10 +126,12 @@ export class PostController {
 	) {
 		try{
 			// 기존 게시글 삭제
-			this.deletePost(updatePostDto);
+			this.postService.delete(updatePostDto);
 
-			// 게시글 업데이트
-			this.createPost(updatePostDto, img);
+			const { email, title } = updatePostDto;
+			const imgPath = generateId(`${email}${title}${img.originalname}`);
+
+			this.postService.create(updatePostDto, imgPath);
 		} catch(error) {
 			throw new HttpException("Update failed", HttpStatus.BAD_REQUEST);
 		}
