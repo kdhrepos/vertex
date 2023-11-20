@@ -25,8 +25,9 @@ import { HashtagLink } from "./hashtagLink.model";
 @Table({ freezeTableName: true })
 export class Video extends Model {
 	// Columns
+	// 비디오 id가 파이어 베이스 내 경로
 	@Column({ primaryKey: true })
-	file_path: string;
+	id: string;
 
 	@ForeignKey(() => User)
 	@Column({ onDelete: "CASCADE" })

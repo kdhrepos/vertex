@@ -42,10 +42,11 @@ export class VideoCommentService {
 		}
 	}
 
-	async create(uploadCommentDto: UploadCommentDto) {
+	async create(uploadCommentDto: UploadCommentDto, session: any) {
 		const functionName = VideoCommentService.prototype.create.name;
 		try {
-			const { email, content, parentId, videoId } = uploadCommentDto;
+			const { content, parentId, videoId } = uploadCommentDto;
+			const { user: email } = session.passport;
 
 			await this.commentModel.create({
 				user_email: email,
@@ -87,10 +88,11 @@ export class VideoCommentService {
 		}
 	}
 
-	async delete(deleteCommentDto: DeleteCommentDto) {
+	async delete(deleteCommentDto: DeleteCommentDto, session: any) {
 		const functionName = VideoCommentService.prototype.delete.name;
 		try {
-			const { id, email, videoId } = deleteCommentDto;
+			const { id, videoId } = deleteCommentDto;
+			const { user: email } = session.passport;
 
 			const existedVideo = await this.commentModel.findOne({
 				where: {

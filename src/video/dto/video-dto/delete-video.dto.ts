@@ -2,14 +2,6 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsString } from "class-validator";
 
 export class DeleteVideoDto {
-	@IsEmail()
-	@ApiProperty({
-		required: true,
-		description: "asd@naver.com",
-		example: "유저의 이메일",
-	})
-	email: string;
-
 	@IsString()
 	@ApiProperty({
 		required: true,

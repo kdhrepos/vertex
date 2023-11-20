@@ -4,6 +4,7 @@ import { InjectModel } from "@nestjs/sequelize";
 import { UpdateVideoDto } from "./dto/video-dto/update-video.dto";
 import { Like } from "src/model/like.model";
 import { VideoLikeService } from "./video-like.service";
+import { DeleteVideoDto } from "./dto/video-dto/delete-video.dto";
 
 @Injectable()
 export class VideoService {
@@ -49,7 +50,7 @@ export class VideoService {
 		const functionName = VideoService.prototype.create.name;
 		try {
 			return this.videoModel.create({
-				file_path: videoId,
+				id: videoId,
 				title: title,
 				description: description === null ? null : description,
 				user_email: email,
@@ -64,15 +65,17 @@ export class VideoService {
 		}
 	}
 
-	async updateOne(updateVideoDto: UpdateVideoDto) {
+	async updateOne(updateVideoDto: UpdateVideoDto, session: any) {
 		const functionName = VideoService.prototype.updateOne.name;
 		try {
-			const { email, title, description, videoId } = updateVideoDto;
+			const { user: email } = session.passport;
+
+			const { title, description, videoId } = updateVideoDto;
 			await this.videoModel.update(
 				{ user_email: email, title: title, description: description },
 				{
 					where: {
-						file_path: videoId,
+						id: videoId,
 						user_email: email,
 						title: title,
 					},
@@ -80,81 +83,63 @@ export class VideoService {
 			);
 		} catch (error) {
 			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(
-				`${functionName} ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	async deleteOne(videoId: string, email: string, title: string) {
+	async deleteOne(deleteVideoDto: DeleteVideoDto, session: any) {
 		const functionName = VideoService.prototype.deleteOne.name;
 		try {
-			const existedVideo = await this.videoModel.findOne({
+			const { title, videoId } = deleteVideoDto;
+			const { user: email } = session.passport;
+
+			return await this.videoModel.destroy({
 				where: {
-					file_path: videoId,
+					id: videoId,
 					user_email: email,
 					title: title,
 				},
 			});
-			if (existedVideo) {
-				await existedVideo.destroy();
-				return;
-			}
-			this.logger.error(`${functionName} : Video Does Not Exist`);
-			return new HttpException(
-				`${functionName} : Video Does Not Exist`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
 		} catch (error) {
 			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(
-				`${functionName} ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			return new HttpException(` ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	async updateView(video: Video) {
 		const functionName = VideoService.prototype.updateView.name;
 		try {
-			const { file_path: videoId, view_count: viewCount } = video;
+			const { id: videoId, view_count: viewCount } = video;
 			await this.videoModel.update(
 				{ view_count: viewCount + 1 },
 				{
 					where: {
-						file_path: videoId,
+						id: videoId,
 					},
 				},
 			);
 		} catch (error) {
 			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(
-				`${functionName} ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	async updateLike(video: Video, liked: any) {
 		const functionName = VideoService.prototype.updateLike.name;
 		try {
-			const { file_path: filePath, like_count: likeCount } = video;
+			const { id: videoId, like_count: likeCount } = video;
 			await this.videoModel.update(
 				// 좋아요를 누르지 않았다면 +1, 좋아요를 눌렀었다면 취소이므로 -1
 				{ like_count: liked ? likeCount + 1 : likeCount - 1 },
 				{
 					where: {
-						file_path: filePath,
+						id: videoId,
 					},
 				},
 			);
 		} catch (error) {
 			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(
-				`${functionName} ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

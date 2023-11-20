@@ -24,6 +24,10 @@ export class Post extends Model {
 	@Column({ onDelete: "CASCADE" })
 	user_email: string;
 
+	@ForeignKey(() => User)
+	@Column
+	channel_email: string;
+
 	@Column
 	title: string;
 
@@ -33,7 +37,7 @@ export class Post extends Model {
 	@Column({ allowNull: true })
 	contents_image_path: string;
 
-	@Column
+	@Column({ allowNull: true })
 	contents_image_extension: string;
 
 	@Column({ defaultValue: 0 })
@@ -41,13 +45,6 @@ export class Post extends Model {
 
 	@Column({ defaultValue: 0 })
 	view_count: number;
-
-	@Column({ defaultValue: false })
-	is_deleted: boolean;
-
-	@ForeignKey(() => User)
-	@Column
-	channel_email: string;
 
 	/**
 	 * Relationship

@@ -15,13 +15,13 @@ export class VideoLikeService {
 	 * @description 비디오에 좋아요 버튼을 누름
 	 */
 
-	async findAll(email: string, path: string) {
+	async findAll(email: string, videoId: string) {
 		const functionName = VideoLikeService.prototype.findAll.name;
 		try {
 			const existedRecord = await this.likeModel.findOne({
 				where: {
 					user_email: email,
-					video_id: path,
+					video_id: videoId,
 				},
 			});
 			if (existedRecord) {
@@ -37,16 +37,15 @@ export class VideoLikeService {
 		}
 	}
 
-	async create(path: string, session: any) {
+	async create(videoId: string, session: any) {
 		const functionName = VideoLikeService.prototype.create.name;
 		try {
-			const { passport } = session;
-			// console.log(passport.user, path);
+			const { user: email } = session.passport;
 
 			const existedRecord = await this.likeModel.findOne({
 				where: {
-					user_email: passport.user,
-					video_id: path,
+					user_email: email,
+					video_id: videoId,
 				},
 			});
 
@@ -55,8 +54,8 @@ export class VideoLikeService {
 				return false;
 			}
 			await this.likeModel.create({
-				user_email: passport.user,
-				video_id: path,
+				user_email: email,
+				video_id: videoId,
 			});
 			return true;
 		} catch (error) {

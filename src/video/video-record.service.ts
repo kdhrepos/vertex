@@ -21,12 +21,12 @@ export class VideoRecordService {
 	async create(video: Video) {
 		const functionName = VideoRecordService.prototype.create.name;
 		try {
-			const { user_email: email, file_path: filePath } = video;
+			const { user_email: email, id: videoId } = video;
 
 			const existedRecord = await this.recordModel.findOne({
 				where: {
 					user_email: email,
-					video_id: filePath,
+					video_id: videoId,
 				},
 			});
 
@@ -36,7 +36,7 @@ export class VideoRecordService {
 
 			await this.recordModel.create({
 				user_email: email,
-				video_id: filePath,
+				video_id: videoId,
 			});
 		} catch (error) {
 			this.logger.error(`${functionName} : ${error}`);

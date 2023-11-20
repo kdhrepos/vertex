@@ -34,8 +34,8 @@ import { VideoCommentService } from "./video-comment.service";
 import { UpdateCommentDto } from "./dto/comment-dto/update-comment.dto";
 import { VideoRecordService } from "./video-record.service";
 import { DeleteCommentDto } from "./dto/comment-dto/delete-comment.dto";
-import { session } from "passport";
 import { VideoLikeService } from "./video-like.service";
+import * as path from "path";
 
 @ApiTags("Video")
 @Controller("video")
@@ -79,15 +79,25 @@ export class VideoController {
 			video: Express.Multer.File[];
 			thumbnail?: Express.Multer.File[];
 		},
-		@Session() session,
+		@Session() session: any,
 	) {
-		const { email, title } = uploadVideoDto;
-		const hashedFilePath = generateId(
-			`${email}${title}${files.video[0].originalname}`,
-		);
+		const { user: email } = session.passport;
+		const { title, description } = uploadVideoDto;
+		const hashedFilePath = generateId(`${email}${title}`);
 
 		if (!(await this.videoService.findOne(hashedFilePath))) {
+			// 메타 데이터를 DB에 저장
+			await this.videoService.create(
+				hashedFilePath,
+				title,
+				description,
+				email,
+				path.extname(files.video[0].originalname),
+				path.extname(files.thumbnail[0].originalname),
+			);
+			// 비디오 업로드
 			return await this.firebaseService.uploadVideo(
+				session,
 				uploadVideoDto,
 				files.video[0],
 				files.thumbnail[0],
@@ -119,7 +129,7 @@ export class VideoController {
 
 		const videoData = await this.videoService.findOne(videoId);
 		if (videoData) {
-			this.videoService.updateOne(updateVideoDto);
+			this.videoService.updateOne(updateVideoDto, session);
 			return await this.firebaseService.updateVideo(
 				videoData,
 				files.video[0],
@@ -135,23 +145,24 @@ export class VideoController {
 	@Delete("/delete")
 	async deleteVideo(
 		@Body() deleteVideoDto: DeleteVideoDto,
-		@Session() session,
+		@Session() session: any,
 	) {
-		const { email, title, videoId } = deleteVideoDto;
-		const existedVideo = await this.videoService.findOne(videoId); // 여기에서 find해서 존재하면 삭제를 진행하는데 Service에 deleteOne에서 또 존재하는지 보는게 조금 비효율적인거같음.
+		const { videoId } = deleteVideoDto;
+		const existedVideo = await this.videoService.findOne(videoId);
 		if (existedVideo) {
-			await this.videoService.deleteOne(videoId, email, title);
+			await this.videoService.deleteOne(deleteVideoDto, session);
 			return await this.firebaseService.deleteVideo(existedVideo);
+		} else {
+			return new HttpException(
+				`Video Does Not Exist`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
 		}
 	}
 
 	@ApiOperation({ description: "비디오 다운로드 요청" })
 	@Get("/download")
-	async downloadVideo(
-		@Res() res: Response,
-		@Query("videoId") videoId: string,
-		@Session() session,
-	) {
+	async downloadVideo(@Res() res: Response, @Query("videoId") videoId: string) {
 		const existedVideo = await this.videoService.findOne(videoId);
 		if (existedVideo) {
 			const downloadURL =
@@ -172,21 +183,19 @@ export class VideoController {
 	}
 
 	@ApiOperation({ description: "비디오에 댓글 등록" })
+	@UseGuards(AuthenticatedGuard)
 	@Post("comment")
 	async createCommentToVideo(
 		@Body() uploadCommentDto: UploadCommentDto,
-		@Session() session,
+		@Session() session: any,
 	) {
-		return await this.videoCommentService.create(uploadCommentDto);
+		return await this.videoCommentService.create(uploadCommentDto, session);
 	}
 
 	@ApiOperation({ description: "비디오 댓글 수정" })
 	@UseGuards(AuthenticatedGuard)
 	@Patch("comment")
-	async updateCommentToVideo(
-		@Body() updateCommentDto: UpdateCommentDto,
-		@Session() session,
-	) {
+	async updateCommentToVideo(@Body() updateCommentDto: UpdateCommentDto) {
 		return await this.videoCommentService.update(updateCommentDto);
 	}
 
@@ -197,7 +206,7 @@ export class VideoController {
 		@Body() deleteCommentDto: DeleteCommentDto,
 		@Session() session,
 	) {
-		return await this.videoCommentService.delete(deleteCommentDto);
+		return await this.videoCommentService.delete(deleteCommentDto, session);
 	}
 
 	@ApiOperation({ description: "비디오 좋아요/싫어요 누르기" })

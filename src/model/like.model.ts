@@ -35,10 +35,10 @@ export class Like extends Model {
 	@BelongsTo(() => User, "user_email")
 	user: User;
 
-	@BelongsTo(() => Post, "contents_id")
+	@BelongsTo(() => Post, "post_id")
 	post: Post;
 
-	@BelongsTo(() => Video, "contents_id")
+	@BelongsTo(() => Video, "video_id")
 	video: Video;
 	/* Has */
 }

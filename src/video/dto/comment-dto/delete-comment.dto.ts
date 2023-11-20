@@ -10,14 +10,6 @@ export class DeleteCommentDto {
 	})
 	id: number;
 
-	@IsEmail()
-	@ApiProperty({
-		required: true,
-		description: "유저의 이메일",
-		example: "asd@naver.com",
-	})
-	email: string;
-
 	@IsString()
 	@ApiProperty({
 		required: true,

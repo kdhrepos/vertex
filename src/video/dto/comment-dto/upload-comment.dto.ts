@@ -1,15 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsEmail, IsNumber, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNull } from "sequelize-typescript";
 
 export class UploadCommentDto {
-	@IsEmail()
-	@ApiProperty({
-		required: true,
-		description: "asd@naver.com",
-		example: "유저의 이메일",
-	})
-	email: string;
-
 	@IsString()
 	@ApiProperty({
 		required: true,
@@ -18,6 +11,7 @@ export class UploadCommentDto {
 	})
 	content: string;
 
+	@IsOptional()
 	@IsNumber({}, { always: false })
 	@ApiProperty({
 		required: true,

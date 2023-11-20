@@ -40,6 +40,7 @@ export class FirebaseService {
 	}
 
 	async uploadVideo(
+		session: any,
 		uploadVideoDto: UploadVideoDto,
 		video: Express.Multer.File,
 		thumbnail?: Express.Multer.File,
@@ -54,11 +55,10 @@ export class FirebaseService {
 				);
 			}
 
-			const { email, title, description } = uploadVideoDto;
+			const { title } = uploadVideoDto;
+			const { user: email } = session.passport;
 
-			const hashedFilePath = generateId(
-				`${email}${title}${video.originalname}`,
-			);
+			const hashedFilePath = generateId(`${email}${title}`);
 
 			// Firebase Storage 내 Video 파일 경로 생성
 			let videoPath = "videos/";
@@ -73,20 +73,12 @@ export class FirebaseService {
 			const videoDirRef = ref(this.firebaseStorage, videoPath);
 			const thumbnailDirRef = ref(this.firebaseStorage, thumbnailPath);
 
-			const videoResult = uploadBytes(videoDirRef, video.buffer);
+			// 비디오 업로드
+			const videoResult = await uploadBytes(videoDirRef, video.buffer);
 			uploadBytes(thumbnailDirRef, thumbnail.buffer);
 
 			// 비디오가 올바르게 업로드 되었다면 메타 데이터를 DB에 저장
 			if (videoResult) {
-				await this.videoService.create(
-					hashedFilePath,
-					title,
-					description,
-					email,
-					path.extname(video.originalname),
-					path.extname(thumbnail.originalname),
-				);
-
 				return true;
 			}
 			return new HttpException(
@@ -118,12 +110,12 @@ export class FirebaseService {
 			}
 
 			const {
+				id: filePath,
 				user_email: email,
 				title,
 				description,
 				video_file_extension: videoFileExtension,
 				thumbnail_file_extension: thumbnailFileExtension,
-				file_path: filePath,
 			} = videoData;
 
 			// Firebase Storage 내 Video 파일 경로 생성
@@ -153,8 +145,7 @@ export class FirebaseService {
 	async findVideo(res: Response, video: Video) {
 		const functionName = FirebaseService.prototype.findVideo.name;
 		try {
-			const { file_path: filePath, video_file_extension: videoFileExtension } =
-				video;
+			const { id: filePath, video_file_extension: videoFileExtension } = video;
 
 			const videoPath = "videos/" + filePath + videoFileExtension;
 			const videoDirRef = ref(this.firebaseStorage, videoPath);
@@ -174,8 +165,7 @@ export class FirebaseService {
 	async deleteVideo(video: Video) {
 		const functionName = FirebaseService.prototype.deleteVideo.name;
 		try {
-			let { file_path: videoPath, video_file_extension: videoFileExtension } =
-				video;
+			let { id: videoPath, video_file_extension: videoFileExtension } = video;
 			videoPath = "videos/" + videoPath + videoFileExtension;
 
 			const videoDirRef = ref(this.firebaseStorage, videoPath);
@@ -195,8 +185,7 @@ export class FirebaseService {
 	async downloadVideo(video: Video): Promise<string> {
 		const functionName = FirebaseService.prototype.downloadVideo.name;
 		try {
-			const { file_path: filePath, video_file_extension: videoFileExtension } =
-				video;
+			const { id: filePath, video_file_extension: videoFileExtension } = video;
 
 			const videoPath = "videos/" + filePath + videoFileExtension;
 			const videoDirRef = ref(this.firebaseStorage, videoPath);
