@@ -33,7 +33,10 @@ export class Record extends Model {
 
 	/* Belongs */
 
-	// @BelongsTo(() => Video)
-	// video: Video;
+	@BelongsTo(() => Video)
+	video: Video;
+
+	@BelongsTo(() => User)
+	user: User;
 	/* Has */
 }

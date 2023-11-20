@@ -25,5 +25,10 @@ export class PlaylistContents extends Model {
 	 */
 
 	/* Belongs */
+	@BelongsTo(() => Video, "video_id")
+	video: Video;
+
+	@BelongsTo(() => Playlist, "playlist_id")
+	playlist: Playlist;
 	/* Has */
 }

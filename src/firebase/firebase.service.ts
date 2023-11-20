@@ -16,7 +16,6 @@ import * as path from "path";
 import { VideoService } from "src/video/video.service";
 import { Response } from "express";
 import { generateId } from "src/generate-id";
-import { FindVideoDto } from "src/video/dto/video-dto/find-video.dto";
 
 @Injectable()
 export class FirebaseService {
@@ -232,9 +231,9 @@ export class FirebaseService {
 		}
 	}
 
-	async findImage(imgPath : string, imgExt : string) {
+	async findImage(imgPath: string, imgExt: string) {
 		// img가 없는 게시글의 경우
-		if(imgPath === null) return true;
+		if (imgPath === null) return true;
 
 		const functionName = FirebaseService.prototype.uploadImage.name;
 		try {
@@ -281,8 +280,7 @@ export class FirebaseService {
 	async updateImage(img: Express.Multer.File, imgPath: string) {
 		const functionName = FirebaseService.prototype.uploadImage.name;
 		try {
-			
-		} catch(error) {
+		} catch (error) {
 			this.logger.error(`${functionName} : ${error}`);
 			throw new HttpException(
 				`${functionName} : ${error}`,
@@ -290,7 +288,7 @@ export class FirebaseService {
 			);
 		}
 	}
-	async deleteImage(imgPath : string, imgExt: string) {
+	async deleteImage(imgPath: string, imgExt: string) {
 		const functionName = FirebaseService.prototype.uploadImage.name;
 		try {
 			if (!imgPath) return "No imgPath";
@@ -307,7 +305,7 @@ export class FirebaseService {
 			}
 
 			return true;
-		} catch(error) {
+		} catch (error) {
 			this.logger.error(`${functionName} : ${error}`);
 			throw new HttpException(
 				`${functionName} : ${error}`,

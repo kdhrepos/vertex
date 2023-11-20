@@ -16,10 +16,12 @@ export class VideoService {
 
 	private readonly logger = new Logger("Video Service");
 
-	async findOne(videoPath: string): Promise<any> {
+	async findAll(userId: string) {}
+
+	async findOne(videoId: string): Promise<any> {
 		const functionName = VideoService.prototype.findOne.name;
 		try {
-			const existedVideo = await this.videoModel.findByPk(videoPath, {
+			const existedVideo = await this.videoModel.findByPk(videoId, {
 				raw: true,
 			});
 			if (existedVideo) {
@@ -36,10 +38,8 @@ export class VideoService {
 		}
 	}
 
-	async findAll(userId: string) {}
-
 	async create(
-		videoPath: string,
+		videoId: string,
 		title: string,
 		description: string,
 		email: string,
@@ -49,7 +49,7 @@ export class VideoService {
 		const functionName = VideoService.prototype.create.name;
 		try {
 			return this.videoModel.create({
-				file_path: videoPath,
+				file_path: videoId,
 				title: title,
 				description: description === null ? null : description,
 				user_email: email,
@@ -67,12 +67,12 @@ export class VideoService {
 	async updateOne(updateVideoDto: UpdateVideoDto) {
 		const functionName = VideoService.prototype.updateOne.name;
 		try {
-			const { email, title, description, path } = updateVideoDto;
+			const { email, title, description, videoId } = updateVideoDto;
 			await this.videoModel.update(
 				{ user_email: email, title: title, description: description },
 				{
 					where: {
-						file_path: path,
+						file_path: videoId,
 						user_email: email,
 						title: title,
 					},
@@ -87,12 +87,12 @@ export class VideoService {
 		}
 	}
 
-	async deleteOne(videoPath: string, email: string, title: string) {
+	async deleteOne(videoId: string, email: string, title: string) {
 		const functionName = VideoService.prototype.deleteOne.name;
 		try {
 			const existedVideo = await this.videoModel.findOne({
 				where: {
-					file_path: videoPath,
+					file_path: videoId,
 					user_email: email,
 					title: title,
 				},
@@ -118,12 +118,12 @@ export class VideoService {
 	async updateView(video: Video) {
 		const functionName = VideoService.prototype.updateView.name;
 		try {
-			const { file_path: filePath, view_count: viewCount } = video;
+			const { file_path: videoId, view_count: viewCount } = video;
 			await this.videoModel.update(
 				{ view_count: viewCount + 1 },
 				{
 					where: {
-						file_path: filePath,
+						file_path: videoId,
 					},
 				},
 			);
@@ -136,7 +136,7 @@ export class VideoService {
 		}
 	}
 
-	async updateLike(path: string, video: Video, liked: any) {
+	async updateLike(video: Video, liked: any) {
 		const functionName = VideoService.prototype.updateLike.name;
 		try {
 			const { file_path: filePath, like_count: likeCount } = video;

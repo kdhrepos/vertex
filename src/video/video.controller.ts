@@ -26,13 +26,11 @@ import { FirebaseService } from "src/firebase/firebase.service";
 import { AuthenticatedGuard } from "src/auth/auth.guard";
 import { Response } from "express";
 import { generateId } from "src/generate-id";
-import { FindVideoDto } from "./dto/video-dto/find-video.dto";
 import { UploadVideoDto } from "./dto/video-dto/upload-video.dto";
 import { UpdateVideoDto } from "./dto/video-dto/update-video.dto";
 import { DeleteVideoDto } from "./dto/video-dto/delete-video.dto";
 import { UploadCommentDto } from "./dto/comment-dto/upload-comment.dto";
 import { VideoCommentService } from "./video-comment.service";
-import { FindCommentDto } from "./dto/comment-dto/find-comment.dto";
 import { UpdateCommentDto } from "./dto/comment-dto/update-comment.dto";
 import { VideoRecordService } from "./video-record.service";
 import { DeleteCommentDto } from "./dto/comment-dto/delete-comment.dto";
@@ -56,9 +54,8 @@ export class VideoController {
 
 	@ApiOperation({ description: "하나의 비디오 시청을 위해 비디오 요청" })
 	@Get("watch")
-	async streamVideo(@Res() res: Response, @Query() findVideoDto: FindVideoDto) {
-		const { path } = findVideoDto;
-		const video = await this.videoService.findOne(path);
+	async streamVideo(@Res() res: Response, @Query("videoId") videoId: string) {
+		const video = await this.videoService.findOne(videoId);
 		if (video) {
 			// 조회수 갱신, 비디오 기록 후 비디오 스트리밍
 			this.videoService.updateView(video);
@@ -118,9 +115,9 @@ export class VideoController {
 		},
 		@Session() session,
 	) {
-		const { path } = updateVideoDto;
+		const { videoId } = updateVideoDto;
 
-		const videoData = await this.videoService.findOne(path);
+		const videoData = await this.videoService.findOne(videoId);
 		if (videoData) {
 			this.videoService.updateOne(updateVideoDto);
 			return await this.firebaseService.updateVideo(
@@ -140,10 +137,10 @@ export class VideoController {
 		@Body() deleteVideoDto: DeleteVideoDto,
 		@Session() session,
 	) {
-		const { email, title, path } = deleteVideoDto;
-		const existedVideo = await this.videoService.findOne(path); // 여기에서 find해서 존재하면 삭제를 진행하는데 Service에 deleteOne에서 또 존재하는지 보는게 조금 비효율적인거같음.
+		const { email, title, videoId } = deleteVideoDto;
+		const existedVideo = await this.videoService.findOne(videoId); // 여기에서 find해서 존재하면 삭제를 진행하는데 Service에 deleteOne에서 또 존재하는지 보는게 조금 비효율적인거같음.
 		if (existedVideo) {
-			await this.videoService.deleteOne(path, email, title);
+			await this.videoService.deleteOne(videoId, email, title);
 			return await this.firebaseService.deleteVideo(existedVideo);
 		}
 	}
@@ -152,11 +149,10 @@ export class VideoController {
 	@Get("/download")
 	async downloadVideo(
 		@Res() res: Response,
-		@Query() findVideoDto: FindVideoDto,
+		@Query("videoId") videoId: string,
 		@Session() session,
 	) {
-		const { path } = findVideoDto;
-		const existedVideo = await this.videoService.findOne(path);
+		const existedVideo = await this.videoService.findOne(videoId);
 		if (existedVideo) {
 			const downloadURL =
 				await this.firebaseService.downloadVideo(existedVideo);
@@ -171,8 +167,8 @@ export class VideoController {
 
 	@ApiOperation({ description: "특정 비디오의 댓글 가져오기" })
 	@Get("comment")
-	async getCommentFromVideo(@Query() findCommentDto: FindCommentDto) {
-		return await this.videoCommentService.findAll(findCommentDto);
+	async getCommentFromVideo(@Query("videoId") videoId: string) {
+		return await this.videoCommentService.findAll(videoId);
 	}
 
 	@ApiOperation({ description: "비디오에 댓글 등록" })
@@ -207,12 +203,15 @@ export class VideoController {
 	@ApiOperation({ description: "비디오 좋아요/싫어요 누르기" })
 	@UseGuards(AuthenticatedGuard)
 	@Post("/like")
-	async likeToVideo(@Body("path") path: string, @Session() session: any) {
-		const video = await this.videoService.findOne(path);
+	async likeToVideo(
+		@Body("videoId,") videoId: string,
+		@Session() session: any,
+	) {
+		const video = await this.videoService.findOne(videoId);
 
 		if (video) {
-			const liked = await this.videoLikeService.create(path, session);
-			this.videoService.updateLike(path, video, liked);
+			const liked = await this.videoLikeService.create(videoId, session);
+			this.videoService.updateLike(video, liked);
 		} else {
 			return new HttpException("Video Does Not Exist", HttpStatus.BAD_REQUEST);
 		}

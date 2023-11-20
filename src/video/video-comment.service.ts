@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Comment } from "src/model/comment.model";
 import { UploadCommentDto } from "./dto/comment-dto/upload-comment.dto";
-import { FindCommentDto } from "./dto/comment-dto/find-comment.dto";
 import { User } from "src/model/user.model";
 import { UpdateCommentDto } from "./dto/comment-dto/update-comment.dto";
 import { DeleteCommentDto } from "./dto/comment-dto/delete-comment.dto";
@@ -19,14 +18,12 @@ export class VideoCommentService {
 	/**
 	 * @description 비디오 ID를 통해 비디오의 댓글들을 검색
 	 */
-	async findAll(findCommentDto: FindCommentDto) {
+	async findAll(videoId: string) {
 		const functionName = VideoCommentService.prototype.findAll.name;
 		try {
-			const { path } = findCommentDto;
-
 			return await this.commentModel.findAll({
 				where: {
-					video_id: path,
+					video_id: videoId,
 				},
 				attributes: ["content", "createdAt", "parent_id"],
 				include: [
@@ -48,11 +45,11 @@ export class VideoCommentService {
 	async create(uploadCommentDto: UploadCommentDto) {
 		const functionName = VideoCommentService.prototype.create.name;
 		try {
-			const { email, content, parentId, path } = uploadCommentDto;
+			const { email, content, parentId, videoId } = uploadCommentDto;
 
 			await this.commentModel.create({
 				user_email: email,
-				video_id: path,
+				video_id: videoId,
 				content: content,
 				parent_id: parentId,
 			});
@@ -68,7 +65,7 @@ export class VideoCommentService {
 	async update(updateCommentDto: UpdateCommentDto) {
 		const functionName = VideoCommentService.prototype.update.name;
 		try {
-			const { id, content, path } = updateCommentDto;
+			const { id, content, videoId } = updateCommentDto;
 
 			await this.commentModel.update(
 				{
@@ -77,7 +74,7 @@ export class VideoCommentService {
 				{
 					where: {
 						id: id,
-						video_id: path,
+						video_id: videoId,
 					},
 				},
 			);
@@ -93,13 +90,13 @@ export class VideoCommentService {
 	async delete(deleteCommentDto: DeleteCommentDto) {
 		const functionName = VideoCommentService.prototype.delete.name;
 		try {
-			const { id, email, path } = deleteCommentDto;
+			const { id, email, videoId } = deleteCommentDto;
 
 			const existedVideo = await this.commentModel.findOne({
 				where: {
 					id: id,
 					user_email: email,
-					video_id: path,
+					video_id: videoId,
 				},
 			});
 

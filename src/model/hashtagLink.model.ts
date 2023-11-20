@@ -34,10 +34,10 @@ export class HashtagLink extends Model {
 	 */
 
 	/* Belongs */
-	// @BelongsTo(() => Post, "contents_id")
-	// post: Post;
+	@BelongsTo(() => Post, "contents_id")
+	post: Post;
 
-	// @BelongsTo(() => Video, "contents_id")
-	// video: Video;
+	@BelongsTo(() => Video, "contents_id")
+	video: Video;
 	/* Has */
 }

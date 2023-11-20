@@ -7,14 +7,14 @@ import {
 	Request,
 	Response,
 	Body,
+	UseGuards,
+	Query,
+	Session,
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { PlaylistService } from "./playlist.service";
 import { PlaylistContentsService } from "./playlist-contents.service";
-import { CreatePlaylistDto } from "./playlist-dto/create-playlist.dto";
-import { DeletePlaylistDto } from "./playlist-dto/delete-playlist.dto";
-import { AddVideoToPlaylistDto } from "./playlist-contents-dto/add-video-to-playlist.dto";
-import { DeleteVideoToPlaylistDto } from "./playlist-contents-dto/delete-video-to-playlist.dto";
+import { AuthenticatedGuard } from "src/auth/auth.guard";
 
 @ApiTags("Playlist")
 @Controller("playlist")
@@ -22,51 +22,59 @@ export class PlaylistController {
 	constructor(
 		private playlistService: PlaylistService,
 		private playlistContentsService: PlaylistContentsService,
-	) { }
+	) {}
 
 	@ApiOperation({ description: "유저의 재생목록 리스트 요청" })
-	@Get(":playlist_id")
-	async findPlaylist(
-		@Request() req,
-		@Response() res,
-		@Param("playlist_id") playlist_id,
-	) {
-		return this.playlistService.findAll(req, res, playlist_id);
+	@UseGuards(AuthenticatedGuard)
+	@Get("")
+	async findPlaylist(@Param("playlist_id") playlist_id) {
+		// return this.playlistService.findAll(playlist_id);
 	}
 
 	@ApiOperation({ description: "재생목록 리스트 생성" })
-	@Post(":playlist_id")
-	async createPlaylist(@Body() createPlaylistDto: CreatePlaylistDto) {
-		return this.playlistService.createPlaylist(createPlaylistDto);
+	@UseGuards(AuthenticatedGuard)
+	@Post("")
+	async createPlaylist(
+		@Query("listName") listName: string,
+		@Session() session: any,
+	) {
+		return this.playlistService.create(listName, session);
 	}
 
 	@ApiOperation({ description: "재생목록 리스트 삭제" })
-	@Delete(":playlist_id")
-	async deletePlaylist(@Body() deletePlaylistDto: DeletePlaylistDto) {
-		const { email, title } = deletePlaylistDto;
-		await this.playlistService.deleteOne(email, title);
+	@UseGuards(AuthenticatedGuard)
+	@Delete("")
+	async deletePlaylist(
+		@Query("listName") listName: string,
+		@Session() session: any,
+	) {
+		return await this.playlistService.delete(listName, session);
 	}
 
 	@ApiOperation({ description: "유저의 재생목록 내 컨텐츠 요청" })
-	@Get("contents/:playlist_id")
-	async findContents(
-		@Request() req,
-		@Response() res,
-		@Param("playlist_id") playlist_id,
-	) {
-		return this.playlistService.findVideosInPlaylist(req, res, playlist_id);
+	@UseGuards(AuthenticatedGuard)
+	@Get("contents")
+	async findContents(@Query("playlistId") playlistId: number) {
+		return this.playlistContentsService.findAll(playlistId);
 	}
 
 	@ApiOperation({ description: "재생목록에 비디오 추가" })
-	@Post("contents/:video_id")
-	async addToPlaylist(@Body() addVideoToPlaylistDto: AddVideoToPlaylistDto) {
-		return this.playlistService.addVideoToPlaylist(addVideoToPlaylistDto);
+	@UseGuards(AuthenticatedGuard)
+	@Post("contents")
+	async addToPlaylist(
+		@Body("videoId") videoId: string,
+		@Body("playlistId") playlistId: number,
+	) {
+		return this.playlistContentsService.add(videoId, playlistId);
 	}
 
 	@ApiOperation({ description: "재생목록의 비디오 삭제" })
-	@Delete("contents/:video_id")
-	async deleteToPlaylist(@Body() deleteVideoToPlaylistDto: DeleteVideoToPlaylistDto) {
-		const { video_id } = deleteVideoToPlaylistDto;
-		await this.playlistService.deleteVideoToPlaylist(video_id);
+	@UseGuards(AuthenticatedGuard)
+	@Delete("contents")
+	async deleteToPlaylist(
+		@Body("videoId") videoId: string,
+		@Body("playlistId") playlistId: number,
+	) {
+		await this.playlistContentsService.delete(videoId, playlistId);
 	}
 }
