@@ -3,22 +3,18 @@ import {
 	Column,
 	Model,
 	IsEmail,
-	HasMany,
 	BelongsToMany,
 	ForeignKey,
-	BelongsTo,
+	HasMany,
 } from "sequelize-typescript";
 import { Video } from "./video.model";
-import { Record } from "./record.model";
 import { Post } from "./post.model";
-import { Playlist } from "./playlist.model";
 import { Like } from "./like.model";
-import { Comment } from "./comment.model";
 import { Subscription } from "./subscription.model";
 
 @Table({ freezeTableName: true })
 export class User extends Model {
-	// @ForeignKey(() => User)
+	@ForeignKey(() => User)
 	@IsEmail
 	@Column({ primaryKey: true })
 	email: string;
@@ -44,12 +40,19 @@ export class User extends Model {
 	 */
 
 	/* Belongs */
-	// @BelongsToMany(() => User, () => Subscription, "email", "email")
-	// subscription: Subscription;
+	@BelongsToMany(() => User, () => Subscription, "user_email")
+	userSub: Subscription;
+
+	@BelongsToMany(() => User, () => Subscription, "channel_email")
+	channelSub: Subscription;
 
 	@BelongsToMany(() => Video, () => Like, "user_email")
 	videoLike: Like;
 
 	@BelongsToMany(() => Post, () => Like, "user_email")
 	postLike: Like;
+
+	/* Has */
+	@HasMany(() => Video)
+	video: Video;
 }

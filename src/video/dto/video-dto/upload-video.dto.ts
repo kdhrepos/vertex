@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsString } from "class-validator";
+import { IsArray, IsEmail, IsString } from "class-validator";
 
 export class UploadVideoDto {
 	@IsString()
@@ -31,4 +31,12 @@ export class UploadVideoDto {
 		description: "동영상 썸네일",
 	})
 	thumbnail: Express.Multer.File;
+
+	// @IsArray({ always: false })
+	// @ApiProperty({
+	// 	required: false,
+	// 	example: '"sports", "game", "lol" ....',
+	// 	description: "동영상에 딸린 해시 태그",
+	// })
+	// hashtags: string[];
 }

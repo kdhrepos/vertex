@@ -23,8 +23,11 @@ export class Subscription extends Model {
 	 */
 
 	/* Belongs */
-	// @BelongsTo(() => User, "user_email")
-	// user: User[];
+	@BelongsTo(() => User, "user_email")
+	user: User[];
+
+	@BelongsTo(() => User, "channel_email")
+	channel: User[];
 
 	/* Has */
 }

@@ -56,7 +56,7 @@ export class Video extends Model {
 	 */
 
 	/* Belongs */
-	@BelongsTo(() => User)
+	@BelongsTo(() => User, "user_email")
 	user: User;
 
 	@BelongsToMany(() => Playlist, () => PlaylistContents, "video_id")

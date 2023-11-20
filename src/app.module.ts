@@ -48,7 +48,13 @@ import { HashtagLink } from "./model/hashtagLink.model";
 			username: process.env.MYSQL_USER,
 			password: process.env.MYSQL_PASSWORD,
 			database: process.env.MYSQL_NAME,
+			timezone: "Asia/Seoul",
 			autoLoadModels: true,
+			dialectOptions: {
+				charset: "utf8mb4",
+				dateStrings: true,
+				typeCast: true,
+			},
 			models: [
 				User,
 				Video,
@@ -62,7 +68,6 @@ import { HashtagLink } from "./model/hashtagLink.model";
 				Hashtag,
 				HashtagLink,
 			],
-			timezone: "Asia/Seoul",
 			synchronize: true,
 			// sync: { alter: true },
 			// sync: { force: true },

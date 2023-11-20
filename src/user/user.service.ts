@@ -63,7 +63,10 @@ export class UserService {
 		try {
 			const { email, name, password, description } = createUserDto;
 
-			const duplicatedUser = await this.userModel.findByPk(email, {
+			const duplicatedUser = await this.userModel.findOne({
+				where: {
+					email: email,
+				},
 				raw: true,
 			});
 
