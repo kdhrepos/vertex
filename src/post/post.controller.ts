@@ -66,12 +66,15 @@ export class PostController {
 			post.image_file_extension,
 		);
 
-		const base64Data = Buffer.from(img).toString("base64");
+		const buffer = Buffer.from(img);
+	
 
-		res.setHeader("Content-length", 123123);
-		res.setHeader("Content-type", `image/${post.image_file_extension}`);
-
-		return res.send(img);
+		res.writeHead(200, {
+			'Content-Type': 'image/png',
+			'Content-Length': buffer.length
+		  });
+		  
+		return res.end(buffer);
 	}
 
 	@ApiOperation({ description: "한 채널에 게시글 업로드" })
@@ -83,6 +86,7 @@ export class PostController {
 		@Body() createPostDto: CreatePostDto,
 		@Session() session: any,
 	) {
+		console.log(session);
 		const { user: email } = session.passport;
 		const imgFileExtension = path.extname(img.originalname);
 		const hashedFilePath = await bcrypt.hashSync(email, 12).replace(/\//g, "");
