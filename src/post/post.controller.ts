@@ -61,6 +61,7 @@ export class PostController {
 		@Query("channelId") channelId: string,
 	) {
 		const post = await this.postService.findOne(postId, channelId);
+		console.log(post);
 		const img = await this.firebaseService.findImage(
 			post.image_file_path,
 			post.image_file_extension,
@@ -68,7 +69,10 @@ export class PostController {
 
 		const buffer = Buffer.from(img);
 	
+		// res.setHeader('Content-Type', 'image/png');
+		// res.setHeader('Content-Length', buffer.length);
 
+		// res.send(buffer);
 		res.writeHead(200, {
 			'Content-Type': 'image/png',
 			'Content-Length': buffer.length
