@@ -11,10 +11,6 @@ export class VideoLikeService {
 
 	private readonly logger = new Logger("Video Like Service");
 
-	/**
-	 * @description 비디오에 좋아요 버튼을 누름
-	 */
-
 	async findAll(email: string, videoId: string) {
 		const functionName = VideoLikeService.prototype.findAll.name;
 		try {

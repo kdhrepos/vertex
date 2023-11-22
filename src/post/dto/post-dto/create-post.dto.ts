@@ -1,23 +1,16 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsString, IsNotEmpty } from "class-validator";
 
-export class UpdatePostDto {
-    @IsNotEmpty()
+export class CreatePostDto {
 	@IsString()
-	email: string;
+	channelId: string;
 
-	@IsNotEmpty()
 	@IsString()
 	title: string;
 
-    @IsNotEmpty()
-	@IsString()
-	channelEmail: string;
-
-	@IsNotEmpty()
 	@IsString()
 	contents: string;
-    
+
 	@ApiProperty({
 		required: false,
 		example: "jpg/jpeg/png etc...",

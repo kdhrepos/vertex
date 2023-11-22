@@ -20,7 +20,6 @@ import { HTTPLoggerMiddleware } from "./middleware/http-logger.middleware";
 import { PlaylistModule } from "./playlist/playlist.module";
 
 // Model
-import { RedisModule } from "./redis/redis.module";
 import { FirebaseModule } from "./firebase/firebase.module";
 import { User } from "./model/user.model";
 import { Video } from "./model/video.model";
@@ -55,6 +54,9 @@ import { HashtagLink } from "./model/hashtagLink.model";
 				dateStrings: true,
 				typeCast: true,
 			},
+			synchronize: true,
+			// sync: { alter: true },
+			// sync: { force: true },
 			models: [
 				User,
 				Video,
@@ -68,9 +70,6 @@ import { HashtagLink } from "./model/hashtagLink.model";
 				Hashtag,
 				HashtagLink,
 			],
-			synchronize: true,
-			// sync: { alter: true },
-			// sync: { force: true },
 		}),
 		PostModule,
 		VideoModule,
@@ -78,7 +77,6 @@ import { HashtagLink } from "./model/hashtagLink.model";
 		AuthModule,
 		SubscriptionModule,
 		PlaylistModule,
-		RedisModule,
 		FirebaseModule,
 	],
 	controllers: [],

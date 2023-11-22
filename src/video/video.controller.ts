@@ -25,7 +25,6 @@ import {
 import { FirebaseService } from "src/firebase/firebase.service";
 import { AuthenticatedGuard } from "src/auth/auth.guard";
 import { Response } from "express";
-import { generateId } from "src/generate-id";
 import { UploadVideoDto } from "./dto/video-dto/upload-video.dto";
 import { UpdateVideoDto } from "./dto/video-dto/update-video.dto";
 import { DeleteVideoDto } from "./dto/video-dto/delete-video.dto";
@@ -36,6 +35,7 @@ import { VideoRecordService } from "./video-record.service";
 import { DeleteCommentDto } from "./dto/comment-dto/delete-comment.dto";
 import { VideoLikeService } from "./video-like.service";
 import * as path from "path";
+import * as bcrypt from "bcrypt";
 
 @ApiTags("Video")
 @Controller("video")
@@ -71,7 +71,7 @@ export class VideoController {
 	@UseInterceptors(
 		FileFieldsInterceptor([{ name: "video" }, { name: "thumbnail" }]),
 	)
-	@Post("upload")
+	@Post("")
 	async uploadVideo(
 		@Body() uploadVideoDto: UploadVideoDto,
 		@UploadedFiles()
@@ -83,7 +83,9 @@ export class VideoController {
 	) {
 		const { user: email } = session.passport;
 		const { title, description } = uploadVideoDto;
-		const hashedFilePath = generateId(`${email}${title}`);
+		const hashedFilePath = bcrypt
+			.hashSync(`${email}${title}`, 12)
+			.replace(/\//g, "");
 
 		if (!(await this.videoService.findOne(hashedFilePath))) {
 			// 메타 데이터를 DB에 저장
@@ -115,7 +117,7 @@ export class VideoController {
 	@UseInterceptors(
 		FileFieldsInterceptor([{ name: "video" }, { name: "thumbnail" }]),
 	)
-	@Patch("/update")
+	@Patch("")
 	async updateVideo(
 		@Body() updateVideoDto: UpdateVideoDto,
 		@UploadedFiles()
@@ -142,7 +144,7 @@ export class VideoController {
 
 	@ApiOperation({ description: "비디오 삭제" })
 	@UseGuards(AuthenticatedGuard)
-	@Delete("/delete")
+	@Delete("")
 	async deleteVideo(
 		@Body() deleteVideoDto: DeleteVideoDto,
 		@Session() session: any,
@@ -229,8 +231,10 @@ export class VideoController {
 	@ApiOperation({
 		description: "한 크리에이터의 채널에 들어갔을때 비디오 요청",
 	})
-	@Get("channel/:creator_id")
-	async getChannelById() {}
+	@Get("list")
+	async getChannelVideoList(@Query("channelId") channelId: string) {
+		return await this.videoService.findAll(channelId);
+	}
 
 	@ApiOperation({ description: "검색을 통해 비디오 요청" })
 	@Get("search/:search_query")

@@ -17,7 +17,7 @@ export class VideoService {
 
 	private readonly logger = new Logger("Video Service");
 
-	async findAll(userId: string) {}
+	async findAll(channelId: string) {}
 
 	async findOne(videoId: string): Promise<any> {
 		const functionName = VideoService.prototype.findOne.name;
@@ -28,7 +28,6 @@ export class VideoService {
 			if (existedVideo) {
 				return existedVideo;
 			}
-			this.logger.error(`${functionName} : Video Does Not Exist`);
 			return false;
 		} catch (error) {
 			this.logger.error(`${error}`);

@@ -13,8 +13,10 @@ import {
 	UseInterceptors,
 	HttpException,
 	HttpStatus,
+	Session,
+	Query,
 } from "@nestjs/common";
-import {Request, Response} from 'express';
+import { Request, Response } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { AuthenticatedGuard } from "src/auth/auth.guard";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
@@ -22,164 +24,138 @@ import { PostService } from "./post.service";
 import { FirebaseService } from "src/firebase/firebase.service";
 import * as path from "path";
 import { generateId } from "src/generate-id";
-import { FindPostDto } from "./dto/find-post.dto";
-import { CreatePostDto } from "./dto/create-post.dto";
-import { UpdatePostDto } from "./dto/update-post.dto";
-import { DeletePostDto } from "./dto/delete-post.dto";
+import { CreatePostDto } from "./dto/post-dto/create-post.dto";
+import { UpdatePostDto } from "./dto/post-dto/update-post.dto";
+import * as bcrypt from "bcrypt";
+import { UploadCommentDto } from "./dto/comment-dto/upload-comment.dto";
+import { UpdateCommentDto } from "./dto/comment-dto/update-comment.dto";
+import { DeleteCommentDto } from "./dto/comment-dto/delete-comment.dto";
+import { PostCommentService } from "./post-comment.service";
 
 @ApiTags("Community")
 @Controller("community")
 export class PostController {
 	constructor(
 		private postService: PostService,
+		private postCommentService: PostCommentService,
 		private firebaseService: FirebaseService,
 	) {}
 
-	@ApiOperation({ description: "게시글 고유 아이디를 통해 하나의 게시글 검색" })
-	@Get("/:creator_id/post/:post_id")
-	async findPostById() {
-		return "this function returns one post";
-	}
+	// @ApiOperation({ description: "게시글 고유 아이디를 통해 하나의 게시글 검색" })
+	// @Get("/:creator_id/post/:post_id")
+	// async findPostById() {
+	// 	return "this function returns one post";
+	// }
 
 	@ApiOperation({ description: "한 채널의 게시글 리스트 요청" })
-	@Get("/:creator_id/post-list")
-	async findPostsByCreatorId() {
-		return "this function returns all post in the chanel";
+	@Get("/list")
+	async findPostList(@Query("channelId") channelId: string) {
+		return await this.postService.findAll(channelId);
 	}
 
-	@ApiOperation({ description: "게시글 요청" })
-	@Get("/:creator_id/post-list")
+	@ApiOperation({ description: "채널 내 하나의 게시글 요청 (구현 x)" })
+	@Get("")
 	async findPost(
 		@Res() res: Response,
-		@Body() findPostDto: FindPostDto,
+		@Query("postId") postId: number,
+		@Query("channelId") channelId: string,
 	) {
-		// find post, image
-		const findPostResult = await this.postService.findOne(findPostDto);
-		
-		// post 잘 찾았는지 검사
-		if(!findPostResult) {
-			return new HttpException(
-				"Can't find Post",
-				HttpStatus.NOT_FOUND
-			);
-		}
-		const {contents_image_path, contents_image_extension} = findPostResult;
+		const post = await this.postService.findOne(postId, channelId);
+		const img = await this.firebaseService.findImage(
+			post.image_file_path,
+			post.image_file_extension,
+		);
 
-		const findImgResult = await this.firebaseService.findImage(contents_image_path, contents_image_extension);
-		
-		// image 잘 찾았는지 검사
-		if(!findImgResult) {
-			return new HttpException(
-				"Can't find Post",
-				HttpStatus.NOT_FOUND
-			);
-		}
+		const base64Data = Buffer.from(img).toString("base64");
 
-		// return image, post
-		res.setHeader("Content-Type", "video/mp4");
-		res.setHeader("Content-Disposition", 'inline; filename="video.mp4"');
-		return res.status(HttpStatus.OK).json({post:findPostResult, img:findImgResult});
+		res.setHeader("Content-length", 123123);
+		res.setHeader("Content-type", `image/${post.image_file_extension}`);
+
+		return res.send(img);
 	}
 
 	@ApiOperation({ description: "한 채널에 게시글 업로드" })
-	@Post("/create")
+	@Post("")
 	@UseGuards(AuthenticatedGuard)
 	@UseInterceptors(FileInterceptor("img", {}))
-	async createPost(
-		@Body() createPostDto: CreatePostDto,
+	async uploadPost(
 		@UploadedFile() img: Express.Multer.File,
+		@Body() createPostDto: CreatePostDto,
+		@Session() session: any,
 	) {
-		// 이미지 없는 경우에 대한 로직 추가
-		const { email, title } = createPostDto;
-		const imgPath = generateId(`${email}${title}${img.originalname}`);
+		const { user: email } = session.passport;
+		const imgFileExtension = path.extname(img.originalname);
+		const hashedFilePath = await bcrypt.hashSync(email, 12).replace(/\//g, "");
 
-		if (!(await this.firebaseService.findImage(imgPath, path.extname(img.originalname)))) {
-			const resultFirebase = await this.firebaseService.uploadImage(
-				img,
-				imgPath,
-			);
-
-			const resultPostServ = await this.postService.create(
-				createPostDto,
-				imgPath,
-			);
-
-			if (resultFirebase && resultPostServ) return true;
-			else {
-				return new HttpException(
-					"Failed to createPost or uploadImage on DataBase",
-					HttpStatus.FAILED_DEPENDENCY,
-				);
-			}
-		} else {
-			throw new HttpException("Duplicated Post Title", HttpStatus.BAD_REQUEST);
-		}
+		await this.postService.create(
+			createPostDto,
+			hashedFilePath,
+			imgFileExtension,
+			session,
+		);
+		await this.firebaseService.uploadImage(img, hashedFilePath);
 	}
 
 	@ApiOperation({ description: "한 채널의 게시글 수정" })
-	@Patch("/:creator_id/post/:post_id")
+	@Patch("")
 	@UseGuards(AuthenticatedGuard)
 	@UseInterceptors(FileInterceptor("img", {}))
 	async updatePost(
-		@Body() updatePostDto: UpdatePostDto,
 		@UploadedFile() img: Express.Multer.File,
+		@Body() updatePostDto: UpdatePostDto,
 	) {
-		try{
-			// 기존 게시글 삭제
-			this.postService.delete(updatePostDto);
-
-			const { email, title } = updatePostDto;
-			const imgPath = generateId(`${email}${title}${img.originalname}`);
-
-			this.postService.create(updatePostDto, imgPath);
-		} catch(error) {
-			throw new HttpException("Update failed", HttpStatus.BAD_REQUEST);
+		const post = await this.postService.update(updatePostDto);
+		if (img != null || img != undefined) {
+			await this.firebaseService.updateImage(img, post);
 		}
 	}
 
 	@ApiOperation({ description: "한 채널의 게시글 삭제" })
-	@Delete("/:creator_id/post/:post_id")
+	@Delete("")
 	@UseGuards(AuthenticatedGuard)
-	async deletePost(
-		@Body() deletePostDto: DeletePostDto,
-	) {
-		try {
-			const findPostResult = await this.postService.findOne(deletePostDto);
-		
-			// post 잘 찾았는지 검사
-			if(!findPostResult) {
-				return new HttpException(
-					"Can't find Post",
-					HttpStatus.NOT_FOUND
-				);
-			}
-			const {contents_image_path, contents_image_extension} = findPostResult;
+	async deletePost(@Query("postId") postId: string, @Session() session: any) {
+		const post = await this.postService.delete(postId, session);
+		await this.firebaseService.deleteImage(post);
+	}
 
-			await this.firebaseService.deleteImage(contents_image_path, contents_image_extension);
-			await this.postService.delete(deletePostDto);
-		} catch(error) {
-			throw new HttpException("Delete failed", HttpStatus.BAD_REQUEST);
-		}
+	@ApiOperation({ description: "게시글의 댓글들 가져오기" })
+	@Get("/comment")
+	async getComment(@Query("postId") postId: string) {
+		return await this.postCommentService.findAll(postId);
 	}
 
 	@ApiOperation({ description: "게시글에 댓글 등록" })
-	@Get("/:creator_id/comment/:post_id")
+	@Post("/comment")
 	@UseGuards(AuthenticatedGuard)
-	async createCommentToPost(@Param("post_id") params) {
-		return params;
+	async createCommentToPost(
+		@Body() uploadCommentDto: UploadCommentDto,
+		@Session() session: any,
+	) {
+		return await this.postCommentService.create(uploadCommentDto, session);
 	}
 
 	@ApiOperation({ description: "게시글의 댓글 수정" })
-	@Patch("/:creator_id/comment/:post_id")
+	@Patch("/comment")
 	@UseGuards(AuthenticatedGuard)
-	async updateCommentToPost(@Param("post_id") params) {
-		return params;
+	async updateCommentToPost(
+		@Body() updateCommentDto: UpdateCommentDto,
+		@Session() session: any,
+	) {
+		return await this.postCommentService.update(updateCommentDto, session);
 	}
 
-	@ApiOperation({ description: "게시글 좋아요/싫어요 누르기" })
-	@Post("/:creator_id/like/:post_id")
+	@ApiOperation({ description: "게시글의 댓글 삭제" })
+	@Delete("/comment")
 	@UseGuards(AuthenticatedGuard)
-	async likeToPost(@Param("post_id") params) {
-		return params;
+	async deleteCommentToPost(
+		@Body() deleteCommentDto: DeleteCommentDto,
+		@Session() session: any,
+	) {
+		return await this.postCommentService.delete(deleteCommentDto, session);
 	}
+
+	@ApiOperation({ description: "게시글 좋아요 누르기/취소" })
+	@Post("/like")
+	@UseGuards(AuthenticatedGuard)
+	async likeToPost(@Query("postId") postId: string) {}
 }

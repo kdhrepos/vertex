@@ -9,7 +9,7 @@ export class PostLikeService {
 		private likeModel: typeof Like,
 	) {}
 
-	private readonly logger = new Logger("Like Service");
+	private readonly logger = new Logger("Post Like Service");
 
 	async put() {}
 }

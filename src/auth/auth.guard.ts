@@ -1,6 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import { RedisService } from "src/redis/redis.service";
 
 @Injectable()
 export class GoogleAuthGuard extends AuthGuard("google") {

@@ -26,7 +26,7 @@ export class Comment extends Model {
 
 	@ForeignKey(() => Post)
 	@Column({ allowNull: true, onDelete: "CASCADE" })
-	post_id: string;
+	post_id: number;
 
 	@ForeignKey(() => Comment)
 	@Column({

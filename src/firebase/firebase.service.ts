@@ -16,6 +16,7 @@ import * as path from "path";
 import { VideoService } from "src/video/video.service";
 import { Response } from "express";
 import { generateId } from "src/generate-id";
+import { Post } from "src/model/post.model";
 
 @Injectable()
 export class FirebaseService {
@@ -150,7 +151,7 @@ export class FirebaseService {
 			const videoPath = "videos/" + filePath + videoFileExtension;
 			const videoDirRef = ref(this.firebaseStorage, videoPath);
 			const videoStream = getStream(videoDirRef);
-			res.setHeader("Content-Type", "video/mp4");
+			res.setHeader("Content-Type", `video/${videoFileExtension}`);
 			res.setHeader("Content-Disposition", 'inline; filename="video.mp4"');
 			videoStream.pipe(res);
 		} catch (error) {
@@ -221,14 +222,11 @@ export class FirebaseService {
 	}
 
 	async findImage(imgPath: string, imgExt: string) {
-		// img가 없는 게시글의 경우
-		if (imgPath === null) return true;
-
-		const functionName = FirebaseService.prototype.uploadImage.name;
+		const functionName = FirebaseService.prototype.findImage.name;
 		try {
 			const imagePath = "images/" + imgPath + imgExt;
 			const imgDirRef = ref(this.firebaseStorage, imagePath);
-			const imgByte = getBytes(imgDirRef);
+			const imgByte = await getBytes(imgDirRef);
 
 			return imgByte;
 		} catch (error) {
@@ -244,7 +242,10 @@ export class FirebaseService {
 		try {
 			if (!img) {
 				this.logger.error(`${functionName} : Invalid Image Object`);
-				throw new HttpException("Invalid Image Object", HttpStatus.BAD_REQUEST);
+				return new HttpException(
+					"Invalid Image Object",
+					HttpStatus.BAD_REQUEST,
+				);
 			}
 
 			const imagePath = "images/" + imgPath + path.extname(img.originalname);
@@ -252,7 +253,7 @@ export class FirebaseService {
 			const imgResult = uploadBytes(imgDirRef, img.buffer);
 
 			if (!imgResult) {
-				throw new HttpException(
+				return new HttpException(
 					"Image Upload Error",
 					HttpStatus.INTERNAL_SERVER_ERROR,
 				);
@@ -266,9 +267,29 @@ export class FirebaseService {
 			);
 		}
 	}
-	async updateImage(img: Express.Multer.File, imgPath: string) {
+	async updateImage(img: Express.Multer.File, post: any) {
 		const functionName = FirebaseService.prototype.uploadImage.name;
 		try {
+			if (!img) {
+				this.logger.error(`${functionName} : Invalid Image Object`);
+				return new HttpException(
+					"Invalid Image Object",
+					HttpStatus.BAD_REQUEST,
+				);
+			}
+
+			const imagePath =
+				"images/" + post.image_file_path + path.extname(img.originalname);
+			const imgDirRef = ref(this.firebaseStorage, imagePath);
+			const imgResult = uploadBytes(imgDirRef, img.buffer);
+
+			if (!imgResult) {
+				return new HttpException(
+					"Image Upload Error",
+					HttpStatus.INTERNAL_SERVER_ERROR,
+				);
+			}
+			return true;
 		} catch (error) {
 			this.logger.error(`${functionName} : ${error}`);
 			throw new HttpException(
@@ -277,10 +298,12 @@ export class FirebaseService {
 			);
 		}
 	}
-	async deleteImage(imgPath: string, imgExt: string) {
-		const functionName = FirebaseService.prototype.uploadImage.name;
+	async deleteImage(post: any) {
+		const functionName = FirebaseService.prototype.deleteImage.name;
 		try {
-			if (!imgPath) return "No imgPath";
+			const { image_file_path: imgPath, image_file_extension: imgExt } = post;
+
+			if (!imgPath) return;
 
 			const imagePath = "images/" + imgPath + imgExt;
 			const imgDirRef = ref(this.firebaseStorage, imagePath);

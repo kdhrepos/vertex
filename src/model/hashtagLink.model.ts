@@ -23,7 +23,7 @@ export class HashtagLink extends Model {
 
 	@ForeignKey(() => Post)
 	@Column({ unique: true, allowNull: true, onDelete: "CASCADE" })
-	post_id: string;
+	post_id: number;
 
 	@ForeignKey(() => Hashtag)
 	@Column({ unique: true, allowNull: false, onDelete: "CASCADE" })
