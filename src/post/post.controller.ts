@@ -71,16 +71,25 @@ export class PostController {
 		@Query("channelId") channelId: string,
 	) {
 		const post = await this.postService.findOne(postId, channelId);
-		const img = await this.firebaseService.findImage(post.image_file_path);
 
-		const imgFileExt = post.image_file_path.split(".");
+		console.log(post);
+		const img = await this.firebaseService.findImage(
+			post.image_file_path,
+			post.image_file_extension,
+		);
 
 		const buffer = Buffer.from(img);
+	
+		// res.setHeader('Content-Type', 'image/png');
+		// res.setHeader('Content-Length', buffer.length);
 
-		res.setHeader("Content-Type", `image/${imgFileExt[imgFileExt.length - 1]}`);
-		res.setHeader("Content-Length", buffer.length);
-
-		return res.send(buffer);
+		// res.send(buffer);
+		res.writeHead(200, {
+			'Content-Type': 'image/png',
+			'Content-Length': buffer.length
+		  });
+		  
+		return res.end(buffer);
 	}
 
 	@ApiOperation({ description: "한 채널에 게시글 업로드" })
@@ -92,6 +101,7 @@ export class PostController {
 		@Body() createPostDto: CreatePostDto,
 		@Session() session: any,
 	) {
+		console.log(session);
 		const { user: email } = session.passport;
 
 		// 게시글 이미지가 없다면 그냥 null로 삽입
