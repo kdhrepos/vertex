@@ -55,4 +55,7 @@ export class User extends Model {
 	/* Has */
 	@HasMany(() => Video)
 	video: Video;
+
+	@HasMany(() => Post)
+	post: Post;
 }
