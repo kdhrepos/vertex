@@ -84,18 +84,10 @@ export class PostController {
 		@Query("channelId") channelId: string,
 	) {
 		const post = await this.postService.findOne(postId, channelId);
-		const img = await this.firebaseService.findImage(
-			post.image_file_path,
-		);
-		console.log(img);
-		const buffer = Buffer.from(img);
-		const base64Image = buffer.toString('base64');
-
 		return res.status(200).json({
 			title: post.title,
 			contents: post.contents,
 			like_count: post.like_count,
-			view_count: post.view_count,
 			image: `http://localhost:8000/community/image?postId=${postId}&channelId=${channelId}`
 		});
 	}
