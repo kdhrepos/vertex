@@ -11,12 +11,8 @@ import {
 	uploadBytes,
 } from "firebase/storage";
 import { Video } from "src/model/video.model";
-import { UploadVideoDto } from "src/video/dto/video-dto/upload-video.dto";
 import * as path from "path";
-import { VideoService } from "src/video/video.service";
 import { Response } from "express";
-import { generateId } from "src/generate-id";
-import { Post } from "src/model/post.model";
 
 @Injectable()
 export class FirebaseService {
@@ -35,16 +31,15 @@ export class FirebaseService {
 
 	private readonly logger = new Logger("Firebase Service");
 
-	constructor(private videoService: VideoService) {
+	constructor() {
 		this.firebase = initializeApp(this.firebaseConfiguration);
 		this.firebaseStorage = getStorage(this.firebase);
 	}
 
 	async uploadVideo(
 		session: any,
-		uploadVideoDto: UploadVideoDto,
+		hashedFilePath: string,
 		video: Express.Multer.File,
-		thumbnail?: Express.Multer.File,
 	) {
 		const functionName = FirebaseService.prototype.uploadVideo.name;
 		try {
@@ -56,27 +51,15 @@ export class FirebaseService {
 				);
 			}
 
-			const { title } = uploadVideoDto;
-			const { user: email } = session.passport;
-
-			const hashedFilePath = generateId(`${email}${title}`);
-
 			// Firebase Storage 내 Video 파일 경로 생성
 			let videoPath = "videos/";
 			videoPath += hashedFilePath;
 			videoPath += path.extname(video.originalname);
 
-			// Firebase Storage 내 Thumbnail 이미지 경로 생성
-			let thumbnailPath = "thumbnail/";
-			thumbnailPath += hashedFilePath;
-			thumbnailPath += path.extname(thumbnail.originalname);
-
 			const videoDirRef = ref(this.firebaseStorage, videoPath);
-			const thumbnailDirRef = ref(this.firebaseStorage, thumbnailPath);
 
 			// 비디오 업로드
 			const videoResult = await uploadBytes(videoDirRef, video.buffer);
-			uploadBytes(thumbnailDirRef, thumbnail.buffer);
 
 			// 비디오가 올바르게 업로드 되었다면 메타 데이터를 DB에 저장
 			if (videoResult) {
@@ -151,6 +134,7 @@ export class FirebaseService {
 			const videoPath = "videos/" + filePath + videoFileExtension;
 			const videoDirRef = ref(this.firebaseStorage, videoPath);
 			const videoStream = getStream(videoDirRef);
+
 			res.setHeader("Content-Type", `video/${videoFileExtension}`);
 			res.setHeader("Content-Disposition", 'inline; filename="video.mp4"');
 			videoStream.pipe(res);
@@ -201,30 +185,10 @@ export class FirebaseService {
 		}
 	}
 
-	async findThumbnail() {
-		const functionName = FirebaseService.prototype.findThumbnail.name;
-		try {
-			// const { file_path: filePath, video_file_extension: videoFileExtension } =
-			// 	video;
-			// 	let thumbnailPath = "thumbnail/";
-			// 	thumbnailPath += hashedFilePath;
-			// 	thumbnailPath += path.extname(thumbnail.originalname);
-			// res.setHeader("Content-Type", "video/mp4");
-			// res.setHeader("Content-Disposition", 'inline; filename="video.mp4"');
-			// videoStream.pipe(res);
-		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(
-				`${functionName} ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
-		}
-	}
-
-	async findImage(imgPath: string, imgExt: string) {
+	async findImage(imgPath: string) {
 		const functionName = FirebaseService.prototype.findImage.name;
 		try {
-			const imagePath = "images/" + imgPath + imgExt;
+			const imagePath = "images/" + imgPath;
 			const imgDirRef = ref(this.firebaseStorage, imagePath);
 			const imgByte = await getBytes(imgDirRef);
 
@@ -237,7 +201,7 @@ export class FirebaseService {
 			);
 		}
 	}
-	async uploadImage(img: Express.Multer.File, imgPath: string) {
+	async uploadImage(img: Express.Multer.File, imgPath: any) {
 		const functionName = FirebaseService.prototype.uploadImage.name;
 		try {
 			if (!img) {
@@ -248,7 +212,7 @@ export class FirebaseService {
 				);
 			}
 
-			const imagePath = "images/" + imgPath + path.extname(img.originalname);
+			const imagePath = "images/" + imgPath;
 			const imgDirRef = ref(this.firebaseStorage, imagePath);
 			const imgResult = uploadBytes(imgDirRef, img.buffer);
 
@@ -267,7 +231,7 @@ export class FirebaseService {
 			);
 		}
 	}
-	async updateImage(img: Express.Multer.File, post: any) {
+	async updateImage(img: Express.Multer.File, imgPath: any) {
 		const functionName = FirebaseService.prototype.uploadImage.name;
 		try {
 			if (!img) {
@@ -278,8 +242,7 @@ export class FirebaseService {
 				);
 			}
 
-			const imagePath =
-				"images/" + post.image_file_path + path.extname(img.originalname);
+			const imagePath = "images/" + imgPath;
 			const imgDirRef = ref(this.firebaseStorage, imagePath);
 			const imgResult = uploadBytes(imgDirRef, img.buffer);
 

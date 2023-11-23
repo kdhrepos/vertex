@@ -1,10 +1,11 @@
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { CreateUserDto } from "src/auth/dto/create-user.dto";
+import { CreateUserDto } from "src/user/dto/create-user.dto";
 import * as bcrypt from "bcrypt";
 
 import { User } from "src/model/user.model";
-import { DeleteUserDto } from "src/auth/dto/delete-user.dto";
+import { DeleteUserDto } from "src/user/dto/delete-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Injectable()
 export class UserService {
@@ -55,10 +56,7 @@ export class UserService {
 		return result;
 	}
 
-	async createUser(
-		createUserDto: CreateUserDto,
-		profileImage: Express.Multer.File,
-	) {
+	async createUser(createUserDto: CreateUserDto, profileImagePath: string) {
 		const functionName = UserService.prototype.createUser.name;
 		try {
 			const { email, name, password, description } = createUserDto;
@@ -74,11 +72,6 @@ export class UserService {
 				this.logger.error(`${functionName} : Duplicated Email`);
 				return new HttpException("Duplicated Email", HttpStatus.BAD_REQUEST);
 			}
-
-			const profileImagePath =
-				profileImage === null || profileImage === undefined
-					? null
-					: `profile-${email}-${profileImage.originalname}`;
 
 			const createdUser = await this.userModel.create({
 				email: email,
@@ -113,9 +106,6 @@ export class UserService {
 
 			// 소셜 로그인은 여기서 삭제
 			if (existedUser.provider_id) {
-				/*
-				유저가 생성했던 비디오, post 모두 deleted 상태로 돌려야 함
-				*/
 				await this.userModel.destroy({
 					where: {
 						email: existedUser.email,
@@ -130,9 +120,6 @@ export class UserService {
 			}
 
 			// 일반 로그인은 여기서 삭제
-			/*
-				유저가 생성했던 비디오, post 모두 deleted 상태로 돌려야 함
-			*/
 			await this.userModel.destroy({
 				where: {
 					email: existedUser.email,
@@ -140,6 +127,15 @@ export class UserService {
 			});
 
 			return true;
+		} catch (error) {
+			this.logger.error(`${functionName} :  ${error}`);
+			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	async updateUser(updateUserDto: UpdateUserDto) {
+		const functionName = UserService.prototype.updateUser.name;
+		try {
 		} catch (error) {
 			this.logger.error(`${functionName} :  ${error}`);
 			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);

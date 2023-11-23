@@ -7,6 +7,6 @@ import { Like } from "src/model/like.model";
 
 @Module({
 	imports: [SequelizeModule.forFeature([Video, Like])],
-	providers: [FirebaseService, VideoService],
+	providers: [FirebaseService],
 })
 export class FirebaseModule {}

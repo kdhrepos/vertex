@@ -26,10 +26,13 @@ import {
 	getSchemaPath,
 } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
-import { CreateUserDto } from "./dto/create-user.dto";
+import { CreateUserDto } from "../user/dto/create-user.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { UserService } from "src/user/user.service";
-import { DeleteUserDto } from "./dto/delete-user.dto";
+import { DeleteUserDto } from "../user/dto/delete-user.dto";
+import * as bcrypt from "bcrypt";
+import { FirebaseService } from "src/firebase/firebase.service";
+import * as path from "path";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -37,6 +40,7 @@ export class AuthController {
 	constructor(
 		private authService: AuthService,
 		private userService: UserService,
+		private firebaseService: FirebaseService,
 	) {}
 
 	@ApiOperation({ description: "구글 소셜 로그인 접근 Route" })
@@ -61,7 +65,6 @@ export class AuthController {
 	@Post("login/local")
 	@UseGuards(LocalAuthGuard)
 	localAuth(@Request() req: any) {
-		console.log(req.user);
 		return req.user;
 	}
 
@@ -71,7 +74,7 @@ export class AuthController {
 	authenticated(@Request() req: any, @Response() res: any) {
 		const { user } = req;
 		if (!user) {
-			return res.send(user);
+			return;
 		}
 		return res.send(user);
 	}
@@ -94,7 +97,13 @@ export class AuthController {
 		@Body() createUserDto: CreateUserDto,
 		@UploadedFile() profileImage?: Express.Multer.File,
 	) {
-		return await this.userService.createUser(createUserDto, profileImage);
+		const { email, name } = createUserDto;
+		const hashedFilePath =
+			bcrypt.hashSync(`${email}${name}`, 12).replace(/\//g, "") +
+			path.extname(profileImage.originalname);
+
+		this.firebaseService.updateImage(profileImage, hashedFilePath);
+		return await this.userService.createUser(createUserDto, hashedFilePath);
 	}
 
 	@ApiOperation({ description: "소셜, 일반 모두 포함한 회원탈퇴 기능" })
