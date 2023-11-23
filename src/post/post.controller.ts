@@ -52,30 +52,6 @@ export class PostController {
 		return await this.postService.findAll(channelId);
 	}
 
-	@ApiOperation({ description: "이미지 전송" })
-	@Get("/image")
-	async sendImage(@Res() res: Response, @Query('postId') postId: number, @Query('channelId') channelId: string) {
-		const post = await this.postService.findOne(postId, channelId);
-		const img = await this.firebaseService.findImage(
-			post.image_file_path,
-		);
-		const buffer = Buffer.from(img);
-
-		res.writeHead(200, {
-			'Content-Type': 'image/png', // PNG 형식이라고 가정
-			'Content-Length': buffer.length,
-		});
-		res.end(buffer);
-	}
-	@ApiOperation({ description: "채널 내 하나의 게시글 요청 (구현 x)" })
-	@Get("")
-	async findPost(
-		@Query("postId") postId: number,
-		@Query("channelId") channelId: string,
-	) {
-		return await this.postService.findOne(postId, channelId);
-	}
-
 	@ApiOperation({ description: "게시글의 이미지 요청" })
 	@Get("image")
 	async findPostImage(
@@ -88,7 +64,7 @@ export class PostController {
 			title: post.title,
 			contents: post.contents,
 			like_count: post.like_count,
-			image: `http://localhost:8000/community/image?postId=${postId}&channelId=${channelId}`
+			image: post.image_file_path,
 		});
 	}
 
