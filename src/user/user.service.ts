@@ -92,6 +92,7 @@ export class UserService {
 	async deleteUser(deleteUserDto: DeleteUserDto) {
 		const functionName = UserService.prototype.deleteUser.name;
 		try {
+			console.log(deleteUserDto);
 			const { email, password } = deleteUserDto;
 
 			const existedUser = await this.userModel.findOne({

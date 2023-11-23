@@ -23,7 +23,7 @@ export class Post extends Model {
 	user_email: string;
 
 	@ForeignKey(() => User)
-	@Column
+	@Column({ onDelete: "CASCADE" })
 	channel_email: string;
 
 	@Column

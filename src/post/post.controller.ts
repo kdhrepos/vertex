@@ -23,7 +23,6 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { PostService } from "./post.service";
 import { FirebaseService } from "src/firebase/firebase.service";
 import * as path from "path";
-import { generateId } from "src/generate-id";
 import { CreatePostDto } from "./dto/post-dto/create-post.dto";
 import { UpdatePostDto } from "./dto/post-dto/update-post.dto";
 import * as bcrypt from "bcrypt";

@@ -83,14 +83,6 @@ export class AuthController {
 		description: "소셜 로그인을 통한 회원가입이 아닌 일반 회원가입",
 	})
 	@ApiExtraModels(CreateUserDto)
-	@ApiOkResponse({
-		status: 200,
-		description: "성공 시 DB에 생성된 유저 정보 반환",
-	})
-	@ApiBadRequestResponse({
-		status: 400,
-		description: "에러 반환",
-	})
 	@Post("signin/local")
 	@UseInterceptors(FileInterceptor("profile", {}))
 	async signin(
@@ -99,8 +91,10 @@ export class AuthController {
 	) {
 		const { email, name } = createUserDto;
 		const hashedFilePath =
-			bcrypt.hashSync(`${email}${name}`, 12).replace(/\//g, "") +
-			path.extname(profileImage.originalname);
+			profileImage !== null && profileImage !== undefined
+				? (await bcrypt.hashSync(`${email}${name}`, 12).replace(/\//g, "")) +
+				  path.extname(profileImage.originalname)
+				: null;
 
 		this.firebaseService.updateImage(profileImage, hashedFilePath);
 		return await this.userService.createUser(createUserDto, hashedFilePath);

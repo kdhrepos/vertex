@@ -40,7 +40,7 @@ export class UserController {
 	// @UseGuards(AuthenticatedGuard)
 	// @Patch("profile")
 	// async updateUserProfile(@Session() session: any) {
-	// 	const { user: email } = session.passport;
+	// 	const { user: email } = session.p	assport;
 	// }
 
 	@ApiBody({ description: "유저가 자신의 프로필 이미지를 받아옴" })
