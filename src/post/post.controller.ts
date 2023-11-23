@@ -23,7 +23,6 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { PostService } from "./post.service";
 import { FirebaseService } from "src/firebase/firebase.service";
 import * as path from "path";
-import { generateId } from "src/generate-id";
 import { CreatePostDto } from "./dto/post-dto/create-post.dto";
 import { UpdatePostDto } from "./dto/post-dto/update-post.dto";
 import * as bcrypt from "bcrypt";
@@ -59,7 +58,6 @@ export class PostController {
 		const post = await this.postService.findOne(postId, channelId);
 		const img = await this.firebaseService.findImage(
 			post.image_file_path,
-			post.image_file_extension,
 		);
 		const buffer = Buffer.from(img);
 
@@ -72,6 +70,15 @@ export class PostController {
 	@ApiOperation({ description: "채널 내 하나의 게시글 요청 (구현 x)" })
 	@Get("")
 	async findPost(
+		@Query("postId") postId: number,
+		@Query("channelId") channelId: string,
+	) {
+		return await this.postService.findOne(postId, channelId);
+	}
+
+	@ApiOperation({ description: "게시글의 이미지 요청" })
+	@Get("image")
+	async findPostImage(
 		@Res() res: Response,
 		@Query("postId") postId: number,
 		@Query("channelId") channelId: string,
@@ -79,7 +86,6 @@ export class PostController {
 		const post = await this.postService.findOne(postId, channelId);
 		const img = await this.firebaseService.findImage(
 			post.image_file_path,
-			post.image_file_extension,
 		);
 		console.log(img);
 		const buffer = Buffer.from(img);
@@ -105,16 +111,18 @@ export class PostController {
 	) {
 		console.log(session);
 		const { user: email } = session.passport;
-		const imgFileExtension = path.extname(img.originalname);
-		const hashedFilePath = await bcrypt.hashSync(email, 12).replace(/\//g, "");
 
-		await this.postService.create(
-			createPostDto,
-			hashedFilePath,
-			imgFileExtension,
-			session,
-		);
-		await this.firebaseService.uploadImage(img, hashedFilePath);
+		// 게시글 이미지가 없다면 그냥 null로 삽입
+		const hashedFilePath =
+			img !== null && img !== undefined
+				? (await bcrypt.hashSync(email, 12).replace(/\//g, "")) +
+				  path.extname(img.originalname)
+				: null;
+
+		await this.postService.create(createPostDto, hashedFilePath, session);
+
+		if (img !== null && img !== undefined)
+			await this.firebaseService.uploadImage(img, hashedFilePath);
 	}
 
 	@ApiOperation({ description: "한 채널의 게시글 수정" })
@@ -127,7 +135,7 @@ export class PostController {
 	) {
 		const post = await this.postService.update(updatePostDto);
 		if (img != null || img != undefined) {
-			await this.firebaseService.updateImage(img, post);
+			await this.firebaseService.updateImage(img, post.image_file_path);
 		}
 	}
 

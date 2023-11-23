@@ -6,24 +6,7 @@ import {
 	IsEmail,
 } from "class-validator";
 
-export class CreateUserDto {
-	@IsEmail()
-	@IsNotEmpty()
-	@ApiProperty({
-		example: "qweqwe@naver.com",
-		description: "Local 회원가입을 위한 이메일",
-		required: true,
-	})
-	email: string;
-
-	@IsString()
-	@ApiProperty({
-		example: "김동현",
-		description: "사용자 이름",
-		required: true,
-	})
-	name: string;
-
+export class UpdateUserDto {
 	@IsStrongPassword({
 		minLength: 8,
 		minUppercase: 1,
@@ -33,7 +16,7 @@ export class CreateUserDto {
 	})
 	@ApiProperty({
 		example: "asd123",
-		description: "Local 회원가입을 위한 패스워드 (strong password)",
+		description: "사용자 인증을 위한 패스워드",
 		required: true,
 	})
 	password: string;

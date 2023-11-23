@@ -23,7 +23,7 @@ export class Post extends Model {
 	user_email: string;
 
 	@ForeignKey(() => User)
-	@Column
+	@Column({ onDelete: "CASCADE" })
 	channel_email: string;
 
 	@Column
@@ -34,9 +34,6 @@ export class Post extends Model {
 
 	@Column({ allowNull: true })
 	image_file_path: string;
-
-	@Column({ allowNull: true })
-	image_file_extension: string;
 
 	@Column({ defaultValue: 0 })
 	like_count: number;

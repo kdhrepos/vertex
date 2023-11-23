@@ -66,6 +66,35 @@ export class VideoController {
 		}
 	}
 
+	@ApiOperation({ description: "비디오 썸네일 요청" })
+	@Get("data")
+	async getVideoData(@Query("videoId") videoId: string) {
+		return await this.videoService.findOne(videoId);
+	}
+
+	@ApiOperation({ description: "비디오 썸네일 요청" })
+	@Get("thumbnail")
+	async getThumbnail(@Res() res: Response, @Query("videoId") videoId: string) {
+		const video = await this.videoService.findOne(videoId);
+		if (video) {
+			const thumbnailPath = video.id + video.thumbnail_file_extension;
+			const img = await this.firebaseService.findImage(thumbnailPath);
+
+			video.thumbnail_file_extension = video.thumbnail_file_extension.substring(
+				1,
+				video.thumbnail_file_extension.length,
+			);
+			const buffer = Buffer.from(img);
+
+			res.setHeader("Content-Type", `image/${video.thumbnail_file_extension}`);
+			res.setHeader("Content-Length", buffer.length);
+
+			return res.send(buffer);
+		} else {
+			return new HttpException("Video Does Not Exist", HttpStatus.BAD_REQUEST);
+		}
+	}
+
 	@ApiOperation({ description: "비디오 업로드" })
 	@UseGuards(AuthenticatedGuard)
 	@UseInterceptors(
@@ -89,7 +118,7 @@ export class VideoController {
 
 		if (!(await this.videoService.findOne(hashedFilePath))) {
 			// 메타 데이터를 DB에 저장
-			await this.videoService.create(
+			this.videoService.create(
 				hashedFilePath,
 				title,
 				description,
@@ -97,13 +126,13 @@ export class VideoController {
 				path.extname(files.video[0].originalname),
 				path.extname(files.thumbnail[0].originalname),
 			);
-			// 비디오 업로드
-			return await this.firebaseService.uploadVideo(
-				session,
-				uploadVideoDto,
-				files.video[0],
+			// 썸네일 업로드
+			this.firebaseService.uploadImage(
 				files.thumbnail[0],
+				hashedFilePath + path.extname(files.thumbnail[0].originalname),
 			);
+			// 비디오 업로드
+			this.firebaseService.uploadVideo(session, hashedFilePath, files.video[0]);
 		} else {
 			return new HttpException(
 				"Duplicated Video Title",

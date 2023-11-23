@@ -43,7 +43,7 @@ export class PostService {
 					"like_count",
 					"view_count",
 					"image_file_path",
-					"image_file_extension",
+					
 					"createdAt",
 					"updatedAt",
 				],
@@ -69,12 +69,7 @@ export class PostService {
 		}
 	}
 
-	async create(
-		createPostDto: CreatePostDto,
-		imgPath: string,
-		imgFileExtension: string,
-		session: any,
-	) {
+	async create(createPostDto: CreatePostDto, imgPath: string, session: any) {
 		const functionName = PostService.prototype.create.name;
 		try {
 			const { channelId, title, contents } = createPostDto;
@@ -86,7 +81,6 @@ export class PostService {
 				title: title,
 				contents: contents,
 				image_file_path: imgPath,
-				image_file_extension: imgFileExtension,
 			});
 		} catch (error) {
 			this.logger.error(`${functionName} : ${error}`);
@@ -119,7 +113,7 @@ export class PostService {
 			});
 		} catch (error) {
 			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

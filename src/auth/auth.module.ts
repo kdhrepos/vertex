@@ -10,6 +10,7 @@ import { AuthenticatedGuard, LocalAuthGuard } from "./auth.guard";
 import { LocalStrategy } from "./local.strategy";
 import { AuthService } from "./auth.service";
 import { SessionSerializer } from "./session.serializer";
+import { FirebaseService } from "src/firebase/firebase.service";
 
 @Module({
 	imports: [
@@ -25,6 +26,7 @@ import { SessionSerializer } from "./session.serializer";
 		SessionSerializer,
 		LocalAuthGuard,
 		AuthenticatedGuard,
+		FirebaseService,
 	],
 	controllers: [AuthController],
 })
