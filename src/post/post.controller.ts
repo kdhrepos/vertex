@@ -39,7 +39,7 @@ export class PostController {
 		private postService: PostService,
 		private postCommentService: PostCommentService,
 		private firebaseService: FirebaseService,
-	) {}
+	) { }
 
 	// @ApiOperation({ description: "게시글 고유 아이디를 통해 하나의 게시글 검색" })
 	// @Get("/:creator_id/post/:post_id")
@@ -53,6 +53,22 @@ export class PostController {
 		return await this.postService.findAll(channelId);
 	}
 
+	@ApiOperation({ description: "이미지 전송" })
+	@Get("/image")
+	async sendImage(@Res() res: Response, @Query('postId') postId: number, @Query('channelId') channelId: string) {
+		const post = await this.postService.findOne(postId, channelId);
+		const img = await this.firebaseService.findImage(
+			post.image_file_path,
+			post.image_file_extension,
+		);
+		const buffer = Buffer.from(img);
+
+		res.writeHead(200, {
+			'Content-Type': 'image/png', // PNG 형식이라고 가정
+			'Content-Length': buffer.length,
+		});
+		res.end(buffer);
+	}
 	@ApiOperation({ description: "채널 내 하나의 게시글 요청 (구현 x)" })
 	@Get("")
 	async findPost(
@@ -61,24 +77,21 @@ export class PostController {
 		@Query("channelId") channelId: string,
 	) {
 		const post = await this.postService.findOne(postId, channelId);
-		console.log(post);
 		const img = await this.firebaseService.findImage(
 			post.image_file_path,
 			post.image_file_extension,
 		);
-
+		console.log(img);
 		const buffer = Buffer.from(img);
-	
-		// res.setHeader('Content-Type', 'image/png');
-		// res.setHeader('Content-Length', buffer.length);
+		const base64Image = buffer.toString('base64');
 
-		// res.send(buffer);
-		res.writeHead(200, {
-			'Content-Type': 'image/png',
-			'Content-Length': buffer.length
-		  });
-		  
-		return res.end(buffer);
+		return res.status(200).json({
+			title: post.title,
+			contents: post.contents,
+			like_count: post.like_count,
+			view_count: post.view_count,
+			image: `http://localhost:8000/community/image?postId=${postId}&channelId=${channelId}`
+		});
 	}
 
 	@ApiOperation({ description: "한 채널에 게시글 업로드" })
@@ -165,5 +178,5 @@ export class PostController {
 	@ApiOperation({ description: "게시글 좋아요 누르기/취소" })
 	@Post("/like")
 	@UseGuards(AuthenticatedGuard)
-	async likeToPost(@Query("postId") postId: string) {}
+	async likeToPost(@Query("postId") postId: string) { }
 }
