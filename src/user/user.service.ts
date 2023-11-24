@@ -134,12 +134,56 @@ export class UserService {
 		}
 	}
 
-	async updateUser(updateUserDto: UpdateUserDto) {
-		const functionName = UserService.prototype.updateUser.name;
+	async updateGoogleUser(email:string, updateUserDto: UpdateUserDto) {
+		const functionName = UserService.prototype.updateGoogleUser.name;
 		try {
+			const { description } = updateUserDto;
+			this.userModel.update(
+				{
+					description: description,
+				},
+				{
+					where:{
+						email: email
+					}
+				}
+			);
+			return await this.userModel.findOne({
+				where: {
+					email: email,
+				},
+				raw: true,
+			});
 		} catch (error) {
 			this.logger.error(`${functionName} :  ${error}`);
-			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	async updateLocalUser(email: string, updateUserDto: UpdateUserDto){
+		const functionName = UserService.prototype.updateLocalUser.name;
+		try {
+			const { password, description } = updateUserDto;
+			this.userModel.update(
+				{
+					password: password,
+					description: description,
+				},
+				{
+					where:{
+						email: email
+					}
+				}
+			);
+			return await this.userModel.findOne({
+				where: {
+					email: email,
+				},
+				raw: true,
+			});
+		} catch (error) {
+			this.logger.error(`${functionName} :  ${error}`);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }
