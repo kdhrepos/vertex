@@ -83,12 +83,13 @@ export class AuthController {
 		description: "소셜 로그인을 통한 회원가입이 아닌 일반 회원가입",
 	})
 	@ApiExtraModels(CreateUserDto)
-	@Post("signin/local")
+	@Post("signup/local")
 	@UseInterceptors(FileInterceptor("profile", {}))
 	async signin(
-		@Body() createUserDto: CreateUserDto,
+		@Body() createUserDto: any,// CreateUserDto로 하니까 안됨. any로 해야 받아짐.이유는 모르겠음. 다른 Body들도 수정해야 할 가능성 높음.
 		@UploadedFile() profileImage?: Express.Multer.File,
 	) {
+		console.log(createUserDto);
 		const { email, name } = createUserDto;
 		const hashedFilePath =
 			profileImage !== null && profileImage !== undefined
@@ -106,6 +107,7 @@ export class AuthController {
 		status: 200,
 		description: "회원 탈퇴 성공 시 boolean 값 true 반환 (문자열 x)",
 	})
+	
 	@ApiBadRequestResponse({
 		status: 400,
 		description: "에러 반환",
