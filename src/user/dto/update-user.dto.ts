@@ -7,13 +7,6 @@ import {
 } from "class-validator";
 
 export class UpdateUserDto {
-	@IsStrongPassword({
-		minLength: 8,
-		minUppercase: 1,
-		minLowercase: 1,
-		minNumbers: 1,
-		minSymbols: 1,
-	})
 	@ApiProperty({
 		example: "asd123",
 		description: "사용자 인증을 위한 패스워드",

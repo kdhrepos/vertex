@@ -52,44 +52,25 @@ export class PostController {
 		return await this.postService.findAll(channelId);
 	}
 
-	@ApiOperation({
-		description: "채널 내 하나의 게시글 데이터 요청 (이미지는 따로)",
-	})
+	@ApiOperation({ description: "채널 내 하나의 게시글 데이터 요청" })
 	@Get("")
 	async findPost(
-		@Query("postId") postId: number,
-		@Query("channelId") channelId: string,
-	) {
-		return await this.postService.findOne(postId, channelId);
-	}
-
-	@ApiOperation({ description: "게시글의 이미지 요청" })
-	@Get("image")
-	async findPostImage(
 		@Res() res: Response,
 		@Query("postId") postId: number,
 		@Query("channelId") channelId: string,
 	) {
 		const post = await this.postService.findOne(postId, channelId);
+		const img = await this.firebaseService.findImage(post.image_file_path);
 
-		console.log(post);
-		const img = await this.firebaseService.findImage(
-			post.image_file_path,
-			post.image_file_extension,
-		);
+		const imgFileExt = post.image_file_path.split(".");
 
 		const buffer = Buffer.from(img);
-	
-		// res.setHeader('Content-Type', 'image/png');
-		// res.setHeader('Content-Length', buffer.length);
 
-		// res.send(buffer);
-		res.writeHead(200, {
-			'Content-Type': 'image/png',
-			'Content-Length': buffer.length
-		  });
-		  
-		return res.end(buffer);
+		// res.setHeader("Content-Type", `image/${imgFileExt[imgFileExt.length - 1]}`);
+		// res.setHeader("Content-Length", buffer.length);
+
+		return res.json({ img: buffer, post: post });
+		// return res.send(buffer);
 	}
 
 	@ApiOperation({ description: "한 채널에 게시글 업로드" })
@@ -101,7 +82,6 @@ export class PostController {
 		@Body() createPostDto: CreatePostDto,
 		@Session() session: any,
 	) {
-		console.log(session);
 		const { user: email } = session.passport;
 
 		// 게시글 이미지가 없다면 그냥 null로 삽입

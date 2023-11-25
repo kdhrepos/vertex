@@ -19,7 +19,6 @@ export class User extends Model {
 	@Column({ primaryKey: true })
 	email: string;
 
-	// Columns
 	@Column({ allowNull: true })
 	provider_id: string;
 
