@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsEmail } from "class-validator";
+import { IsString, IsEmail, IsDate, IsOptional } from "class-validator";
 
 export class CreateUserDto {
 	@IsEmail()
@@ -41,4 +41,21 @@ export class CreateUserDto {
 		required: false,
 	})
 	profileImage: Express.Multer.File;
+
+	@IsOptional()
+	@IsDate()
+	@ApiProperty({
+		example: "2000-06-15",
+		description: "사용자의 생년월일",
+		required: false,
+	})
+	birthday: Date | null;
+
+	@IsString()
+	@ApiProperty({
+		example: "M / F",
+		description: "사용자의 성별 (문자열)",
+		required: false,
+	})
+	gender: string;
 }

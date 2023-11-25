@@ -34,6 +34,12 @@ export class User extends Model {
 	@Column({ allowNull: true })
 	description: string;
 
+	@Column({ allowNull: false })
+	gender: string;
+
+	@Column({ allowNull: false })
+	birthday: Date;
+
 	/**
 	 * Relationship
 	 */
