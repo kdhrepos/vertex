@@ -9,6 +9,7 @@ import {
 	UploadedFile,
 	UseInterceptors,
 	Delete,
+	Query,
 } from "@nestjs/common";
 import {
 	AuthenticatedGuard,
@@ -89,6 +90,7 @@ export class AuthController {
 		@Body() createUserDto: CreateUserDto,
 		@UploadedFile() profileImage?: Express.Multer.File,
 	) {
+		console.log(createUserDto);
 		const { email, name } = createUserDto;
 		const hashedFilePath =
 			profileImage !== null && profileImage !== undefined
@@ -102,16 +104,20 @@ export class AuthController {
 
 	@ApiOperation({ description: "소셜, 일반 모두 포함한 회원탈퇴 기능" })
 	@ApiExtraModels(DeleteUserDto)
-	@ApiOkResponse({
-		status: 200,
-		description: "회원 탈퇴 성공 시 boolean 값 true 반환 (문자열 x)",
-	})
-	@ApiBadRequestResponse({
-		status: 400,
-		description: "에러 반환",
-	})
 	@Delete("signout")
 	async signout(@Body() deleteUserDto: DeleteUserDto) {
 		return await this.userService.deleteUser(deleteUserDto);
+	}
+
+	@ApiOperation({ description: "이메일 중복 체크" })
+	@Get("check/email")
+	async checkDuplicatedEmail(@Query("email") email: string) {
+		return await this.userService.getUserByEmail(email);
+	}
+
+	@ApiOperation({ description: "닉네임 중복 체크" })
+	@Get("check/name")
+	async checkDuplicatedName(@Query("name") name: string) {
+		return await this.userService.getUserByName(name);
 	}
 }

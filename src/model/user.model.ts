@@ -38,7 +38,7 @@ export class User extends Model {
 	gender: string;
 
 	@Column({ allowNull: false })
-	birthday: Date;
+	birthday: string;
 
 	/**
 	 * Relationship

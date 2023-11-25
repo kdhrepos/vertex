@@ -41,10 +41,25 @@ export class UserService {
 		return newUser;
 	}
 
-	async getUser(email: string) {
+	async getUserByEmail(email: string) {
 		const result = await this.userModel.findOne({
 			where: {
 				email: email,
+			},
+			raw: true,
+		});
+
+		if (!result) {
+			return null;
+		}
+
+		return result;
+	}
+
+	async getUserByName(name: string) {
+		const result = await this.userModel.findOne({
+			where: {
+				name: name,
 			},
 			raw: true,
 		});

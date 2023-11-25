@@ -49,7 +49,7 @@ export class CreateUserDto {
 		description: "사용자의 생년월일",
 		required: false,
 	})
-	birthday: Date | null;
+	birthday: string | null;
 
 	@IsString()
 	@ApiProperty({

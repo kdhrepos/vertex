@@ -10,7 +10,7 @@ export class AuthService {
 	private readonly logger = new Logger("Auth Service");
 
 	async validateUser(email: string, password: string) {
-		const user = await this.userService.getUser(email);
+		const user = await this.userService.getUserByEmail(email);
 
 		if (!user) {
 			return null;

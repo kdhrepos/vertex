@@ -29,7 +29,7 @@ export class UserController {
 	@Get("profile")
 	async getUserProfile(@Session() session: any) {
 		const { user: email } = session.passport;
-		const userWithPassord = await this.userService.getUser(email);
+		const userWithPassord = await this.userService.getUserByEmail(email);
 
 		const { password, ...user } = userWithPassord;
 
@@ -49,7 +49,7 @@ export class UserController {
 		@Res() res: Response,
 		@Query("userId") userId: string,
 	) {
-		const user = await this.userService.getUser(userId);
+		const user = await this.userService.getUserByEmail(userId);
 
 		if (
 			user.profile_image_path !== undefined &&
