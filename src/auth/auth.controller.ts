@@ -66,7 +66,10 @@ export class AuthController {
 	@Post("login/local")
 	@UseGuards(LocalAuthGuard)
 	localAuth(@Req() req: any) {
-		return req.user;
+		return {
+			session: `sess:${req.sessionID}`,
+			user: req.user,
+		};
 	}
 
 	@ApiOperation({ description: "이미 로그인한 사용자가 확인하는 Route" })

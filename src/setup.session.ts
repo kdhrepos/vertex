@@ -22,7 +22,7 @@ export function setUpSession(app: INestApplication): void {
 			cookie: {
 				httpOnly: false,
 				secure: false,
-				maxAge: 3600000,
+				maxAge: 10000,
 				sameSite: "none",
 			},
 		}),
