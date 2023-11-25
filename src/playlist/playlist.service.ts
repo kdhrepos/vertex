@@ -9,30 +9,29 @@ export class PlaylistService {
 		private playlistModel: typeof Playlist,
 	) {}
 
-	private readonly logger = new Logger("Playlist Service");
-
-	async findOne(playlist_id: string): Promise<any> {
-		const functionName = PlaylistService.prototype.findOne.name;
+	async findAll(session: any) {
 		try {
-			const existedPlaylist = await this.playlistModel.findByPk(playlist_id, {
-				raw: true,
+			const { user: email } = session.passport;
+
+			const playlists = await this.playlistModel.findAll({
+				where: {
+					user_email: email,
+				},
 			});
-			if (existedPlaylist) {
-				return existedPlaylist;
+
+			if (playlists) {
+				return {
+					data: playlists,
+					statusCode: 200,
+					message: "Playlists are successfully found",
+				};
 			}
-			this.logger.error(`${functionName} : Playlist Does Not Exist`);
-			return false;
 		} catch (error) {
-			this.logger.error(`${error}`);
-			return new HttpException(
-				`${functionName} ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error.response}`, error.status);
 		}
 	}
 
-	async create(listName: string, session: any) {
-		const functionName = PlaylistService.prototype.create.name;
+	async create(listName: string, isPrivate: boolean, session: any) {
 		try {
 			const { passport } = session;
 			const email = passport.user;
@@ -44,28 +43,23 @@ export class PlaylistService {
 				},
 			});
 
-			if (duplicatedPlaylist) {
-				this.logger.error(`${functionName} : Duplicated Playlist Title`);
-				return new HttpException(
-					"Duplicated Playlist Title",
+			if (duplicatedPlaylist)
+				throw new HttpException(
+					`Duplicated Playlist Title`,
 					HttpStatus.BAD_REQUEST,
 				);
-			}
+
 			return await this.playlistModel.create({
 				user_email: email,
+				is_private: isPrivate,
 				list_name: listName,
 			});
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error.message}`);
-			return new HttpException(
-				"Server Error",
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error.response}`, error.status);
 		}
 	}
 
 	async delete(listName: string, session: any) {
-		const functionName = PlaylistService.prototype.delete.name;
 		try {
 			const { passport } = session;
 			const email = passport.user;
@@ -77,19 +71,17 @@ export class PlaylistService {
 			});
 			if (existedVideo) {
 				await existedVideo.destroy();
-				return;
+				return {
+					statusCode: 200,
+					message: "Successfully Deleted",
+				};
 			}
-			this.logger.error(`${functionName} : Playlist does Not Exist`);
-			return new HttpException(
-				`${functionName} : Playlist Does Not Exist`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
+			throw new HttpException(
+				`Playlist Does Not Exist`,
+				HttpStatus.BAD_REQUEST,
 			);
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error.message}`);
-			return new HttpException(
-				`${functionName} ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error.response}`, error.status);
 		}
 	}
 }

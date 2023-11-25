@@ -2,25 +2,33 @@ import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { Video } from "../model/video.model";
 import { InjectModel } from "@nestjs/sequelize";
 import { UpdateVideoDto } from "./dto/video-dto/update-video.dto";
-import { Like } from "src/model/like.model";
-import { VideoLikeService } from "./video-like.service";
-import { DeleteVideoDto } from "./dto/video-dto/delete-video.dto";
 
 @Injectable()
 export class VideoService {
 	constructor(
 		@InjectModel(Video)
 		private videoModel: typeof Video,
-		@InjectModel(Like)
-		private likeModel: typeof Like,
 	) {}
 
-	private readonly logger = new Logger("Video Service");
+	async findAll(channelId: string) {
+		try {
+			const videos = await this.videoModel.findAll({
+				where: {
+					user_email: channelId,
+				},
+			});
 
-	async findAll(channelId: string) {}
+			return {
+				data: videos,
+				statusCode: 200,
+				message: "Videos are successfully found",
+			};
+		} catch (error) {
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 	async findOne(videoId: string): Promise<any> {
-		const functionName = VideoService.prototype.findOne.name;
 		try {
 			const existedVideo = await this.videoModel.findByPk(videoId, {
 				raw: true,
@@ -30,11 +38,7 @@ export class VideoService {
 			}
 			return false;
 		} catch (error) {
-			this.logger.error(`${error}`);
-			return new HttpException(
-				`${functionName} ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -46,7 +50,6 @@ export class VideoService {
 		videoFileExtension: string,
 		thumbnailFileExtension: string,
 	) {
-		const functionName = VideoService.prototype.create.name;
 		try {
 			return this.videoModel.create({
 				id: videoId,
@@ -57,10 +60,7 @@ export class VideoService {
 				thumbnail_file_extension: thumbnailFileExtension,
 			});
 		} catch (error) {
-			return new HttpException(
-				`${functionName} ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -81,32 +81,34 @@ export class VideoService {
 				},
 			);
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
 		}
 	}
 
-	async deleteOne(deleteVideoDto: DeleteVideoDto, session: any) {
-		const functionName = VideoService.prototype.deleteOne.name;
+	async deleteOne(videoId: string, session: any) {
 		try {
-			const { title, videoId } = deleteVideoDto;
 			const { user: email } = session.passport;
 
-			return await this.videoModel.destroy({
+			const video = await this.videoModel.findOne({
 				where: {
 					id: videoId,
 					user_email: email,
-					title: title,
 				},
 			});
+
+			if (video) {
+				await video.destroy();
+			}
+			return video;
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(` ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	async updateView(video: Video) {
-		const functionName = VideoService.prototype.updateView.name;
 		try {
 			const { id: videoId, view_count: viewCount } = video;
 			await this.videoModel.update(
@@ -118,8 +120,7 @@ export class VideoService {
 				},
 			);
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -137,8 +138,10 @@ export class VideoService {
 				},
 			);
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
 		}
 	}
 }

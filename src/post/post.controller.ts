@@ -20,7 +20,6 @@ import { Request, Response } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { AuthenticatedGuard } from "src/auth/auth.guard";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { PostService } from "./post.service";
 import { FirebaseService } from "src/firebase/firebase.service";
 import * as path from "path";
 import { CreatePostDto } from "./dto/post-dto/create-post.dto";
@@ -30,6 +29,7 @@ import { UploadCommentDto } from "./dto/comment-dto/upload-comment.dto";
 import { UpdateCommentDto } from "./dto/comment-dto/update-comment.dto";
 import { DeleteCommentDto } from "./dto/comment-dto/delete-comment.dto";
 import { PostCommentService } from "./post-comment.service";
+import { PostService } from "./post.service";
 
 @ApiTags("Community")
 @Controller("community")
@@ -116,7 +116,8 @@ export class PostController {
 	@UseGuards(AuthenticatedGuard)
 	async deletePost(@Query("postId") postId: string, @Session() session: any) {
 		const post = await this.postService.delete(postId, session);
-		await this.firebaseService.deleteImage(post);
+		const { image_file_path: imgPath } = post;
+		return await this.firebaseService.deleteImage(imgPath);
 	}
 
 	@ApiOperation({ description: "게시글의 댓글들 가져오기" })

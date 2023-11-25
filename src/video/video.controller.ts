@@ -27,7 +27,6 @@ import { AuthenticatedGuard } from "src/auth/auth.guard";
 import { Response } from "express";
 import { UploadVideoDto } from "./dto/video-dto/upload-video.dto";
 import { UpdateVideoDto } from "./dto/video-dto/update-video.dto";
-import { DeleteVideoDto } from "./dto/video-dto/delete-video.dto";
 import { UploadCommentDto } from "./dto/comment-dto/upload-comment.dto";
 import { VideoCommentService } from "./video-comment.service";
 import { UpdateCommentDto } from "./dto/comment-dto/update-comment.dto";
@@ -60,16 +59,33 @@ export class VideoController {
 			// 조회수 갱신, 비디오 기록 후 비디오 스트리밍
 			this.videoService.updateView(video);
 			this.videoRecordService.create(video);
-			return await this.firebaseService.findVideo(res, video);
+
+			return this.firebaseService.findVideo(res, video);
 		} else {
-			return new HttpException("Video Does Not Exist", HttpStatus.BAD_REQUEST);
+			return res.json({
+				statusCode: 404,
+				message: "Video not found",
+			});
 		}
 	}
 
 	@ApiOperation({ description: "비디오 썸네일 요청" })
 	@Get("data")
-	async getVideoData(@Query("videoId") videoId: string) {
-		return await this.videoService.findOne(videoId);
+	async getVideoData(@Res() res: Response, @Query("videoId") videoId: string) {
+		const videoData = await this.videoService.findOne(videoId);
+
+		if (videoData) {
+			return res.json({
+				data: videoData,
+				statusCode: 200,
+				message: "Video is successfully found",
+			});
+		}
+
+		return res.json({
+			statusCode: 404,
+			message: "Video not found",
+		});
 	}
 
 	@ApiOperation({ description: "비디오 썸네일 요청" })
@@ -97,11 +113,12 @@ export class VideoController {
 
 	@ApiOperation({ description: "비디오 업로드" })
 	@UseGuards(AuthenticatedGuard)
+	@Post("")
 	@UseInterceptors(
 		FileFieldsInterceptor([{ name: "video" }, { name: "thumbnail" }]),
 	)
-	@Post("")
 	async uploadVideo(
+		@Res() res: Response,
 		@Body() uploadVideoDto: UploadVideoDto,
 		@UploadedFiles()
 		files: {
@@ -112,99 +129,97 @@ export class VideoController {
 	) {
 		const { user: email } = session.passport;
 		const { title, description } = uploadVideoDto;
+
+		// 비디오 ID 및 파이어 베이스 내 파일 경로 생성
 		const hashedFilePath = bcrypt
 			.hashSync(`${email}${title}`, 12)
 			.replace(/\//g, "");
 
-		if (!(await this.videoService.findOne(hashedFilePath))) {
-			// 메타 데이터를 DB에 저장
-			this.videoService.create(
-				hashedFilePath,
-				title,
-				description,
-				email,
-				path.extname(files.video[0].originalname),
-				path.extname(files.thumbnail[0].originalname),
-			);
-			// 썸네일 업로드
+		// 메타 데이터를 DB에 저장
+		this.videoService.create(
+			hashedFilePath,
+			title,
+			description,
+			email,
+			path.extname(files.video[0].originalname),
+			path.extname(files.thumbnail[0].originalname),
+		);
+		// 썸네일 업로드
+		if (files.thumbnail[0])
 			this.firebaseService.uploadImage(
 				files.thumbnail[0],
 				hashedFilePath + path.extname(files.thumbnail[0].originalname),
 			);
-			// 비디오 업로드
-			this.firebaseService.uploadVideo(session, hashedFilePath, files.video[0]);
-		} else {
-			return new HttpException(
-				"Duplicated Video Title",
-				HttpStatus.BAD_REQUEST,
-			);
-		}
+		// 비디오 업로드
+		const result = await this.firebaseService.uploadVideo(
+			hashedFilePath,
+			files.video[0],
+		);
+		return res.send(result);
 	}
 
 	@ApiOperation({ description: "비디오 수정" })
 	@UseGuards(AuthenticatedGuard)
+	@Patch("")
 	@UseInterceptors(
 		FileFieldsInterceptor([{ name: "video" }, { name: "thumbnail" }]),
 	)
-	@Patch("")
 	async updateVideo(
+		@Res() res: Response,
 		@Body() updateVideoDto: UpdateVideoDto,
 		@UploadedFiles()
 		files: {
 			video: Express.Multer.File[];
 			thumbnail?: Express.Multer.File[];
 		},
-		@Session() session,
+		@Session() session: any,
 	) {
 		const { videoId } = updateVideoDto;
 
 		const videoData = await this.videoService.findOne(videoId);
-		if (videoData) {
-			this.videoService.updateOne(updateVideoDto, session);
-			return await this.firebaseService.updateVideo(
+
+		this.videoService.updateOne(updateVideoDto, session);
+
+		let thumbnailResult = null;
+		let videoResult = null;
+
+		if (files.thumbnail)
+			thumbnailResult = await this.firebaseService.uploadImage(
+				files.thumbnail[0],
+				videoData.id,
+			);
+
+		if (files.video)
+			videoResult = await this.firebaseService.updateVideo(
 				videoData,
 				files.video[0],
-				files.thumbnail[0],
 			);
-		} else {
-			return new HttpException("Video Does Not Exist", HttpStatus.BAD_REQUEST);
-		}
+
+		return res.json({
+			thumbnailResult,
+			videoResult,
+		});
 	}
 
 	@ApiOperation({ description: "비디오 삭제" })
 	@UseGuards(AuthenticatedGuard)
 	@Delete("")
 	async deleteVideo(
-		@Body() deleteVideoDto: DeleteVideoDto,
+		@Res() res: Response,
+		@Query("videoId") videoId: string,
 		@Session() session: any,
 	) {
-		const { videoId } = deleteVideoDto;
-		const existedVideo = await this.videoService.findOne(videoId);
-		if (existedVideo) {
-			await this.videoService.deleteOne(deleteVideoDto, session);
-			return await this.firebaseService.deleteVideo(existedVideo);
-		} else {
-			return new HttpException(
-				`Video Does Not Exist`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
-		}
+		const video = await this.videoService.deleteOne(videoId, session);
+		const result = await this.firebaseService.deleteVideo(video);
+		return res.send(result);
 	}
 
 	@ApiOperation({ description: "비디오 다운로드 요청" })
 	@Get("/download")
 	async downloadVideo(@Res() res: Response, @Query("videoId") videoId: string) {
 		const existedVideo = await this.videoService.findOne(videoId);
-		if (existedVideo) {
-			const downloadURL =
-				await this.firebaseService.downloadVideo(existedVideo);
-			return res.redirect(downloadURL);
-		} else {
-			return new HttpException(
-				"Video Download Error",
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
-		}
+		const downloadURL = await this.firebaseService.downloadVideo(existedVideo);
+		return res.redirect(downloadURL);
 	}
 
 	@ApiOperation({ description: "특정 비디오의 댓글 가져오기" })
@@ -242,18 +257,15 @@ export class VideoController {
 
 	@ApiOperation({ description: "비디오 좋아요/싫어요 누르기" })
 	@UseGuards(AuthenticatedGuard)
-	@Post("/like")
-	async likeToVideo(
-		@Body("videoId,") videoId: string,
-		@Session() session: any,
-	) {
+	@Post("like")
+	async likeToVideo(@Body("videoId") videoId: string, @Session() session: any) {
 		const video = await this.videoService.findOne(videoId);
 
 		if (video) {
 			const liked = await this.videoLikeService.create(videoId, session);
 			this.videoService.updateLike(video, liked);
 		} else {
-			return new HttpException("Video Does Not Exist", HttpStatus.BAD_REQUEST);
+			return false;
 		}
 	}
 
@@ -261,8 +273,17 @@ export class VideoController {
 		description: "한 크리에이터의 채널에 들어갔을때 비디오 요청",
 	})
 	@Get("list")
-	async getChannelVideoList(@Query("channelId") channelId: string) {
+	async getVideoListInChannel(@Query("channelId") channelId: string) {
 		return await this.videoService.findAll(channelId);
+	}
+
+	@ApiOperation({
+		description: "비디오 시청 기록 리스트 요청",
+	})
+	@UseGuards(AuthenticatedGuard)
+	@Get("records")
+	async getRecordList(@Session() session: any) {
+		return await this.videoRecordService.findAll(session);
 	}
 
 	@ApiOperation({ description: "검색을 통해 비디오 요청" })

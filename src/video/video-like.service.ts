@@ -9,8 +9,6 @@ export class VideoLikeService {
 		private likeModel: typeof Like,
 	) {}
 
-	private readonly logger = new Logger("Video Like Service");
-
 	async findAll(email: string, videoId: string) {
 		const functionName = VideoLikeService.prototype.findAll.name;
 		try {
@@ -25,9 +23,8 @@ export class VideoLikeService {
 			}
 			return false;
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(
-				`${functionName} ${error}`,
+			throw new HttpException(
+				`${functionName} : ${error}`,
 				HttpStatus.INTERNAL_SERVER_ERROR,
 			);
 		}
@@ -55,9 +52,8 @@ export class VideoLikeService {
 			});
 			return true;
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(
-				`${functionName} ${error}`,
+			throw new HttpException(
+				`${functionName} : ${error}`,
 				HttpStatus.INTERNAL_SERVER_ERROR,
 			);
 		}

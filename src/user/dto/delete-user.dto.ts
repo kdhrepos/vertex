@@ -1,10 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import {
-	IsNotEmpty,
-	IsStrongPassword,
-	IsEmail,
-	IsOptional,
-} from "class-validator";
+import { IsEmail, IsOptional } from "class-validator";
 
 export class DeleteUserDto {
 	@IsEmail()

@@ -11,19 +11,21 @@ export class PostService {
 		private postModel: typeof Post,
 	) {}
 
-	private readonly logger = new Logger("Post Service");
-
 	async findAll(channelId: string) {
-		const functionName = PostService.prototype.findAll.name;
 		try {
-			return await this.postModel.findAll({
+			const posts = await this.postModel.findAll({
 				where: {
 					channel_email: channelId,
 				},
 				raw: true,
 			});
+
+			return {
+				data: posts,
+				statusCode: 200,
+				message: "Posts are successfully found",
+			};
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -63,8 +65,10 @@ export class PostService {
 
 			return existedPost;
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
 		}
 	}
 
@@ -82,8 +86,10 @@ export class PostService {
 				image_file_path: imgPath,
 			});
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
 		}
 	}
 
@@ -111,8 +117,10 @@ export class PostService {
 				raw: true,
 			});
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
 		}
 	}
 
@@ -135,8 +143,10 @@ export class PostService {
 				raw: true,
 			});
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
 		}
 	}
 }

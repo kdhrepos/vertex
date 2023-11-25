@@ -29,27 +29,19 @@ export class FirebaseService {
 		measurementId: `${process.env.FIREBASE_MEASUREMENT_ID}`,
 	};
 
-	private readonly logger = new Logger("Firebase Service");
-
 	constructor() {
 		this.firebase = initializeApp(this.firebaseConfiguration);
 		this.firebaseStorage = getStorage(this.firebase);
 	}
 
-	async uploadVideo(
-		session: any,
-		hashedFilePath: string,
-		video: Express.Multer.File,
-	) {
+	async uploadVideo(hashedFilePath: string, video: Express.Multer.File) {
 		const functionName = FirebaseService.prototype.uploadVideo.name;
 		try {
-			if (!video) {
-				this.logger.error(`${functionName} : Invalid Video Object`);
-				return new HttpException(
-					"Invalid Video Object",
+			if (!video)
+				throw new HttpException(
+					`${functionName} : "Invalid Video Object"`,
 					HttpStatus.BAD_REQUEST,
 				);
-			}
 
 			// Firebase Storage 내 Video 파일 경로 생성
 			let videoPath = "videos/";
@@ -61,36 +53,29 @@ export class FirebaseService {
 			// 비디오 업로드
 			const videoResult = await uploadBytes(videoDirRef, video.buffer);
 
-			// 비디오가 올바르게 업로드 되었다면 메타 데이터를 DB에 저장
+			// 비디오가 올바르게 업로드 되었다면 성공 메시지 반환
 			if (videoResult) {
-				return true;
+				return {
+					statusCode: 200,
+					message: "Video successfully uploaded",
+				};
 			}
-			return new HttpException(
-				"Video Upload Error",
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			return {
+				statusCode: 500,
+				message: "Video successfully failed",
+			};
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(
-				`${functionName} : ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	async updateVideo(
-		videoData: Video,
-		video: Express.Multer.File,
-		thumbnail?: Express.Multer.File,
-	) {
-		const functionName = FirebaseService.prototype.uploadVideo.name;
+	async updateVideo(videoData: Video, video: Express.Multer.File) {
 		try {
 			if (!video) {
-				this.logger.error(`${functionName} : Invalid Video Object`);
-				return new HttpException(
-					"Invalid Video Object",
-					HttpStatus.BAD_REQUEST,
-				);
+				return {
+					statusCode: 400,
+					message: "Invalid video object",
+				};
 			}
 
 			const {
@@ -107,27 +92,26 @@ export class FirebaseService {
 			videoPath += filePath;
 			videoPath += videoFileExtension;
 
-			// Firebase Storage 내 Thumbnail 이미지 경로 생성
-			let thumbnailPath = "thumbnail/";
-			thumbnailPath += filePath;
-			thumbnailPath += thumbnailFileExtension;
-
 			const videoDirRef = ref(this.firebaseStorage, videoPath);
-			const thumbnailDirRef = ref(this.firebaseStorage, thumbnailPath);
 
-			uploadBytes(videoDirRef, video.buffer);
-			uploadBytes(thumbnailDirRef, thumbnail.buffer);
+			const result = uploadBytes(videoDirRef, video.buffer);
+
+			if (result) {
+				return {
+					statusCode: 200,
+					message: "Video successfully updated",
+				};
+			}
+			return {
+				statusCode: 500,
+				message: "Video update failed",
+			};
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(
-				`${functionName} : ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	async findVideo(res: Response, video: Video) {
-		const functionName = FirebaseService.prototype.findVideo.name;
 		try {
 			const { id: filePath, video_file_extension: videoFileExtension } = video;
 
@@ -135,15 +119,16 @@ export class FirebaseService {
 			const videoDirRef = ref(this.firebaseStorage, videoPath);
 			const videoStream = getStream(videoDirRef);
 
-			res.setHeader("Content-Type", `video/${videoFileExtension}`);
-			res.setHeader("Content-Disposition", 'inline; filename="video.mp4"');
+			const videoExt = videoFileExtension.split(".")[1];
+
+			res.setHeader("Content-Type", `video/${videoExt}`);
+			res.setHeader(
+				"Content-Disposition",
+				`inline; filename="${filePath}${videoFileExtension}"`,
+			);
 			videoStream.pipe(res);
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(
-				`${functionName} ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -155,13 +140,22 @@ export class FirebaseService {
 
 			const videoDirRef = ref(this.firebaseStorage, videoPath);
 
-			deleteObject(videoDirRef).catch(error => {
-				this.logger.error(`${functionName} : ${error}`);
-			});
+			return deleteObject(videoDirRef)
+				.then(result => {
+					return {
+						statusCode: 200,
+						message: "Video successfully deleted",
+					};
+				})
+				.catch(error => {
+					return {
+						statusCode: 500,
+						message: `${error}`,
+					};
+				});
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(
-				`${functionName} ${error}`,
+			throw new HttpException(
+				`${functionName} : ${error}`,
 				HttpStatus.INTERNAL_SERVER_ERROR,
 			);
 		}
@@ -177,7 +171,6 @@ export class FirebaseService {
 			const downloadURL = await getDownloadURL(videoDirRef);
 			return downloadURL;
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
 			throw new HttpException(
 				`${functionName} : ${error}`,
 				HttpStatus.INTERNAL_SERVER_ERROR,
@@ -194,7 +187,6 @@ export class FirebaseService {
 
 			return imgByte;
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
 			throw new HttpException(
 				`${functionName} : ${error}`,
 				HttpStatus.INTERNAL_SERVER_ERROR,
@@ -204,27 +196,27 @@ export class FirebaseService {
 	async uploadImage(img: Express.Multer.File, imgPath: any) {
 		const functionName = FirebaseService.prototype.uploadImage.name;
 		try {
-			if (!img) {
-				this.logger.error(`${functionName} : Invalid Image Object`);
-				return new HttpException(
-					"Invalid Image Object",
-					HttpStatus.BAD_REQUEST,
-				);
-			}
+			if (!img)
+				return {
+					statusCode: 400,
+					message: "Invalid Image Object",
+				};
 
 			const imagePath = "images/" + imgPath;
 			const imgDirRef = ref(this.firebaseStorage, imagePath);
 			const imgResult = uploadBytes(imgDirRef, img.buffer);
 
-			if (!imgResult) {
-				return new HttpException(
-					"Image Upload Error",
-					HttpStatus.INTERNAL_SERVER_ERROR,
-				);
-			}
-			return true;
+			if (!imgResult)
+				return {
+					statusCode: 500,
+					message: "Image Upload Error",
+				};
+
+			return {
+				statusCode: 200,
+				message: "Image successfully uploaded",
+			};
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
 			throw new HttpException(
 				`${functionName} : ${error}`,
 				HttpStatus.INTERNAL_SERVER_ERROR,
@@ -235,7 +227,6 @@ export class FirebaseService {
 		const functionName = FirebaseService.prototype.uploadImage.name;
 		try {
 			if (!img) {
-				this.logger.error(`${functionName} : Invalid Image Object`);
 				return new HttpException(
 					"Invalid Image Object",
 					HttpStatus.BAD_REQUEST,
@@ -246,42 +237,43 @@ export class FirebaseService {
 			const imgDirRef = ref(this.firebaseStorage, imagePath);
 			const imgResult = uploadBytes(imgDirRef, img.buffer);
 
-			if (!imgResult) {
-				return new HttpException(
-					"Image Upload Error",
-					HttpStatus.INTERNAL_SERVER_ERROR,
-				);
-			}
-			return true;
+			if (!imgResult)
+				return {
+					statusCode: 500,
+					message: "Image Update Error",
+				};
+
+			return {
+				statusCode: 200,
+				message: "Image successfully deleted",
+			};
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
 			throw new HttpException(
 				`${functionName} : ${error}`,
 				HttpStatus.INTERNAL_SERVER_ERROR,
 			);
 		}
 	}
-	async deleteImage(post: any) {
+	async deleteImage(imgPath: string) {
 		const functionName = FirebaseService.prototype.deleteImage.name;
 		try {
-			const { image_file_path: imgPath, image_file_extension: imgExt } = post;
-
 			if (!imgPath) return;
 
-			const imagePath = "images/" + imgPath + imgExt;
+			const imagePath = "images/" + imgPath;
 			const imgDirRef = ref(this.firebaseStorage, imagePath);
 			const imgResult = deleteObject(imgDirRef);
 
-			if (!imgResult) {
-				throw new HttpException(
-					"Image Delete Error",
-					HttpStatus.INTERNAL_SERVER_ERROR,
-				);
-			}
+			if (!imgResult)
+				return {
+					statusCode: 500,
+					message: "Image Delete Error",
+				};
 
-			return true;
+			return {
+				statusCode: 200,
+				message: "Image successfully deleted",
+			};
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
 			throw new HttpException(
 				`${functionName} : ${error}`,
 				HttpStatus.INTERNAL_SERVER_ERROR,

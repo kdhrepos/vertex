@@ -14,8 +14,6 @@ export class UserService {
 		private userModel: typeof User,
 	) {}
 
-	private logger: Logger = new Logger("User Service");
-
 	async findByEmailOrSave(
 		email: any,
 		username: any,
@@ -71,36 +69,24 @@ export class UserService {
 		return result;
 	}
 
-	async createUser(createUserDto: CreateUserDto, profileImagePath: string) {
-		const functionName = UserService.prototype.createUser.name;
+	async createUser(createUserDto: CreateUserDto) {
 		try {
-			const { email, name, password, description } = createUserDto;
-
-			const duplicatedUser = await this.userModel.findOne({
-				where: {
-					email: email,
-				},
-				raw: true,
-			});
-
-			if (duplicatedUser) {
-				this.logger.error(`${functionName} : Duplicated Email`);
-				return new HttpException("Duplicated Email", HttpStatus.BAD_REQUEST);
-			}
+			const { email, name, password, description, gender, birthday } =
+				createUserDto;
 
 			const createdUser = await this.userModel.create({
 				email: email,
-				name: name,
 				password: bcrypt.hashSync(password, 12),
+				name: name,
+				gender: gender,
+				birthday: birthday,
 				description: description == null ? null : description,
-				profile_image_path: profileImagePath,
 			});
 			delete createdUser.dataValues.password;
 
 			return createdUser;
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -116,23 +102,11 @@ export class UserService {
 			});
 
 			if (!existedUser) {
-				this.logger.error(`${functionName} : Wrong Email`);
-				return new HttpException("Wrong Email", HttpStatus.BAD_REQUEST);
-			}
-
-			// 소셜 로그인은 여기서 삭제
-			if (existedUser.provider_id) {
-				await this.userModel.destroy({
-					where: {
-						email: existedUser.email,
-					},
-				});
-				return true;
+				throw new HttpException(`Wrong Email`, HttpStatus.BAD_REQUEST);
 			}
 
 			if (!bcrypt.compareSync(password, existedUser.password)) {
-				this.logger.error(`${functionName} : Wrong Password`);
-				return new HttpException("Wrong Password", HttpStatus.BAD_REQUEST);
+				throw new HttpException(`Wrong Password`, HttpStatus.BAD_REQUEST);
 			}
 
 			// 일반 로그인은 여기서 삭제
@@ -144,8 +118,7 @@ export class UserService {
 
 			return true;
 		} catch (error) {
-			this.logger.error(`${functionName} :  ${error}`);
-			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -153,8 +126,10 @@ export class UserService {
 		const functionName = UserService.prototype.updateUser.name;
 		try {
 		} catch (error) {
-			this.logger.error(`${functionName} :  ${error}`);
-			return new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
 		}
 	}
 }

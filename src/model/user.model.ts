@@ -25,19 +25,22 @@ export class User extends Model {
 	@Column({ allowNull: true })
 	password: string;
 
-	@Column
+	@Column({ allowNull: false })
 	name: string;
 
 	@Column({ allowNull: true })
 	profile_image_path: string;
 
 	@Column({ allowNull: true })
+	background_image_path: string;
+
+	@Column({ allowNull: true })
 	description: string;
 
-	@Column({ allowNull: false })
+	@Column({ allowNull: true })
 	gender: string;
 
-	@Column({ allowNull: false })
+	@Column({ allowNull: true })
 	birthday: string;
 
 	/**

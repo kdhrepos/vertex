@@ -1,8 +1,6 @@
 import {
 	Controller,
 	Get,
-	Response,
-	Request,
 	UseGuards,
 	Post,
 	Body,
@@ -10,6 +8,8 @@ import {
 	UseInterceptors,
 	Delete,
 	Query,
+	Res,
+	Req,
 } from "@nestjs/common";
 import {
 	AuthenticatedGuard,
@@ -24,7 +24,6 @@ import {
 	ApiOperation,
 	ApiResponse,
 	ApiTags,
-	getSchemaPath,
 } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
 import { CreateUserDto } from "../user/dto/create-user.dto";
@@ -34,6 +33,7 @@ import { DeleteUserDto } from "../user/dto/delete-user.dto";
 import * as bcrypt from "bcrypt";
 import { FirebaseService } from "src/firebase/firebase.service";
 import * as path from "path";
+import { Response } from "express";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -47,13 +47,13 @@ export class AuthController {
 	@ApiOperation({ description: "구글 소셜 로그인 접근 Route" })
 	@Get("login/google")
 	@UseGuards(GoogleAuthGuard)
-	async googleAuth(@Request() req) {}
+	async googleAuth(@Req() req) {}
 
 	@ApiOperation({ description: "구글 소셜 로그인 콜백 Route" })
 	@ApiResponse({ description: "구글 소셜 로그인 성공 시 유저 정보 반환" })
 	@Get("google")
 	@UseGuards(GoogleAuthGuard)
-	async googleAuthRedirect(@Request() req, @Response() res) {
+	async googleAuthRedirect(@Req() req, @Res() res) {
 		console.log(req.user);
 		const { user } = req;
 		if (!user) {
@@ -65,14 +65,14 @@ export class AuthController {
 	@ApiOperation({ description: "일반 로그인 접근 Route" })
 	@Post("login/local")
 	@UseGuards(LocalAuthGuard)
-	localAuth(@Request() req: any) {
+	localAuth(@Req() req: any) {
 		return req.user;
 	}
 
 	@ApiOperation({ description: "이미 로그인한 사용자가 확인하는 Route" })
 	@Get("login/authenticated")
 	@UseGuards(AuthenticatedGuard)
-	authenticated(@Request() req: any, @Response() res: any) {
+	authenticated(@Req() req: any, @Res() res: any) {
 		const { user } = req;
 		if (!user) {
 			return;
@@ -84,13 +84,12 @@ export class AuthController {
 		description: "소셜 로그인을 통한 회원가입이 아닌 일반 회원가입",
 	})
 	@ApiExtraModels(CreateUserDto)
-	@Post("signin/local")
+	@Post("signup/local")
 	@UseInterceptors(FileInterceptor("profile", {}))
 	async signin(
 		@Body() createUserDto: CreateUserDto,
 		@UploadedFile() profileImage?: Express.Multer.File,
 	) {
-		console.log(createUserDto);
 		const { email, name } = createUserDto;
 		const hashedFilePath =
 			profileImage !== null && profileImage !== undefined
@@ -99,7 +98,7 @@ export class AuthController {
 				: null;
 
 		this.firebaseService.updateImage(profileImage, hashedFilePath);
-		return await this.userService.createUser(createUserDto, hashedFilePath);
+		return await this.userService.createUser(createUserDto);
 	}
 
 	@ApiOperation({ description: "소셜, 일반 모두 포함한 회원탈퇴 기능" })
@@ -111,13 +110,36 @@ export class AuthController {
 
 	@ApiOperation({ description: "이메일 중복 체크" })
 	@Get("check/email")
-	async checkDuplicatedEmail(@Query("email") email: string) {
-		return await this.userService.getUserByEmail(email);
+	async checkDuplicatedEmail(
+		@Res() res: Response,
+		@Query("email") email: string,
+	) {
+		const user = await this.userService.getUserByEmail(email);
+		if (user) {
+			return res.json({
+				status: false,
+				msg: "Invalid Email",
+			});
+		}
+		return res.json({
+			status: true,
+			msg: "Valid Email",
+		});
 	}
 
 	@ApiOperation({ description: "닉네임 중복 체크" })
 	@Get("check/name")
-	async checkDuplicatedName(@Query("name") name: string) {
-		return await this.userService.getUserByName(name);
+	async checkDuplicatedName(@Res() res: Response, @Query("name") name: string) {
+		const user = await this.userService.getUserByName(name);
+		if (user) {
+			return res.json({
+				status: false,
+				msg: "Invalid Name",
+			});
+		}
+		return res.json({
+			status: true,
+			msg: "Valid Name",
+		});
 	}
 }

@@ -12,12 +12,9 @@ export class PlaylistContentsService {
 		private playlistContentsModel: typeof PlaylistContents,
 	) {}
 
-	private readonly logger = new Logger("Playlist Contents Service");
-
 	async findAll(playlistId: number) {
-		const functionName = PlaylistContentsService.prototype.findAll.name;
 		try {
-			return await this.playlistContentsModel.findAll({
+			const playlists = await this.playlistContentsModel.findAll({
 				where: {
 					playlist_id: playlistId,
 				},
@@ -35,44 +32,35 @@ export class PlaylistContentsService {
 					},
 				],
 			});
+
+			return {
+				data: playlists,
+				statusCode: 200,
+				message: "Video successfully found from playlist",
+			};
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error.message}`);
-			return new HttpException(
-				`${functionName} : ${error.message}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error.response}`, error.status);
 		}
 	}
+
 	async add(videoId: string, playlistId: number) {
-		const functionName = PlaylistContentsService.prototype.add.name;
 		try {
-			const duplicatedPlaylist = await this.playlistContentsModel.findOne({
-				where: {
-					video_id: videoId,
-					playlist_id: playlistId,
-				},
-			});
-
-			if (duplicatedPlaylist) {
-				this.logger.error(`${functionName} : Duplicated Video`);
-				return new HttpException("Duplicated Video", HttpStatus.BAD_REQUEST);
-			}
-
-			return await this.playlistContentsModel.create({
+			const playlist = await this.playlistContentsModel.create({
 				video_id: videoId,
 				playlist_id: playlistId,
 			});
+
+			return {
+				data: playlist,
+				statusCode: 200,
+				message: "Video successfully added to playlist",
+			};
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error.message}`);
-			return new HttpException(
-				`${functionName} ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error.response}`, error.status);
 		}
 	}
 
 	async delete(videoId: string, playlistId: number) {
-		const functionName = PlaylistContentsService.prototype.delete.name;
 		try {
 			const existedVideo = await this.playlistContentsModel.findOne({
 				where: {
@@ -83,20 +71,15 @@ export class PlaylistContentsService {
 
 			if (existedVideo) {
 				await existedVideo.destroy();
-				return;
+				return {
+					statusCode: 200,
+					message: "Video successfully deleted from playlist",
+				};
 			}
 
-			this.logger.error(`${functionName} : Video does Not Exist`);
-			return new HttpException(
-				`${functionName} : Video Does Not Exist`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`Video does not exist`, HttpStatus.BAD_REQUEST);
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(
-				`${functionName} ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error.response}`, error.status);
 		}
 	}
 }

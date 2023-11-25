@@ -26,6 +26,7 @@ export class CreateUserDto {
 	})
 	password: string;
 
+	@IsOptional()
 	@IsString({ always: false })
 	@ApiProperty({
 		example: "Hello I'm Kim",
@@ -34,22 +35,13 @@ export class CreateUserDto {
 	})
 	description: string;
 
-	@ApiProperty({
-		example: "jpg/jpeg/png etc...",
-		description:
-			"사용자의 프로필 이미지 파일로, html 태그 이름은 profile-image",
-		required: false,
-	})
-	profileImage: Express.Multer.File;
-
-	@IsOptional()
-	@IsDate()
+	@IsString()
 	@ApiProperty({
 		example: "2000-06-15",
 		description: "사용자의 생년월일",
 		required: false,
 	})
-	birthday: string | null;
+	birthday: string;
 
 	@IsString()
 	@ApiProperty({

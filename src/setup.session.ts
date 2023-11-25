@@ -20,9 +20,10 @@ export function setUpSession(app: INestApplication): void {
 				ttl: 30,
 			}),
 			cookie: {
-				// httpOnly: true,
-				// secure: true,
+				httpOnly: false,
+				secure: false,
 				maxAge: 3600000,
+				sameSite: "none",
 			},
 		}),
 	);

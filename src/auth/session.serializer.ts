@@ -14,7 +14,6 @@ export class SessionSerializer extends PassportSerializer {
 	 * @param done
 	 */
 	serializeUser(user: User, done: Function): any {
-		console.log("serializeUser", user);
 		done(null, user.email);
 	}
 
@@ -27,7 +26,6 @@ export class SessionSerializer extends PassportSerializer {
 		payload: any,
 		done: (err: Error, payload: any) => void,
 	) {
-		console.log("deserializeUser");
 		done(null, payload);
 	}
 }

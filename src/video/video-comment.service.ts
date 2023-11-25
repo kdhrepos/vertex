@@ -13,15 +13,12 @@ export class VideoCommentService {
 		private commentModel: typeof Comment,
 	) {}
 
-	private readonly logger = new Logger("Video Comment Service");
-
 	/**
 	 * @description 비디오 ID를 통해 비디오의 댓글들을 검색
 	 */
 	async findAll(videoId: string) {
-		const functionName = VideoCommentService.prototype.findAll.name;
 		try {
-			return await this.commentModel.findAll({
+			const comments = await this.commentModel.findAll({
 				where: {
 					video_id: videoId,
 				},
@@ -33,38 +30,40 @@ export class VideoCommentService {
 					},
 				],
 			});
+
+			return {
+				data: comments,
+				statusCode: 200,
+				message: "Video comments are successfully found",
+			};
 		} catch (error) {
-			this.logger.error(`${error}`);
-			return new HttpException(
-				`${functionName} ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	async create(uploadCommentDto: UploadCommentDto, session: any) {
-		const functionName = VideoCommentService.prototype.create.name;
 		try {
 			const { content, parentId, videoId } = uploadCommentDto;
 			const { user: email } = session.passport;
 
-			await this.commentModel.create({
+			const comment = await this.commentModel.create({
 				user_email: email,
 				video_id: videoId,
 				content: content,
 				parent_id: parentId,
 			});
+
+			return {
+				data: comment,
+				statusCode: 200,
+				message: "Video comment is successfully created",
+			};
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(
-				`${functionName} : ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	async update(updateCommentDto: UpdateCommentDto) {
-		const functionName = VideoCommentService.prototype.update.name;
 		try {
 			const { id, content, videoId } = updateCommentDto;
 
@@ -79,22 +78,22 @@ export class VideoCommentService {
 					},
 				},
 			);
+
+			return {
+				statusCode: 200,
+				message: "Video comment is successfully updated",
+			};
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(
-				`${functionName} : ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	async delete(deleteCommentDto: DeleteCommentDto, session: any) {
-		const functionName = VideoCommentService.prototype.delete.name;
 		try {
 			const { id, videoId } = deleteCommentDto;
 			const { user: email } = session.passport;
 
-			const existedVideo = await this.commentModel.findOne({
+			const video = await this.commentModel.findOne({
 				where: {
 					id: id,
 					user_email: email,
@@ -102,21 +101,20 @@ export class VideoCommentService {
 				},
 			});
 
-			if (!existedVideo) {
-				this.logger.error(`${functionName} : Video Does Not Exist`);
-				return new HttpException(
-					`${functionName} : Video Does Not Exist`,
-					HttpStatus.BAD_REQUEST,
-				);
+			if (!video) {
+				await video.destroy();
+				return {
+					statusCode: 200,
+					message: "Video comment is successfully deleted",
+				};
 			}
 
-			await existedVideo.destroy();
+			return {
+				statusCode: 400,
+				message: "Video comment delete error",
+			};
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(
-				`${functionName} : ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

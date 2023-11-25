@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Comment } from "src/model/comment.model";
 import { UploadCommentDto } from "./dto/comment-dto/upload-comment.dto";
@@ -10,12 +10,9 @@ import { User } from "src/model/user.model";
 export class PostCommentService {
 	constructor(@InjectModel(Comment) private commentModel: typeof Comment) {}
 
-	private readonly logger = new Logger("Post Comment Service");
-
 	async findAll(postId: string) {
-		const functionName = PostCommentService.prototype.findAll.name;
 		try {
-			return await this.commentModel.findAll({
+			const comments = await this.commentModel.findAll({
 				where: {
 					post_id: postId,
 				},
@@ -29,14 +26,18 @@ export class PostCommentService {
 					},
 				],
 			});
+
+			return {
+				data: comments,
+				statusCode: 200,
+				message: "Comments are successfully found",
+			};
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	async create(uploadCommentDto: UploadCommentDto, session: any) {
-		const functionName = PostCommentService.prototype.create.name;
 		try {
 			const { content, parentId, postId } = uploadCommentDto;
 			const { user: email } = session.passport;
@@ -47,14 +48,17 @@ export class PostCommentService {
 				parent_id: parentId,
 				content: content,
 			});
+
+			return {
+				statusCode: 200,
+				message: "Comment is successfully created",
+			};
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	async update(updateCommentDto: UpdateCommentDto, session: any) {
-		const functionName = PostCommentService.prototype.update.name;
 		try {
 			const { commentId, content, postId } = updateCommentDto;
 			const { user: email } = session.passport;
@@ -69,14 +73,17 @@ export class PostCommentService {
 					},
 				},
 			);
+
+			return {
+				statusCode: 200,
+				message: "Comment is successfully updated",
+			};
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	async delete(deleteCommentDto: DeleteCommentDto, session: any) {
-		const functionName = PostCommentService.prototype.delete.name;
 		try {
 			const { commentId, postId } = deleteCommentDto;
 			const { user: email } = session.passport;
@@ -88,8 +95,12 @@ export class PostCommentService {
 					user_email: email,
 				},
 			});
+
+			return {
+				statusCode: 200,
+				message: "Comment is successfully deleted",
+			};
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

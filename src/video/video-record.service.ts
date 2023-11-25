@@ -10,16 +10,33 @@ export class VideoRecordService {
 		private recordModel: typeof Record,
 	) {}
 
-	private readonly logger = new Logger("Video Record Service");
+	async findAll(session: any) {
+		try {
+			const { user: userId } = session.passport;
 
-	/**
-	 * @param userId
-	 * @description 유저가 자신의 모든 영상 시청 목록을 찾음
-	 */
-	async findAll(userId: string) {}
+			const records = await this.recordModel.findAll({
+				where: {
+					user_email: userId,
+				},
+				include: [
+					{
+						model: Video,
+						as: "video",
+					},
+				],
+			});
+
+			return {
+				data: records,
+				statusCode: 200,
+				message: "Records are successfully found",
+			};
+		} catch (error) {
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 	async create(video: Video) {
-		const functionName = VideoRecordService.prototype.create.name;
 		try {
 			const { user_email: email, id: videoId } = video;
 
@@ -39,11 +56,7 @@ export class VideoRecordService {
 				video_id: videoId,
 			});
 		} catch (error) {
-			this.logger.error(`${functionName} : ${error}`);
-			return new HttpException(
-				`${functionName} ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

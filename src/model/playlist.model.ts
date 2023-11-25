@@ -18,11 +18,14 @@ export class Playlist extends Model {
 	id: number;
 
 	@ForeignKey(() => User)
-	@Column({ onDelete: "CASCADE" })
+	@Column({ onDelete: "CASCADE", allowNull: false })
 	user_email: string;
 
-	@Column
+	@Column({ allowNull: false })
 	list_name: string;
+
+	@Column({ allowNull: false })
+	is_private: boolean;
 
 	/**
 	 * Relationship

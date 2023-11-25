@@ -1,7 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsString } from "class-validator";
+import { IsEmail, IsOptional, IsString } from "class-validator";
 
 export class UpdateVideoDto {
+	@IsOptional()
 	@IsString()
 	@ApiProperty({
 		required: true,
@@ -10,6 +11,7 @@ export class UpdateVideoDto {
 	})
 	title: string;
 
+	@IsOptional()
 	@IsString({ always: false })
 	@ApiProperty({
 		required: false,

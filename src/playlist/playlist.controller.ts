@@ -27,18 +27,19 @@ export class PlaylistController {
 	@ApiOperation({ description: "유저의 재생목록 리스트 요청" })
 	@UseGuards(AuthenticatedGuard)
 	@Get("")
-	async findPlaylist(@Param("playlist_id") playlist_id) {
-		// return this.playlistService.findAll(playlist_id);
+	async findPlaylist(@Session() session: any) {
+		return await this.playlistService.findAll(session);
 	}
 
 	@ApiOperation({ description: "재생목록 리스트 생성" })
 	@UseGuards(AuthenticatedGuard)
 	@Post("")
 	async createPlaylist(
-		@Query("listName") listName: string,
+		@Body("listName") listName: string,
+		@Body("isPrivate") isPrivate: boolean,
 		@Session() session: any,
 	) {
-		return this.playlistService.create(listName, session);
+		return await this.playlistService.create(listName, isPrivate, session);
 	}
 
 	@ApiOperation({ description: "재생목록 리스트 삭제" })
@@ -65,7 +66,7 @@ export class PlaylistController {
 		@Body("videoId") videoId: string,
 		@Body("playlistId") playlistId: number,
 	) {
-		return this.playlistContentsService.add(videoId, playlistId);
+		return await this.playlistContentsService.add(videoId, playlistId);
 	}
 
 	@ApiOperation({ description: "재생목록의 비디오 삭제" })
