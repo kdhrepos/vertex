@@ -71,7 +71,7 @@ export class VideoController {
 		}
 	}
 
-	@ApiOperation({ description: "비디오 썸네일 요청" })
+	@ApiOperation({ description: "비디오 메타 데이터 요청" })
 	@Get("data")
 	async getVideoData(@Res() res: Response, @Query("videoId") videoId: string) {
 		const videoData = await this.videoService.findOne(videoId);

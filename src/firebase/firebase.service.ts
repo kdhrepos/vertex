@@ -13,6 +13,7 @@ import {
 import { Video } from "src/model/video.model";
 import * as path from "path";
 import { Response } from "express";
+import { error } from "console";
 
 @Injectable()
 export class FirebaseService {
@@ -185,7 +186,10 @@ export class FirebaseService {
 			const imgDirRef = ref(this.firebaseStorage, imagePath);
 			const imgByte = await getBytes(imgDirRef);
 
-			return imgByte;
+			if (imgByte) {
+				return imgByte;
+			}
+			return null;
 		} catch (error) {
 			throw new HttpException(
 				`${functionName} : ${error}`,

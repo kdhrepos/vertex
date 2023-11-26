@@ -66,8 +66,8 @@ export class PostController {
 
 		const buffer = Buffer.from(img);
 
-		// res.setHeader("Content-Type", `image/${imgFileExt[imgFileExt.length - 1]}`);
-		// res.setHeader("Content-Length", buffer.length);
+		res.setHeader("Content-Type", `image/${imgFileExt[imgFileExt.length - 1]}`);
+		res.setHeader("Content-Length", buffer.length);
 
 		return res.json({ img: buffer, post: post });
 		// return res.send(buffer);
@@ -80,9 +80,10 @@ export class PostController {
 		@UploadedFile() img: Express.Multer.File,
 		@Body() createPostDto: CreatePostDto,
 	) {
+		console.log(img, createPostDto);
 		// 게시글 이미지가 없다면 그냥 null로 삽입
 		const hashedFilePath =
-			img !== null && img !== undefined
+			img !== null || img !== undefined
 				? (await bcrypt.hashSync("asdasdasjid", 12).replace(/\//g, "")) +
 				  path.extname(img.originalname)
 				: null;
