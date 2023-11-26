@@ -36,6 +36,9 @@ export class Video extends Model {
 	@Column
 	title: string;
 
+	@Column
+	name: string;
+	
 	@Column({ allowNull: true })
 	description: string;
 

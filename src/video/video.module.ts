@@ -14,9 +14,10 @@ import { Like } from "src/model/like.model";
 import { Record } from "src/model/record.model";
 import { FirebaseService } from "src/firebase/firebase.service";
 import { Comment } from "src/model/comment.model";
+import { User } from "src/model/user.model";
 
 @Module({
-	imports: [SequelizeModule.forFeature([Video, Comment, Like, Record])],
+	imports: [SequelizeModule.forFeature([Video, Comment, Like, Record, User])],
 	controllers: [VideoController],
 	providers: [
 		VideoService,

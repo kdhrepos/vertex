@@ -132,7 +132,6 @@ export class VideoController {
 		},
 	) {
 		const { email, title, description } = uploadVideoDto;
-
 		// 비디오 ID 및 파이어 베이스 내 파일 경로 생성
 		const hashedFilePath = bcrypt
 			.hashSync(`${email}${title}`, 12)

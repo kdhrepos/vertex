@@ -2,12 +2,15 @@ import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { Video } from "../model/video.model";
 import { InjectModel } from "@nestjs/sequelize";
 import { UpdateVideoDto } from "./dto/video-dto/update-video.dto";
+import { User } from "src/model/user.model";
 
 @Injectable()
 export class VideoService {
 	constructor(
 		@InjectModel(Video)
 		private videoModel: typeof Video,
+		@InjectModel(User)
+		private userModel: typeof User,
 	) {}
 
 	async homepage() {
@@ -63,11 +66,17 @@ export class VideoService {
 		thumbnailFileExtension: string,
 	) {
 		try {
+			const user = this.userModel.findOne({
+				where:{
+					email: email
+				}
+			})
 			return this.videoModel.create({
 				id: videoId,
 				title: title,
 				description: description === null ? null : description,
 				user_email: email,
+				name: (await user).name,
 				video_file_extension: videoFileExtension,
 				thumbnail_file_extension: thumbnailFileExtension,
 			});
