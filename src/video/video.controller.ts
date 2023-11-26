@@ -47,9 +47,11 @@ export class VideoController {
 		private firebaseService: FirebaseService,
 	) {}
 
-	// @ApiOperation({ description: "추천 알고리즘을 통한 비디오 요청" })
-	// @Get("/")
-	// async findVideosByAlgorithm() {}
+	@ApiOperation({ description: "추천 알고리즘을 통한 비디오 요청" })
+	@Get("home")
+	async findVideosByAlgorithm() {
+		return await this.videoService.homepage();
+	}
 
 	@ApiOperation({ description: "하나의 비디오 시청을 위해 비디오 요청" })
 	@Get("watch")
@@ -90,7 +92,11 @@ export class VideoController {
 
 	@ApiOperation({ description: "비디오 썸네일 요청" })
 	@Get("thumbnail")
-	async getThumbnail(@Res() res: Response, @Query("videoId") videoId: string) {
+	async getThumbnail(
+		@Res() res: Response,
+		@Query("videoId") videoId: string,
+		@Query("thumbnailFileExtension") thumbnailFileExtension: string,
+	) {
 		const video = await this.videoService.findOne(videoId);
 		if (video) {
 			const thumbnailPath = video.id + video.thumbnail_file_extension;
@@ -112,7 +118,6 @@ export class VideoController {
 	}
 
 	@ApiOperation({ description: "비디오 업로드" })
-	@UseGuards(AuthenticatedGuard)
 	@Post("")
 	@UseInterceptors(
 		FileFieldsInterceptor([{ name: "video" }, { name: "thumbnail" }]),
@@ -125,10 +130,8 @@ export class VideoController {
 			video: Express.Multer.File[];
 			thumbnail?: Express.Multer.File[];
 		},
-		@Session() session: any,
 	) {
-		const { user: email } = session.passport;
-		const { title, description } = uploadVideoDto;
+		const { email, title, description } = uploadVideoDto;
 
 		// 비디오 ID 및 파이어 베이스 내 파일 경로 생성
 		const hashedFilePath = bcrypt
@@ -159,7 +162,6 @@ export class VideoController {
 	}
 
 	@ApiOperation({ description: "비디오 수정" })
-	@UseGuards(AuthenticatedGuard)
 	@Patch("")
 	@UseInterceptors(
 		FileFieldsInterceptor([{ name: "video" }, { name: "thumbnail" }]),
@@ -172,13 +174,12 @@ export class VideoController {
 			video: Express.Multer.File[];
 			thumbnail?: Express.Multer.File[];
 		},
-		@Session() session: any,
 	) {
-		const { videoId } = updateVideoDto;
+		const { email, videoId } = updateVideoDto;
 
 		const videoData = await this.videoService.findOne(videoId);
 
-		this.videoService.updateOne(updateVideoDto, session);
+		this.videoService.updateOne(updateVideoDto, email);
 
 		let thumbnailResult = null;
 		let videoResult = null;
@@ -202,14 +203,13 @@ export class VideoController {
 	}
 
 	@ApiOperation({ description: "비디오 삭제" })
-	@UseGuards(AuthenticatedGuard)
 	@Delete("")
 	async deleteVideo(
 		@Res() res: Response,
 		@Query("videoId") videoId: string,
-		@Session() session: any,
+		@Query("email") email: string,
 	) {
-		const video = await this.videoService.deleteOne(videoId, session);
+		const video = await this.videoService.deleteOne(videoId, email);
 		const result = await this.firebaseService.deleteVideo(video);
 		return res.send(result);
 	}
@@ -229,40 +229,33 @@ export class VideoController {
 	}
 
 	@ApiOperation({ description: "비디오에 댓글 등록" })
-	@UseGuards(AuthenticatedGuard)
 	@Post("comment")
-	async createCommentToVideo(
-		@Body() uploadCommentDto: UploadCommentDto,
-		@Session() session: any,
-	) {
-		return await this.videoCommentService.create(uploadCommentDto, session);
+	async createCommentToVideo(@Body() uploadCommentDto: UploadCommentDto) {
+		return await this.videoCommentService.create(uploadCommentDto);
 	}
 
 	@ApiOperation({ description: "비디오 댓글 수정" })
-	@UseGuards(AuthenticatedGuard)
 	@Patch("comment")
 	async updateCommentToVideo(@Body() updateCommentDto: UpdateCommentDto) {
 		return await this.videoCommentService.update(updateCommentDto);
 	}
 
 	@ApiOperation({ description: "비디오 댓글 삭제" })
-	@UseGuards(AuthenticatedGuard)
 	@Delete("comment")
-	async deleteCommentToVideo(
-		@Body() deleteCommentDto: DeleteCommentDto,
-		@Session() session,
-	) {
-		return await this.videoCommentService.delete(deleteCommentDto, session);
+	async deleteCommentToVideo(@Body() deleteCommentDto: DeleteCommentDto) {
+		return await this.videoCommentService.delete(deleteCommentDto);
 	}
 
 	@ApiOperation({ description: "비디오 좋아요/싫어요 누르기" })
-	@UseGuards(AuthenticatedGuard)
 	@Post("like")
-	async likeToVideo(@Body("videoId") videoId: string, @Session() session: any) {
+	async likeToVideo(
+		@Body("videoId") videoId: string,
+		@Body("email") email: string,
+	) {
 		const video = await this.videoService.findOne(videoId);
 
 		if (video) {
-			const liked = await this.videoLikeService.create(videoId, session);
+			const liked = await this.videoLikeService.create(videoId, email);
 			this.videoService.updateLike(video, liked);
 		} else {
 			return false;
@@ -280,10 +273,9 @@ export class VideoController {
 	@ApiOperation({
 		description: "비디오 시청 기록 리스트 요청",
 	})
-	@UseGuards(AuthenticatedGuard)
 	@Get("records")
-	async getRecordList(@Session() session: any) {
-		return await this.videoRecordService.findAll(session);
+	async getRecordList(@Query("email") email: string) {
+		return await this.videoRecordService.findAll(email);
 	}
 
 	@ApiOperation({ description: "검색을 통해 비디오 요청" })

@@ -25,42 +25,37 @@ export class PlaylistController {
 	) {}
 
 	@ApiOperation({ description: "유저의 재생목록 리스트 요청" })
-	@UseGuards(AuthenticatedGuard)
 	@Get("")
-	async findPlaylist(@Session() session: any) {
-		return await this.playlistService.findAll(session);
+	async findPlaylist(@Query("userId") userId: string) {
+		return await this.playlistService.findAll(userId);
 	}
 
 	@ApiOperation({ description: "재생목록 리스트 생성" })
-	@UseGuards(AuthenticatedGuard)
 	@Post("")
 	async createPlaylist(
+		@Body("userId") userId: string,
 		@Body("listName") listName: string,
 		@Body("isPrivate") isPrivate: boolean,
-		@Session() session: any,
 	) {
-		return await this.playlistService.create(listName, isPrivate, session);
+		return await this.playlistService.create(listName, isPrivate, userId);
 	}
 
 	@ApiOperation({ description: "재생목록 리스트 삭제" })
-	@UseGuards(AuthenticatedGuard)
 	@Delete("")
 	async deletePlaylist(
-		@Query("listName") listName: string,
-		@Session() session: any,
+		@Body("listName") listName: string,
+		@Body("userId") userId: string,
 	) {
-		return await this.playlistService.delete(listName, session);
+		return await this.playlistService.delete(listName, userId);
 	}
 
 	@ApiOperation({ description: "유저의 재생목록 내 컨텐츠 요청" })
-	@UseGuards(AuthenticatedGuard)
 	@Get("contents")
 	async findContents(@Query("playlistId") playlistId: number) {
 		return this.playlistContentsService.findAll(playlistId);
 	}
 
 	@ApiOperation({ description: "재생목록에 비디오 추가" })
-	@UseGuards(AuthenticatedGuard)
 	@Post("contents")
 	async addToPlaylist(
 		@Body("videoId") videoId: string,
@@ -70,7 +65,6 @@ export class PlaylistController {
 	}
 
 	@ApiOperation({ description: "재생목록의 비디오 삭제" })
-	@UseGuards(AuthenticatedGuard)
 	@Delete("contents")
 	async deleteToPlaylist(
 		@Body("videoId") videoId: string,

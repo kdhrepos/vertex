@@ -10,6 +10,18 @@ export class VideoService {
 		private videoModel: typeof Video,
 	) {}
 
+	async homepage() {
+		try {
+			const videos = await this.videoModel.findAll();
+
+			return {
+				data: videos,
+				statusCode: 200,
+				message: "Videos are successfully found",
+			};
+		} catch (error) {}
+	}
+
 	async findAll(channelId: string) {
 		try {
 			const videos = await this.videoModel.findAll({
@@ -64,11 +76,9 @@ export class VideoService {
 		}
 	}
 
-	async updateOne(updateVideoDto: UpdateVideoDto, session: any) {
+	async updateOne(updateVideoDto: UpdateVideoDto, email: string) {
 		const functionName = VideoService.prototype.updateOne.name;
 		try {
-			const { user: email } = session.passport;
-
 			const { title, description, videoId } = updateVideoDto;
 			await this.videoModel.update(
 				{ user_email: email, title: title, description: description },
@@ -88,10 +98,8 @@ export class VideoService {
 		}
 	}
 
-	async deleteOne(videoId: string, session: any) {
+	async deleteOne(videoId: string, email: string) {
 		try {
-			const { user: email } = session.passport;
-
 			const video = await this.videoModel.findOne({
 				where: {
 					id: videoId,

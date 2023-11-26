@@ -2,25 +2,33 @@ import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { UserService } from "src/user/user.service";
 import * as bcrypt from "bcrypt";
 import { CreateUserDto } from "../user/dto/create-user.dto";
+import { LoginUserDto } from "./dto/login-user.dto";
 
 @Injectable()
 export class AuthService {
 	constructor(private userService: UserService) {}
 
-	private readonly logger = new Logger("Auth Service");
+	async validateUser(loginUserDto: LoginUserDto) {
+		const { email, password } = loginUserDto;
 
-	async validateUser(email: string, password: string) {
 		const user = await this.userService.getUserByEmail(email);
-
-		if (!user) {
-			return null;
-		}
 
 		const { password: hashedPassword, ...userInfo } = user;
 
 		if (bcrypt.compareSync(password, hashedPassword)) {
-			return userInfo;
+			return {
+				data: userInfo,
+				statusCode: 200,
+				message: "Login Success",
+			};
 		}
-		return new UnauthorizedException();
+
+		if (!user) {
+			return {
+				data: null,
+				statusCode: 400,
+				message: "Login Failed",
+			};
+		}
 	}
 }

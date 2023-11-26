@@ -2,6 +2,14 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsOptional, IsString } from "class-validator";
 
 export class UpdateVideoDto {
+	@IsEmail()
+	@ApiProperty({
+		required: true,
+		description: "비디오 주인의 이메일",
+		example: "asd@naver.com",
+	})
+	email: string;
+
 	@IsOptional()
 	@IsString()
 	@ApiProperty({

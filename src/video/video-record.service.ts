@@ -10,13 +10,11 @@ export class VideoRecordService {
 		private recordModel: typeof Record,
 	) {}
 
-	async findAll(session: any) {
+	async findAll(email: string) {
 		try {
-			const { user: userId } = session.passport;
-
 			const records = await this.recordModel.findAll({
 				where: {
-					user_email: userId,
+					user_email: email,
 				},
 				include: [
 					{

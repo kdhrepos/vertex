@@ -2,6 +2,14 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsBoolean, IsEmail, IsNumber, IsString } from "class-validator";
 
 export class DeleteCommentDto {
+	@IsEmail()
+	@ApiProperty({
+		required: true,
+		description: "비디오 주인의 이메일",
+		example: "asd@naver.com",
+	})
+	email: string;
+
 	@IsNumber()
 	@ApiProperty({
 		required: true,

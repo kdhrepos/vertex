@@ -1,7 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsEmail, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class UploadCommentDto {
+	@IsEmail()
+	@ApiProperty({
+		required: true,
+		description: "비디오 주인의 이메일",
+		example: "asd@naver.com",
+	})
+	email: string;
+
 	@IsString()
 	@ApiProperty({
 		required: true,

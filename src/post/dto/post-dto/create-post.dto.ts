@@ -1,7 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsNotEmpty } from "class-validator";
+import { IsString, IsNotEmpty, IsEmail } from "class-validator";
 
 export class CreatePostDto {
+	@IsEmail()
+	email: string;
+
 	@IsString()
 	channelId: string;
 

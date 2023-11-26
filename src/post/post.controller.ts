@@ -75,23 +75,19 @@ export class PostController {
 
 	@ApiOperation({ description: "한 채널에 게시글 업로드" })
 	@Post("")
-	@UseGuards(AuthenticatedGuard)
 	@UseInterceptors(FileInterceptor("img", {}))
 	async uploadPost(
 		@UploadedFile() img: Express.Multer.File,
 		@Body() createPostDto: CreatePostDto,
-		@Session() session: any,
 	) {
-		const { user: email } = session.passport;
-
 		// 게시글 이미지가 없다면 그냥 null로 삽입
 		const hashedFilePath =
 			img !== null && img !== undefined
-				? (await bcrypt.hashSync(email, 12).replace(/\//g, "")) +
+				? (await bcrypt.hashSync("asdasdasjid", 12).replace(/\//g, "")) +
 				  path.extname(img.originalname)
 				: null;
 
-		await this.postService.create(createPostDto, hashedFilePath, session);
+		await this.postService.create(createPostDto, hashedFilePath);
 
 		if (img !== null && img !== undefined)
 			await this.firebaseService.uploadImage(img, hashedFilePath);
@@ -99,7 +95,6 @@ export class PostController {
 
 	@ApiOperation({ description: "한 채널의 게시글 수정" })
 	@Patch("")
-	@UseGuards(AuthenticatedGuard)
 	@UseInterceptors(FileInterceptor("img", {}))
 	async updatePost(
 		@UploadedFile() img: Express.Multer.File,
@@ -113,9 +108,11 @@ export class PostController {
 
 	@ApiOperation({ description: "한 채널의 게시글 삭제" })
 	@Delete("")
-	@UseGuards(AuthenticatedGuard)
-	async deletePost(@Query("postId") postId: string, @Session() session: any) {
-		const post = await this.postService.delete(postId, session);
+	async deletePost(
+		@Query("postId") postId: string,
+		@Query("email") email: string,
+	) {
+		const post = await this.postService.delete(postId, email);
 		const { image_file_path: imgPath } = post;
 		return await this.firebaseService.deleteImage(imgPath);
 	}
@@ -128,36 +125,23 @@ export class PostController {
 
 	@ApiOperation({ description: "게시글에 댓글 등록" })
 	@Post("/comment")
-	@UseGuards(AuthenticatedGuard)
-	async createCommentToPost(
-		@Body() uploadCommentDto: UploadCommentDto,
-		@Session() session: any,
-	) {
-		return await this.postCommentService.create(uploadCommentDto, session);
+	async createCommentToPost(@Body() uploadCommentDto: UploadCommentDto) {
+		return await this.postCommentService.create(uploadCommentDto);
 	}
 
 	@ApiOperation({ description: "게시글의 댓글 수정" })
 	@Patch("/comment")
-	@UseGuards(AuthenticatedGuard)
-	async updateCommentToPost(
-		@Body() updateCommentDto: UpdateCommentDto,
-		@Session() session: any,
-	) {
-		return await this.postCommentService.update(updateCommentDto, session);
+	async updateCommentToPost(@Body() updateCommentDto: UpdateCommentDto) {
+		return await this.postCommentService.update(updateCommentDto);
 	}
 
 	@ApiOperation({ description: "게시글의 댓글 삭제" })
 	@Delete("/comment")
-	@UseGuards(AuthenticatedGuard)
-	async deleteCommentToPost(
-		@Body() deleteCommentDto: DeleteCommentDto,
-		@Session() session: any,
-	) {
-		return await this.postCommentService.delete(deleteCommentDto, session);
+	async deleteCommentToPost(@Body() deleteCommentDto: DeleteCommentDto) {
+		return await this.postCommentService.delete(deleteCommentDto);
 	}
 
 	@ApiOperation({ description: "게시글 좋아요 누르기/취소" })
 	@Post("/like")
-	@UseGuards(AuthenticatedGuard)
 	async likeToPost(@Query("postId") postId: string) {}
 }

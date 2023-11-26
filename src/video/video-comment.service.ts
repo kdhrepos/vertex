@@ -41,10 +41,9 @@ export class VideoCommentService {
 		}
 	}
 
-	async create(uploadCommentDto: UploadCommentDto, session: any) {
+	async create(uploadCommentDto: UploadCommentDto) {
 		try {
-			const { content, parentId, videoId } = uploadCommentDto;
-			const { user: email } = session.passport;
+			const { email, content, parentId, videoId } = uploadCommentDto;
 
 			const comment = await this.commentModel.create({
 				user_email: email,
@@ -88,10 +87,9 @@ export class VideoCommentService {
 		}
 	}
 
-	async delete(deleteCommentDto: DeleteCommentDto, session: any) {
+	async delete(deleteCommentDto: DeleteCommentDto) {
 		try {
-			const { id, videoId } = deleteCommentDto;
-			const { user: email } = session.passport;
+			const { id, videoId, email } = deleteCommentDto;
 
 			const video = await this.commentModel.findOne({
 				where: {

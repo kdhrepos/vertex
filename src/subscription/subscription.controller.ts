@@ -1,4 +1,5 @@
 import {
+	Body,
 	Controller,
 	Delete,
 	Get,
@@ -11,7 +12,6 @@ import {
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { SubscriptionService } from "./subscription.service";
 import { AuthenticatedGuard } from "src/auth/auth.guard";
-import { VideoService } from "src/video/video.service";
 
 @ApiTags("Subscription")
 @Controller("subscription")
@@ -21,34 +21,37 @@ export class SubscriptionController {
 	@ApiOperation({ description: "구독 목록 요청" })
 	@UseGuards(AuthenticatedGuard)
 	@Get("/list")
-	async findSubscriptionList(@Session() session: any) {
-		return await this.subscriptionService.findAll(session);
+	async findSubscriptionList(@Query("userId") userId: string) {
+		return await this.subscriptionService.findAll(userId);
 	}
 
 	@ApiOperation({ description: "구독한 채널의 모든 컨텐츠를 최신 순으로 요청" })
 	@UseGuards(AuthenticatedGuard)
 	@Get("/contents")
-	async findContentsList(@Query("page") page: number, @Session() session: any) {
-		return await this.subscriptionService.findContents(session, page);
+	async findContentsList(
+		@Query("userId") userId: string,
+		@Query("page") page: number,
+	) {
+		return await this.subscriptionService.findContents(userId, page);
 	}
 
 	@ApiOperation({ description: "채널에 대한 구독 요청" })
 	@UseGuards(AuthenticatedGuard)
 	@Post("/subscribe")
 	async subscribe(
-		@Query("channelId") channelId: string,
-		@Session() session: any,
+		@Body("userId") userId: string,
+		@Body("channelId") channelId: string,
 	) {
-		return await this.subscriptionService.create(channelId, session);
+		return await this.subscriptionService.create(channelId, userId);
 	}
 
 	@ApiOperation({ description: "채널에 대한 구독 취소" })
 	@UseGuards(AuthenticatedGuard)
-	@Delete("/unsubscribe")
+	@Post("/unsubscribe")
 	async unsubscribe(
-		@Query("channelId") channelId: string,
-		@Session() session: any,
+		@Body("userId") userId: string,
+		@Body("channelId") channelId: string,
 	) {
-		return await this.subscriptionService.delete(channelId, session);
+		return await this.subscriptionService.delete(channelId, userId);
 	}
 }

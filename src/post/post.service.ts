@@ -72,11 +72,9 @@ export class PostService {
 		}
 	}
 
-	async create(createPostDto: CreatePostDto, imgPath: string, session: any) {
-		const functionName = PostService.prototype.create.name;
+	async create(createPostDto: CreatePostDto, imgPath: string) {
 		try {
-			const { channelId, title, contents } = createPostDto;
-			const { user: email } = session.passport;
+			const { channelId, title, contents, email } = createPostDto;
 
 			await this.postModel.create({
 				user_email: email,
@@ -86,10 +84,7 @@ export class PostService {
 				image_file_path: imgPath,
 			});
 		} catch (error) {
-			throw new HttpException(
-				`${functionName} : ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -124,15 +119,13 @@ export class PostService {
 		}
 	}
 
-	async delete(postId: string, session: any) {
+	async delete(postId: string, email: string) {
 		const functionName = PostService.prototype.delete.name;
 		try {
-			const { user } = session.passport;
-
 			this.postModel.destroy({
 				where: {
 					id: postId,
-					user_email: user,
+					user_email: email,
 				},
 			});
 

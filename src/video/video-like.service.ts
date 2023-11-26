@@ -30,11 +30,8 @@ export class VideoLikeService {
 		}
 	}
 
-	async create(videoId: string, session: any) {
-		const functionName = VideoLikeService.prototype.create.name;
+	async create(videoId: string, email: string) {
 		try {
-			const { user: email } = session.passport;
-
 			const existedRecord = await this.likeModel.findOne({
 				where: {
 					user_email: email,
@@ -52,10 +49,7 @@ export class VideoLikeService {
 			});
 			return true;
 		} catch (error) {
-			throw new HttpException(
-				`${functionName} : ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

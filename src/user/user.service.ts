@@ -91,9 +91,7 @@ export class UserService {
 	}
 
 	async deleteUser(deleteUserDto: DeleteUserDto) {
-		const functionName = UserService.prototype.deleteUser.name;
 		try {
-			console.log(deleteUserDto);
 			const { email, password } = deleteUserDto;
 
 			const existedUser = await this.userModel.findOne({
@@ -123,13 +121,9 @@ export class UserService {
 	}
 
 	async updateUser(updateUserDto: UpdateUserDto) {
-		const functionName = UserService.prototype.updateUser.name;
 		try {
 		} catch (error) {
-			throw new HttpException(
-				`${functionName} : ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

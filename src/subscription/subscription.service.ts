@@ -11,13 +11,11 @@ export class SubscriptionService {
 		@InjectModel(Video) private videoModel: typeof Video,
 	) {}
 
-	async findAll(session: any) {
+	async findAll(userId: string) {
 		try {
-			const { user: email } = session.passport;
-
 			const subscriptionList = await this.subscriptionModel.findAll({
 				where: {
-					user_email: email,
+					user_email: userId,
 				},
 				include: {
 					model: User,
@@ -38,13 +36,11 @@ export class SubscriptionService {
 		}
 	}
 
-	async findContents(session: any, page: number) {
+	async findContents(userId: string, page: number) {
 		try {
-			const { user: email } = session.passport;
-
 			const contentsList = await this.subscriptionModel.findAll({
 				where: {
-					user_email: email,
+					user_email: userId,
 				},
 				attributes: ["channel_email"],
 				include: [
@@ -75,12 +71,10 @@ export class SubscriptionService {
 		}
 	}
 
-	async create(channelId: string, session: any) {
+	async create(channelId: string, userId: string) {
 		try {
-			const { user: email } = session.passport;
-
 			// 자기 자신 구독 불가
-			if (email === channelId) {
+			if (userId === channelId) {
 				throw new HttpException(
 					`Self Subscription Error`,
 					HttpStatus.BAD_REQUEST,
@@ -88,7 +82,7 @@ export class SubscriptionService {
 			}
 
 			const subscription = await this.subscriptionModel.create({
-				user_email: email,
+				user_email: userId,
 				channel_email: channelId,
 			});
 
@@ -102,14 +96,12 @@ export class SubscriptionService {
 		}
 	}
 
-	async delete(channelId: string, session: any) {
+	async delete(channelId: string, userId: string) {
 		const functionName = SubscriptionService.prototype.delete.name;
 		try {
-			const { user: email } = session.passport;
-
 			await this.subscriptionModel.destroy({
 				where: {
-					user_email: email,
+					user_email: userId,
 					channel_email: channelId,
 				},
 			});

@@ -33,7 +33,8 @@ import { DeleteUserDto } from "../user/dto/delete-user.dto";
 import * as bcrypt from "bcrypt";
 import { FirebaseService } from "src/firebase/firebase.service";
 import * as path from "path";
-import { Response } from "express";
+import { Request, Response } from "express";
+import { LoginUserDto } from "./dto/login-user.dto";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -46,15 +47,14 @@ export class AuthController {
 
 	@ApiOperation({ description: "구글 소셜 로그인 접근 Route" })
 	@Get("login/google")
-	@UseGuards(GoogleAuthGuard)
+	// @UseGuards(GoogleAuthGuard)
 	async googleAuth(@Req() req) {}
 
 	@ApiOperation({ description: "구글 소셜 로그인 콜백 Route" })
 	@ApiResponse({ description: "구글 소셜 로그인 성공 시 유저 정보 반환" })
 	@Get("google")
-	@UseGuards(GoogleAuthGuard)
+	// @UseGuards(GoogleAuthGuard)
 	async googleAuthRedirect(@Req() req, @Res() res) {
-		console.log(req.user);
 		const { user } = req;
 		if (!user) {
 			return res.send(user);
@@ -64,23 +64,8 @@ export class AuthController {
 
 	@ApiOperation({ description: "일반 로그인 접근 Route" })
 	@Post("login/local")
-	@UseGuards(LocalAuthGuard)
-	localAuth(@Req() req: any) {
-		return {
-			session: `sess:${req.sessionID}`,
-			user: req.user,
-		};
-	}
-
-	@ApiOperation({ description: "이미 로그인한 사용자가 확인하는 Route" })
-	@Get("login/authenticated")
-	@UseGuards(AuthenticatedGuard)
-	authenticated(@Req() req: any, @Res() res: any) {
-		const { user } = req;
-		if (!user) {
-			return;
-		}
-		return res.send(user);
+	async localAuth(@Body() loginUserDto: LoginUserDto) {
+		return await this.authService.validateUser(loginUserDto);
 	}
 
 	@ApiOperation({
@@ -105,7 +90,6 @@ export class AuthController {
 	}
 
 	@ApiOperation({ description: "소셜, 일반 모두 포함한 회원탈퇴 기능" })
-	@ApiExtraModels(DeleteUserDto)
 	@Delete("signout")
 	async signout(@Body() deleteUserDto: DeleteUserDto) {
 		return await this.userService.deleteUser(deleteUserDto);
@@ -127,22 +111,6 @@ export class AuthController {
 		return res.json({
 			status: true,
 			msg: "Valid Email",
-		});
-	}
-
-	@ApiOperation({ description: "닉네임 중복 체크" })
-	@Get("check/name")
-	async checkDuplicatedName(@Res() res: Response, @Query("name") name: string) {
-		const user = await this.userService.getUserByName(name);
-		if (user) {
-			return res.json({
-				status: false,
-				msg: "Invalid Name",
-			});
-		}
-		return res.json({
-			status: true,
-			msg: "Valid Name",
 		});
 	}
 }

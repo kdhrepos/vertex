@@ -12,10 +12,7 @@ async function bootstrap() {
 	});
 
 	// CORS
-	app.enableCors({
-		credentials: true,
-		origin: "*", // 클라이언트 도메인 주소
-	});
+	// app.enableCors({ origin: true });
 
 	// Swagger Documentation
 	swaggerSetup(app);

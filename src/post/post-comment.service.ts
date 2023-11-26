@@ -37,10 +37,9 @@ export class PostCommentService {
 		}
 	}
 
-	async create(uploadCommentDto: UploadCommentDto, session: any) {
+	async create(uploadCommentDto: UploadCommentDto) {
 		try {
-			const { content, parentId, postId } = uploadCommentDto;
-			const { user: email } = session.passport;
+			const { content, parentId, postId, email } = uploadCommentDto;
 
 			await this.commentModel.create({
 				user_email: email,
@@ -58,10 +57,9 @@ export class PostCommentService {
 		}
 	}
 
-	async update(updateCommentDto: UpdateCommentDto, session: any) {
+	async update(updateCommentDto: UpdateCommentDto) {
 		try {
-			const { commentId, content, postId } = updateCommentDto;
-			const { user: email } = session.passport;
+			const { commentId, content, postId, email } = updateCommentDto;
 
 			await this.commentModel.update(
 				{ content: content },
@@ -83,10 +81,9 @@ export class PostCommentService {
 		}
 	}
 
-	async delete(deleteCommentDto: DeleteCommentDto, session: any) {
+	async delete(deleteCommentDto: DeleteCommentDto) {
 		try {
-			const { commentId, postId } = deleteCommentDto;
-			const { user: email } = session.passport;
+			const { email, commentId, postId } = deleteCommentDto;
 
 			await this.commentModel.destroy({
 				where: {

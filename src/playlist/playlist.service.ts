@@ -9,13 +9,11 @@ export class PlaylistService {
 		private playlistModel: typeof Playlist,
 	) {}
 
-	async findAll(session: any) {
+	async findAll(userId: string) {
 		try {
-			const { user: email } = session.passport;
-
 			const playlists = await this.playlistModel.findAll({
 				where: {
-					user_email: email,
+					user_email: userId,
 				},
 			});
 
@@ -31,14 +29,11 @@ export class PlaylistService {
 		}
 	}
 
-	async create(listName: string, isPrivate: boolean, session: any) {
+	async create(listName: string, isPrivate: boolean, userId: string) {
 		try {
-			const { passport } = session;
-			const email = passport.user;
-
 			const duplicatedPlaylist = await this.playlistModel.findOne({
 				where: {
-					user_email: email,
+					user_email: userId,
 					list_name: listName,
 				},
 			});
@@ -50,7 +45,7 @@ export class PlaylistService {
 				);
 
 			return await this.playlistModel.create({
-				user_email: email,
+				user_email: userId,
 				is_private: isPrivate,
 				list_name: listName,
 			});
@@ -59,13 +54,11 @@ export class PlaylistService {
 		}
 	}
 
-	async delete(listName: string, session: any) {
+	async delete(listName: string, userId: string) {
 		try {
-			const { passport } = session;
-			const email = passport.user;
 			const existedVideo = await this.playlistModel.findOne({
 				where: {
-					user_email: email,
+					user_email: userId,
 					list_name: listName,
 				},
 			});
@@ -76,10 +69,11 @@ export class PlaylistService {
 					message: "Successfully Deleted",
 				};
 			}
-			throw new HttpException(
-				`Playlist Does Not Exist`,
-				HttpStatus.BAD_REQUEST,
-			);
+
+			return {
+				statusCode: 400,
+				message: "Delete Failed",
+			};
 		} catch (error) {
 			throw new HttpException(`${error.response}`, error.status);
 		}
