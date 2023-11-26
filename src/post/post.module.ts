@@ -13,9 +13,10 @@ import { Video } from "src/model/video.model";
 import { Like } from "src/model/like.model";
 import { VideoLikeService } from "src/video/video-like.service";
 import { PostService } from "./post.service";
+import { User } from "src/model/user.model";
 
 @Module({
-	imports: [SequelizeModule.forFeature([Post, Comment, Video, Like])],
+	imports: [SequelizeModule.forFeature([Post, Comment, Video, Like, User])],
 	controllers: [PostController],
 	providers: [
 		PostService,
