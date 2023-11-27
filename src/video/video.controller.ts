@@ -46,7 +46,7 @@ export class VideoController {
 		private videoRecordService: VideoRecordService,
 		private videoLikeService: VideoLikeService,
 		private firebaseService: FirebaseService,
-	) {}
+	) { }
 
 	@ApiOperation({ description: "추천 알고리즘을 통한 비디오 요청" })
 	@Get("home")
@@ -60,9 +60,9 @@ export class VideoController {
 		const video = await this.videoService.findOne(videoId);
 		if (video) {
 			// 조회수 갱신, 비디오 기록 후 비디오 스트리밍
-			 this.videoService.updateView(video);
-			 if(email)
-			 	this.videoRecordService.create(video.id,email);
+			this.videoService.updateView(video);
+			if (email)
+				this.videoRecordService.create(video.id, email);
 
 			return this.firebaseService.findVideo(res, video);
 		} else {
@@ -250,10 +250,10 @@ export class VideoController {
 	@ApiOperation({ description: "하나의 비디오에 좋아요 눌렀는지 체크" })
 	@Get("like/check")
 	async checkLikeToVideo(
-		@Body("videoId") videoId: string,
-		@Body("email") email: string,
+		@Query("videoId") videoId: string,
+		@Query("email") email: string,
 	) {
-			return await this.videoLikeService.findOne(videoId, email);
+		return await this.videoLikeService.findOne(email,videoId);
 	}
 
 	@ApiOperation({ description: "유저가 좋아요 누른 비디오 리스트 가져오기" })
@@ -261,7 +261,7 @@ export class VideoController {
 	async getLikeList(
 		@Body("email") email: string,
 	) {
-			return await this.videoLikeService.findAll(email);
+		return await this.videoLikeService.findAll(email);
 	}
 
 
@@ -269,11 +269,13 @@ export class VideoController {
 	@ApiOperation({ description: "비디오 좋아요/싫어요 누르기" })
 	@Post("like")
 	async likeToVideo(
-		@Body("videoId") videoId: string,
-		@Body("email") email: string,
-	) {
-			const liked = await this.videoLikeService.create(videoId, email);
-			this.videoService.updateLike(videoId, liked);
+		@Query("videoId") videoId: string,
+		@Query("email") email: string,
+	)
+	{
+		const isLiked = await this.videoLikeService.create(videoId, email);
+		return await this.videoService.updateLike(videoId, isLiked);
+
 	}
 
 	@ApiOperation({
@@ -288,7 +290,7 @@ export class VideoController {
 		description: "비디오 시청 기록 리스트 요청",
 	})
 	@Get("record")
-	async getRecordList(@Req() req:Request,@Query("email") email: string) {
+	async getRecordList(@Req() req: Request, @Query("email") email: string) {
 		return await this.videoRecordService.findAll(email);
 	}
 

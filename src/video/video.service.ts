@@ -145,18 +145,24 @@ export class VideoService {
 		}
 	}
 
-	async updateLike(videoId :string, liked: any) {
+	async updateLike(videoId :string, liked: boolean) {
 		const functionName = VideoService.prototype.updateLike.name;
 		try {
 			await this.videoModel.update(
 				// 좋아요를 누르지 않았다면 +1, 좋아요를 눌렀었다면 취소이므로 -1
-				{ like_count: liked ? Sequelize.literal('like_count-1') : Sequelize.literal('like_count+1') },
+				{ like_count: liked ? Sequelize.literal('like_count+1') : Sequelize.literal('like_count-1') },
 				{
 					where: {
 						id: videoId,
 					},
 				},
 			);
+			const likeModel = this.videoModel.findOne({
+				where: {
+					id:videoId
+				}
+			})
+			return (await likeModel).like_count;
 		} catch (error) {
 			throw new HttpException(
 				`${functionName} : ${error}`,

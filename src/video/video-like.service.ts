@@ -41,7 +41,7 @@ export class VideoLikeService {
 				},
 			});
 			if (record) {
-				return record;
+				return true;
 			}
 			return false;
 		} catch (error) {
@@ -60,7 +60,7 @@ export class VideoLikeService {
 					video_id: videoId,
 				},
 			});
-
+			console.log(existedRecord);
 			if (existedRecord) {
 				await existedRecord.destroy();
 				return false;
