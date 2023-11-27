@@ -3,6 +3,7 @@ import { InjectModel } from "@nestjs/sequelize";
 import { Post } from "src/model/post.model";
 import { CreatePostDto } from "./dto/post-dto/create-post.dto";
 import { UpdatePostDto } from "./dto/post-dto/update-post.dto";
+import { User } from "src/model/user.model";
 
 @Injectable()
 export class PostService {
@@ -11,6 +12,30 @@ export class PostService {
 		private postModel: typeof Post,
 	) {}
 
+	async findNewPosts() {
+		try {
+			const posts = await this.postModel.findAll({
+				raw: true,
+				order: [["createdAt", "DESC"]],
+				include: [
+					{
+						model: User,
+						as: "user",
+						attributes: ["name"],
+					},
+				],
+			});
+
+			return {
+				data: posts,
+				statusCode: 200,
+				message: "Newest posts are successfully found",
+			};
+		} catch (error) {
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	async findAll(channelId: string) {
 		try {
 			const posts = await this.postModel.findAll({
@@ -18,6 +43,13 @@ export class PostService {
 					channel_email: channelId,
 				},
 				raw: true,
+				include: [
+					{
+						model: User,
+						as: "user",
+						attributes: ["name"],
+					},
+				],
 			});
 
 			return {
@@ -76,13 +108,19 @@ export class PostService {
 		try {
 			const { channelId, title, contents, email } = createPostDto;
 
-			await this.postModel.create({
+			const post = await this.postModel.create({
 				user_email: email,
 				channel_email: channelId,
 				title: title,
 				contents: contents,
 				image_file_path: imgPath,
 			});
+
+			return {
+				data: post,
+				statusCode: 200,
+				message: "Post successfully uploaded",
+			};
 		} catch (error) {
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

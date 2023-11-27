@@ -46,13 +46,21 @@ export class PostController {
 	// 	return "this function returns one post";
 	// }
 
+	@ApiOperation({ description: "새로운 게시글 리스트 요청" })
+	@Get("/list/new")
+	async findNewPosts() {
+		return await this.postService.findNewPosts();
+	}
+
 	@ApiOperation({ description: "한 채널의 게시글 리스트 요청" })
 	@Get("/list")
 	async findPostList(@Query("channelId") channelId: string) {
 		return await this.postService.findAll(channelId);
 	}
 
-	@ApiOperation({ description: "채널 내 하나의 게시글 데이터 요청" })
+	@ApiOperation({
+		description: "채널 내 하나의 게시글 데이터 요청 (이미지 포함)",
+	})
 	@Get("")
 	async findPost(
 		@Res() res: Response,
@@ -70,7 +78,6 @@ export class PostController {
 		res.setHeader("Content-Length", buffer.length);
 
 		return res.json({ img: buffer, post: post });
-		// return res.send(buffer);
 	}
 
 	@ApiOperation({ description: "한 채널에 게시글 업로드" })
@@ -80,7 +87,6 @@ export class PostController {
 		@UploadedFile() img: Express.Multer.File,
 		@Body() createPostDto: CreatePostDto,
 	) {
-		console.log(img, createPostDto);
 		// 게시글 이미지가 없다면 그냥 null로 삽입
 		const hashedFilePath =
 			img !== null || img !== undefined
@@ -88,10 +94,10 @@ export class PostController {
 				  path.extname(img.originalname)
 				: null;
 
-		await this.postService.create(createPostDto, hashedFilePath);
-
 		if (img !== null && img !== undefined)
 			await this.firebaseService.uploadImage(img, hashedFilePath);
+
+		return await this.postService.create(createPostDto, hashedFilePath);
 	}
 
 	@ApiOperation({ description: "한 채널의 게시글 수정" })
