@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsNotEmpty, IsEmail } from "class-validator";
+import { IsString, IsNotEmpty, IsEmail, IsOptional } from "class-validator";
 
 export class CreatePostDto {
 	@IsEmail()
@@ -14,6 +14,7 @@ export class CreatePostDto {
 	@IsString()
 	contents: string;
 
+	@IsOptional()
 	@ApiProperty({
 		required: false,
 		example: "jpg/jpeg/png etc...",
