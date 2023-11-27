@@ -90,7 +90,7 @@ export class PostController {
 	) {
 		// 게시글 이미지가 없다면 그냥 null로 삽입
 		const hashedFilePath =
-			img !== null || img !== undefined
+			img !== null && img !== undefined
 				? (await bcrypt.hashSync("asdasdasjid", 12).replace(/\//g, "")) +
 				  path.extname(img.originalname)
 				: null;

@@ -14,7 +14,6 @@ export class CreatePostDto {
 	@IsString()
 	contents: string;
 
-	@IsOptional()
 	@ApiProperty({
 		required: false,
 		example: "jpg/jpeg/png etc...",
