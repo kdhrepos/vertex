@@ -115,7 +115,7 @@ export class UserController {
 		const user = await this.userService.getUserByEmail(userId);
 
 		if (
-			user.channel_image_path !== undefined ||
+			user.channel_image_path !== undefined &&
 			user.channel_image_path !== null
 		) {
 			const img = await this.firebaseService.findImage(user.channel_image_path);
