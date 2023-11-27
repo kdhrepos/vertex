@@ -118,16 +118,9 @@ export class FirebaseService {
 
 			const videoPath = "videos/" + filePath + videoFileExtension;
 			const videoDirRef = ref(this.firebaseStorage, videoPath);
-			const videoStream = getStream(videoDirRef);
+			const videoUrl= await getDownloadURL(videoDirRef);
 
-			const videoExt = videoFileExtension.split(".")[1];
-
-			res.setHeader("Content-Type", `video/${videoExt}`);
-			res.setHeader(
-				"Content-Disposition",
-				`inline; filename="${filePath}${videoFileExtension}"`,
-			);
-			videoStream.pipe(res);
+			return videoUrl;
 		} catch (error) {
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -184,12 +177,9 @@ export class FirebaseService {
 		try {
 			const imagePath = "images/" + imgPath;
 			const imgDirRef = ref(this.firebaseStorage, imagePath);
-			const imgByte = await getBytes(imgDirRef);
+			const imgUrl= await getDownloadURL(imgDirRef);
 
-			if (imgByte) {
-				return imgByte;
-			}
-			return null;
+			return imgUrl;
 		} catch (error) {
 			throw new HttpException(
 				`${functionName} : ${error}`,
