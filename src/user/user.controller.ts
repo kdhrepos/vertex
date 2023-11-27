@@ -8,6 +8,7 @@ import {
 	Patch,
 	UseGuards,
 	Session,
+	UseInterceptors,
 } from "@nestjs/common";
 import { ApiBody, ApiExtraModels, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -15,6 +16,11 @@ import { UserService } from "./user.service";
 import { FirebaseService } from "src/firebase/firebase.service";
 import { Response } from "express";
 import { AuthenticatedGuard } from "src/auth/auth.guard";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { FileFieldsInterceptor } from "@nestjs/platform-express";
+import * as bcrypt from "bcrypt"
+import * as path from "path"
+
 
 @ApiTags("User")
 @Controller("user")
@@ -25,23 +31,40 @@ export class UserController {
 	) {}
 
 	@ApiBody({ description: "유저가 자신의 프로필 정보를 받아옴" })
-	@UseGuards(AuthenticatedGuard)
 	@Get("profile")
-	async getUserProfile(@Session() session: any) {
-		const { user: email } = session.passport;
+	async getUserProfile(@Query("email") email:string) {
 		const userWithPassord = await this.userService.getUserByEmail(email);
-
 		const { password, ...user } = userWithPassord;
 
 		return user;
 	}
 
-	// @ApiBody({ description: "유저가 자신의 프로필 정보를 갱신" })
-	// @UseGuards(AuthenticatedGuard)
-	// @Patch("profile")
-	// async updateUserProfile(@Session() session: any) {
-	// 	const { user: email } = session.p	assport;
-	// }
+	@ApiBody({ description: "유저가 자신의 프로필 정보를 갱신" })
+	@UseInterceptors(
+		FileFieldsInterceptor([{ name: "profileImage" }, { name: "channelImage" }]),
+	)
+	@Patch("profile")
+	async updateUserProfile(@Body() updateUserDto:UpdateUserDto,profileImage: Express.Multer.File,channelImage:Express.Multer.File) {
+		
+		const profileImagePath =
+			profileImage !== null || profileImage !== undefined
+				? (await bcrypt.hashSync(`${Date.now()}`, 12).replace(/\//g, "")) +
+				  path.extname(profileImage.originalname)
+				: null;
+
+		const channelImagePath =
+			channelImage !== null || channelImage !== undefined
+				? (await bcrypt.hashSync(`${Date.now()}`, 12).replace(/\//g, "")) +
+				  path.extname(channelImage.originalname)
+				: null;
+
+		this.firebaseService.uploadImage(profileImage,profileImagePath);
+		this.firebaseService.uploadImage(channelImage,channelImagePath);
+
+		return await this.userService.updateUser(updateUserDto,profileImagePath,channelImagePath);
+	}
+
+
 
 	@ApiBody({ description: "유저가 자신의 프로필 이미지를 받아옴" })
 	@Get("profile/image")
@@ -71,4 +94,33 @@ export class UserController {
 		}
 		return null;
 	}
+
+	// @ApiBody({ description: "유저가 자신의 프로필 이미지를 받아옴" })
+	// @Get("profile/image")
+	// async getUserProfileImage(
+	// 	@Res() res: Response,
+	// 	@Query("userId") userId: string,
+	// ) {
+	// 	const user = await this.userService.getUserByEmail(userId);
+
+	// 	if (
+	// 		user.profile_image_path !== undefined &&
+	// 		user.profile_image_path !== null
+	// 	) {
+	// 		const img = await this.firebaseService.findImage(user.profile_image_path);
+
+	// 		const imgFileExt = user.profile_image_path.split(".");
+
+	// 		const buffer = Buffer.from(img);
+
+	// 		res.setHeader(
+	// 			"Content-Type",
+	// 			`image/${imgFileExt[imgFileExt.length - 1]}`,
+	// 		);
+	// 		res.setHeader("Content-Length", buffer.length);
+
+	// 		return res.send(buffer);
+	// 	}
+	// 	return null;
+	// }
 }

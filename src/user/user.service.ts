@@ -120,8 +120,24 @@ export class UserService {
 		}
 	}
 
-	async updateUser(updateUserDto: UpdateUserDto) {
+	async updateUser(updateUserDto: UpdateUserDto,profileImagePath:string,channelImagePath:string) {
 		try {
+			const {email, name, description}=updateUserDto
+
+			const user = await this.userModel.findByPk(email);
+
+			if(name !== null)
+				user.name = name;
+
+			if(description !== null)
+				user.description=description;
+
+			user.save();
+			
+			return {
+				statusCode :200,
+				message : "User successfully updated!"
+			}
 		} catch (error) {
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

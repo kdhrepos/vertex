@@ -1,13 +1,22 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString } from "class-validator";
+import { IsEmail, IsString } from "class-validator";
 
 export class UpdateUserDto {
+	@IsEmail()
 	@ApiProperty({
-		example: "asd123",
-		description: "사용자 인증을 위한 패스워드",
+		example: "qweqwe@naver.com",
+		description: "사용자 이메일",
 		required: true,
 	})
-	password: string;
+	email: string;
+
+	@IsString()
+	@ApiProperty({
+		example: "김동현",
+		description: "사용자 이름",
+		required: true,
+	})
+	name: string;
 
 	@IsString({ always: false })
 	@ApiProperty({
@@ -24,4 +33,12 @@ export class UpdateUserDto {
 		required: false,
 	})
 	profileImage: Express.Multer.File;
+
+	@ApiProperty({
+		example: "jpg/jpeg/png etc...",
+		description:
+			"채널의 배경 이미지 파일",
+		required: false,
+	})
+	channelImage: Express.Multer.File;
 }

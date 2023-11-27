@@ -47,13 +47,13 @@ export class PostController {
 	// }
 
 	@ApiOperation({ description: "새로운 게시글 리스트 요청" })
-	@Get("/list/new")
+	@Get("list/new")
 	async findNewPosts() {
 		return await this.postService.findNewPosts();
 	}
 
 	@ApiOperation({ description: "한 채널의 게시글 리스트 요청" })
-	@Get("/list")
+	@Get("list")
 	async findPostList(@Query("channelId") channelId: string) {
 		return await this.postService.findAll(channelId);
 	}
@@ -61,13 +61,12 @@ export class PostController {
 	@ApiOperation({
 		description: "채널 내 하나의 게시글 데이터 요청 (이미지 포함)",
 	})
-	@Get("")
+	@Get("image")
 	async findPost(
 		@Res() res: Response,
 		@Query("postId") postId: number,
-		@Query("channelId") channelId: string,
 	) {
-		const post = await this.postService.findOne(postId, channelId);
+		const post = await this.postService.findOne(postId);
 		const img = await this.firebaseService.findImage(post.image_file_path);
 
 		const imgFileExt = post.image_file_path.split(".");
@@ -77,8 +76,8 @@ export class PostController {
 		res.setHeader("Content-Type", `image/${imgFileExt[imgFileExt.length - 1]}`);
 		res.setHeader("Content-Length", buffer.length);
 
-		return res.json({ img: buffer, post: post });
-	}
+		return res.send(buffer);
+	}	
 
 	@ApiOperation({ description: "한 채널에 게시글 업로드" })
 	@Post("")

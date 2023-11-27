@@ -113,4 +113,6 @@ export class AuthController {
 			msg: "Valid Email",
 		});
 	}
+
+
 }

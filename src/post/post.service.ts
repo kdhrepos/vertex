@@ -11,7 +11,7 @@ export class PostService {
 		@InjectModel(Post)
 		private postModel: typeof Post,
 	) {}
-
+	
 	async findNewPosts() {
 		try {
 			const posts = await this.postModel.findAll({
@@ -62,13 +62,12 @@ export class PostService {
 		}
 	}
 
-	async findOne(postId: number, channelId: string) {
+	async findOne(postId: number) {
 		const functionName = PostService.prototype.findOne.name;
 		try {
 			const existedPost = await this.postModel.findOne({
 				where: {
 					id: postId,
-					channel_email: channelId,
 				},
 				attributes: [
 					"id",
@@ -90,7 +89,6 @@ export class PostService {
 				{
 					where: {
 						id: postId,
-						channel_email: channelId,
 					},
 				},
 			);
