@@ -83,12 +83,13 @@ export class UserController {
 	@Get("profile/image")
 	async getUserProfileImage(
 		@Res() res: Response,
-		@Query("userId") userId: string,
+		@Query("email") email: string,
 	) {
-		const user = await this.userService.getUserByEmail(userId);
+		console.log(email)
+		const user = await this.userService.getUserByEmail(email);
 
 		if (
-			user.profile_image_path !== undefined ||
+			user.profile_image_path !== undefined &&
 			user.profile_image_path !== null
 		) {
 			const img = await this.firebaseService.findImage(user.profile_image_path);
