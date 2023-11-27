@@ -69,16 +69,9 @@ export class PostController {
 		@Query("postId") postId: number,
 	) {
 		const post = await this.postService.findOne(postId);
-		const img = await this.firebaseService.findImage(post.image_file_path);
+		const imgUrl = await this.firebaseService.findImage(post.image_file_path);
 
-		const imgFileExt = post.image_file_path.split(".");
-
-		const buffer = Buffer.from(img);
-
-		res.setHeader("Content-Type", `image/${imgFileExt[imgFileExt.length - 1]}`);
-		res.setHeader("Content-Length", buffer.length);
-
-		return res.send(buffer);
+		return res.send(imgUrl);
 	}	
 
 	@ApiOperation({ description: "한 채널에 게시글 업로드" })

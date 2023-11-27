@@ -102,18 +102,9 @@ export class VideoController {
 		const video = await this.videoService.findOne(videoId);
 		if (video) {
 			const thumbnailPath = video.id + video.thumbnail_file_extension;
-			const img = await this.firebaseService.findImage(thumbnailPath);
+			const imgUrl = await this.firebaseService.findImage(thumbnailPath);
 
-			video.thumbnail_file_extension = video.thumbnail_file_extension.substring(
-				1,
-				video.thumbnail_file_extension.length,
-			);
-			const buffer = Buffer.from(img);
-
-			res.setHeader("Content-Type", `image/${video.thumbnail_file_extension}`);
-			res.setHeader("Content-Length", buffer.length);
-
-			return res.send(buffer);
+			return res.send(imgUrl);
 		} else {
 			return new HttpException("Video Does Not Exist", HttpStatus.BAD_REQUEST);
 		}
