@@ -30,12 +30,14 @@ import { UpdateCommentDto } from "./dto/comment-dto/update-comment.dto";
 import { DeleteCommentDto } from "./dto/comment-dto/delete-comment.dto";
 import { PostCommentService } from "./post-comment.service";
 import { PostService } from "./post.service";
+import { PostLikeService } from "./post-like.service";
 
 @ApiTags("Community")
 @Controller("community")
 export class PostController {
 	constructor(
 		private postService: PostService,
+		private postLikeService:PostLikeService,
 		private postCommentService: PostCommentService,
 		private firebaseService: FirebaseService,
 	) {}
@@ -148,6 +150,17 @@ export class PostController {
 	}
 
 	@ApiOperation({ description: "게시글 좋아요 누르기/취소" })
-	@Post("/like")
-	async likeToPost(@Query("postId") postId: string) {}
+	@Post("like")
+	async likeToPost(@Query("postId") postId: number, @Query("email") email: string,) {
+			return await this.postLikeService.create(postId,email);
+	}
+
+	@ApiOperation({ description: "하나의 게시글에 좋아요 눌렀는지 체크" })
+	@Get("like")
+	async checkLikeToVideo(
+		@Body("postId") postId: string,
+		@Body("email") email: string,
+	) {
+			return await this.postLikeService.findOne(postId, email);
+	}
 }

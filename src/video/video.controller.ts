@@ -14,6 +14,7 @@ import {
 	HttpStatus,
 	Query,
 	Session,
+	Req,
 } from "@nestjs/common";
 import { VideoService } from "./video.service";
 import { ApiExtraModels, ApiOperation, ApiTags } from "@nestjs/swagger";
@@ -24,7 +25,7 @@ import {
 } from "@nestjs/platform-express";
 import { FirebaseService } from "src/firebase/firebase.service";
 import { AuthenticatedGuard } from "src/auth/auth.guard";
-import { Response } from "express";
+import { Request, Response } from "express";
 import { UploadVideoDto } from "./dto/video-dto/upload-video.dto";
 import { UpdateVideoDto } from "./dto/video-dto/update-video.dto";
 import { UploadCommentDto } from "./dto/comment-dto/upload-comment.dto";
@@ -55,12 +56,13 @@ export class VideoController {
 
 	@ApiOperation({ description: "하나의 비디오 시청을 위해 비디오 요청" })
 	@Get("watch")
-	async streamVideo(@Res() res: Response, @Query("videoId") videoId: string) {
+	async streamVideo(@Res() res: Response, @Query("videoId") videoId: string, @Query("email") email?: string) {
 		const video = await this.videoService.findOne(videoId);
 		if (video) {
 			// 조회수 갱신, 비디오 기록 후 비디오 스트리밍
-			this.videoService.updateView(video);
-			this.videoRecordService.create(video);
+			 this.videoService.updateView(video);
+			 if(email)
+			 	this.videoRecordService.create(video.id,email);
 
 			return this.firebaseService.findVideo(res, video);
 		} else {
@@ -245,26 +247,39 @@ export class VideoController {
 		return await this.videoCommentService.delete(deleteCommentDto);
 	}
 
+	@ApiOperation({ description: "하나의 비디오에 좋아요 눌렀는지 체크" })
+	@Get("like/check")
+	async checkLikeToVideo(
+		@Body("videoId") videoId: string,
+		@Body("email") email: string,
+	) {
+			return await this.videoLikeService.findOne(videoId, email);
+	}
+
+	@ApiOperation({ description: "유저가 좋아요 누른 비디오 리스트 가져오기" })
+	@Get("like/list")
+	async getLikeList(
+		@Body("email") email: string,
+	) {
+			return await this.videoLikeService.findAll(email);
+	}
+
+
+
 	@ApiOperation({ description: "비디오 좋아요/싫어요 누르기" })
 	@Post("like")
 	async likeToVideo(
 		@Body("videoId") videoId: string,
 		@Body("email") email: string,
 	) {
-		const video = await this.videoService.findOne(videoId);
-
-		if (video) {
 			const liked = await this.videoLikeService.create(videoId, email);
-			this.videoService.updateLike(video, liked);
-		} else {
-			return false;
-		}
+			this.videoService.updateLike(videoId, liked);
 	}
 
 	@ApiOperation({
 		description: "한 크리에이터의 채널에 들어갔을때 비디오 요청",
 	})
-	@Get("list")
+	@Get("/channel/list")
 	async getVideoListInChannel(@Query("channelId") channelId: string) {
 		return await this.videoService.findAll(channelId);
 	}
@@ -272,8 +287,8 @@ export class VideoController {
 	@ApiOperation({
 		description: "비디오 시청 기록 리스트 요청",
 	})
-	@Get("records")
-	async getRecordList(@Query("email") email: string) {
+	@Get("record")
+	async getRecordList(@Req() req:Request,@Query("email") email: string) {
 		return await this.videoRecordService.findAll(email);
 	}
 

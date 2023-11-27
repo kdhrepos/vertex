@@ -201,10 +201,7 @@ export class FirebaseService {
 		const functionName = FirebaseService.prototype.uploadImage.name;
 		try {
 			if (!img)
-				return {
-					statusCode: 400,
-					message: "Invalid Image Object",
-				};
+				return;
 
 			const imagePath = "images/" + imgPath;
 			const imgDirRef = ref(this.firebaseStorage, imagePath);

@@ -32,7 +32,7 @@ export class User extends Model {
 	profile_image_path: string;
 
 	@Column({ allowNull: true })
-	background_image_path: string;
+	channel_image_path: string;
 
 	@Column({ allowNull: true })
 	description: string;

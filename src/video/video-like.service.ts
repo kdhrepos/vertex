@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
+import { Op } from "sequelize";
 import { Like } from "src/model/like.model";
 
 @Injectable()
@@ -9,22 +10,43 @@ export class VideoLikeService {
 		private likeModel: typeof Like,
 	) {}
 
-	async findAll(email: string, videoId: string) {
-		const functionName = VideoLikeService.prototype.findAll.name;
+	async findAll(email: string) {
 		try {
-			const existedRecord = await this.likeModel.findOne({
+			const record = await this.likeModel.findOne({
 				where: {
 					user_email: email,
-					video_id: videoId,
+					video_id: {
+						[Op.not]: null,
+					},
 				},
 			});
-			if (existedRecord) {
-				return existedRecord;
+			if (record) {
+				return record;
 			}
 			return false;
 		} catch (error) {
 			throw new HttpException(
-				`${functionName} : ${error}`,
+				`${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
+
+	async findOne(userId : string, videoId: string){
+		try {
+			const record = await this.likeModel.findOne({
+				where: {
+					user_email: userId,
+					video_id: videoId
+				},
+			});
+			if (record) {
+				return record;
+			}
+			return false;
+		} catch (error) {
+			throw new HttpException(
+				`${error}`,
 				HttpStatus.INTERNAL_SERVER_ERROR,
 			);
 		}

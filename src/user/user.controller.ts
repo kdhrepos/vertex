@@ -9,6 +9,8 @@ import {
 	UseGuards,
 	Session,
 	UseInterceptors,
+	UploadedFile,
+	UploadedFiles
 } from "@nestjs/common";
 import { ApiBody, ApiExtraModels, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -33,6 +35,11 @@ export class UserController {
 	@ApiBody({ description: "유저가 자신의 프로필 정보를 받아옴" })
 	@Get("profile")
 	async getUserProfile(@Query("email") email:string) {
+		if(!email)
+			return {
+				statusCode : 400
+			}
+
 		const userWithPassord = await this.userService.getUserByEmail(email);
 		const { password, ...user } = userWithPassord;
 
@@ -44,22 +51,28 @@ export class UserController {
 		FileFieldsInterceptor([{ name: "profileImage" }, { name: "channelImage" }]),
 	)
 	@Patch("profile")
-	async updateUserProfile(@Body() updateUserDto:UpdateUserDto,profileImage: Express.Multer.File,channelImage:Express.Multer.File) {
-		
+	async updateUserProfile(
+		@Body() updateUserDto:UpdateUserDto,
+		@UploadedFiles()
+		files: {
+			profileImage?: Express.Multer.File[];
+			channelImage?:Express.Multer.File[];
+		},
+	) {
 		const profileImagePath =
-			profileImage !== null || profileImage !== undefined
+			files.profileImage[0] !== null || files.profileImage[0] !== undefined
 				? (await bcrypt.hashSync(`${Date.now()}`, 12).replace(/\//g, "")) +
-				  path.extname(profileImage.originalname)
+				  path.extname(files.profileImage[0].originalname)
 				: null;
 
 		const channelImagePath =
-			channelImage !== null || channelImage !== undefined
+			files.channelImage[0] !== null || files.channelImage[0] !== undefined
 				? (await bcrypt.hashSync(`${Date.now()}`, 12).replace(/\//g, "")) +
-				  path.extname(channelImage.originalname)
+				  path.extname(files.channelImage[0].originalname)
 				: null;
 
-		this.firebaseService.uploadImage(profileImage,profileImagePath);
-		this.firebaseService.uploadImage(channelImage,channelImagePath);
+		this.firebaseService.uploadImage(files.profileImage[0],profileImagePath);
+		this.firebaseService.uploadImage(files.channelImage[0],channelImagePath);
 
 		return await this.userService.updateUser(updateUserDto,profileImagePath,channelImagePath);
 	}
@@ -75,13 +88,38 @@ export class UserController {
 		const user = await this.userService.getUserByEmail(userId);
 
 		if (
-			user.profile_image_path !== undefined &&
+			user.profile_image_path !== undefined ||
 			user.profile_image_path !== null
 		) {
 			const img = await this.firebaseService.findImage(user.profile_image_path);
-
 			const imgFileExt = user.profile_image_path.split(".");
+			const buffer = Buffer.from(img);
 
+			res.setHeader(
+				"Content-Type",
+				`image/${imgFileExt[imgFileExt.length - 1]}`,
+			);
+			res.setHeader("Content-Length", buffer.length);
+
+			return res.send(buffer);
+		}
+		return null;
+	}
+
+	@ApiBody({ description: "유저가 자신의 카드 이미지를 받아옴" })
+	@Get("channel/image")
+	async getChannelImage(
+		@Res() res: Response,
+		@Query("userId") userId: string,
+	) {
+		const user = await this.userService.getUserByEmail(userId);
+
+		if (
+			user.channel_image_path !== undefined ||
+			user.channel_image_path !== null
+		) {
+			const img = await this.firebaseService.findImage(user.channel_image_path);
+			const imgFileExt = user.channel_image_path.split(".");
 			const buffer = Buffer.from(img);
 
 			res.setHeader(
