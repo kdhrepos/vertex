@@ -119,17 +119,9 @@ export class UserController {
 			user.channel_image_path !== undefined &&
 			user.channel_image_path !== null
 		) {
-			const img = await this.firebaseService.findImage(user.channel_image_path);
-			const imgFileExt = user.channel_image_path.split(".");
-			const buffer = Buffer.from(img);
+			const videoUrl = await this.firebaseService.findImage(user.channel_image_path);
 
-			res.setHeader(
-				"Content-Type",
-				`image/${imgFileExt[imgFileExt.length - 1]}`,
-			);
-			res.setHeader("Content-Length", buffer.length);
-
-			return res.send(buffer);
+			return res.send(videoUrl);
 		}
 		return null;
 	}
