@@ -226,18 +226,21 @@ export class VideoController {
 	@ApiOperation({ description: "비디오에 댓글 등록" })
 	@Post("comment")
 	async createCommentToVideo(@Body() uploadCommentDto: UploadCommentDto) {
+		console.log(uploadCommentDto)
 		return await this.videoCommentService.create(uploadCommentDto);
 	}
 
 	@ApiOperation({ description: "비디오 댓글 수정" })
 	@Patch("comment")
 	async updateCommentToVideo(@Body() updateCommentDto: UpdateCommentDto) {
+		console.log(updateCommentDto)
 		return await this.videoCommentService.update(updateCommentDto);
 	}
 
 	@ApiOperation({ description: "비디오 댓글 삭제" })
 	@Delete("comment")
 	async deleteCommentToVideo(@Body() deleteCommentDto: DeleteCommentDto) {
+		console.log(deleteCommentDto)
 		return await this.videoCommentService.delete(deleteCommentDto);
 	}
 

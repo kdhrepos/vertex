@@ -124,18 +124,21 @@ export class PostController {
 	@ApiOperation({ description: "게시글에 댓글 등록" })
 	@Post("/comment")
 	async createCommentToPost(@Body() uploadCommentDto: UploadCommentDto) {
+		console.log(uploadCommentDto)
 		return await this.postCommentService.create(uploadCommentDto);
 	}
 
 	@ApiOperation({ description: "게시글의 댓글 수정" })
 	@Patch("/comment")
 	async updateCommentToPost(@Body() updateCommentDto: UpdateCommentDto) {
+		console.log(updateCommentDto)
 		return await this.postCommentService.update(updateCommentDto);
 	}
 
 	@ApiOperation({ description: "게시글의 댓글 삭제" })
 	@Delete("/comment")
 	async deleteCommentToPost(@Body() deleteCommentDto: DeleteCommentDto) {
+		console.log(deleteCommentDto)
 		return await this.postCommentService.delete(deleteCommentDto);
 	}
 
