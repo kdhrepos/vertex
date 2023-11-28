@@ -34,13 +34,12 @@ export class VideoRecordService {
 		}
 	}
 
-	async create(video: Video) {
+	async create( videoId: string, userId: string) {
 		try {
-			const { user_email: email, id: videoId } = video;
-
+			console.log(videoId,userId)
 			const existedRecord = await this.recordModel.findOne({
 				where: {
-					user_email: email,
+					user_email: userId,
 					video_id: videoId,
 				},
 			});
@@ -50,7 +49,7 @@ export class VideoRecordService {
 			}
 
 			await this.recordModel.create({
-				user_email: email,
+				user_email: userId,
 				video_id: videoId,
 			});
 		} catch (error) {
@@ -58,10 +57,22 @@ export class VideoRecordService {
 		}
 	}
 
-	/**
-	 * @param userId
-	 * @param videoId
-	 * @description 유저가 시청 목록에서 비디오 삭제
-	 */
-	async delete(userId: string, videoId: string) {}
+
+	async delete(email: string, videoId: string) {
+		try {
+			await this.recordModel.destroy({
+				where:{
+					user_email: email,
+					video_id: videoId,
+				}
+			});
+
+			return {
+				statusCode : 200,
+				message : "Record is successfully deleted"
+			}
+		} catch (error) {
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

@@ -132,6 +132,12 @@ export class UserService {
 			if(description !== null)
 				user.description=description;
 
+			if(profileImagePath !== null)
+				user.profile_image_path=profileImagePath;
+
+			if(channelImagePath !== null)
+				user.channel_image_path=channelImagePath;
+			
 			user.save();
 			
 			return {

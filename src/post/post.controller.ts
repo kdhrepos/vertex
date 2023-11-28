@@ -30,12 +30,14 @@ import { UpdateCommentDto } from "./dto/comment-dto/update-comment.dto";
 import { DeleteCommentDto } from "./dto/comment-dto/delete-comment.dto";
 import { PostCommentService } from "./post-comment.service";
 import { PostService } from "./post.service";
+import { PostLikeService } from "./post-like.service";
 
 @ApiTags("Community")
 @Controller("community")
 export class PostController {
 	constructor(
 		private postService: PostService,
+		private postLikeService:PostLikeService,
 		private postCommentService: PostCommentService,
 		private firebaseService: FirebaseService,
 	) {}
@@ -67,16 +69,9 @@ export class PostController {
 		@Query("postId") postId: number,
 	) {
 		const post = await this.postService.findOne(postId);
-		const img = await this.firebaseService.findImage(post.image_file_path);
+		const imgUrl = await this.firebaseService.findImage(post.image_file_path);
 
-		const imgFileExt = post.image_file_path.split(".");
-
-		const buffer = Buffer.from(img);
-
-		res.setHeader("Content-Type", `image/${imgFileExt[imgFileExt.length - 1]}`);
-		res.setHeader("Content-Length", buffer.length);
-
-		return res.send(buffer);
+		return res.send(imgUrl);
 	}	
 
 	@ApiOperation({ description: "한 채널에 게시글 업로드" })
@@ -88,7 +83,7 @@ export class PostController {
 	) {
 		// 게시글 이미지가 없다면 그냥 null로 삽입
 		const hashedFilePath =
-			img !== null || img !== undefined
+			img !== null && img !== undefined
 				? (await bcrypt.hashSync("asdasdasjid", 12).replace(/\//g, "")) +
 				  path.extname(img.originalname)
 				: null;
@@ -148,6 +143,17 @@ export class PostController {
 	}
 
 	@ApiOperation({ description: "게시글 좋아요 누르기/취소" })
-	@Post("/like")
-	async likeToPost(@Query("postId") postId: string) {}
+	@Post("like")
+	async likeToPost(@Query("postId") postId: number, @Query("email") email: string,) {
+			return await this.postLikeService.create(postId,email);
+	}
+
+	@ApiOperation({ description: "하나의 게시글에 좋아요 눌렀는지 체크" })
+	@Get("like")
+	async checkLikeToVideo(
+		@Body("postId") postId: string,
+		@Body("email") email: string,
+	) {
+			return await this.postLikeService.findOne(postId, email);
+	}
 }

@@ -63,7 +63,6 @@ export class PostService {
 	}
 
 	async findOne(postId: number) {
-		const functionName = PostService.prototype.findOne.name;
 		try {
 			const existedPost = await this.postModel.findOne({
 				where: {
@@ -96,7 +95,7 @@ export class PostService {
 			return existedPost;
 		} catch (error) {
 			throw new HttpException(
-				`${functionName} : ${error}`,
+				`${error}`,
 				HttpStatus.INTERNAL_SERVER_ERROR,
 			);
 		}

@@ -3,6 +3,7 @@ import { Video } from "../model/video.model";
 import { InjectModel } from "@nestjs/sequelize";
 import { UpdateVideoDto } from "./dto/video-dto/update-video.dto";
 import { User } from "src/model/user.model";
+import { Sequelize } from "sequelize";
 
 @Injectable()
 export class VideoService {
@@ -45,9 +46,12 @@ export class VideoService {
 
 	async findOne(videoId: string): Promise<any> {
 		try {
-			const existedVideo = await this.videoModel.findByPk(videoId, {
-				raw: true,
-			});
+			const existedVideo = await this.videoModel.findOne({
+				where:{
+					id:videoId
+				},
+				raw:true,
+			})
 			if (existedVideo) {
 				return existedVideo;
 			}
@@ -141,19 +145,24 @@ export class VideoService {
 		}
 	}
 
-	async updateLike(video: Video, liked: any) {
+	async updateLike(videoId :string, liked: boolean) {
 		const functionName = VideoService.prototype.updateLike.name;
 		try {
-			const { id: videoId, like_count: likeCount } = video;
 			await this.videoModel.update(
 				// 좋아요를 누르지 않았다면 +1, 좋아요를 눌렀었다면 취소이므로 -1
-				{ like_count: liked ? likeCount + 1 : likeCount - 1 },
+				{ like_count: liked ? Sequelize.literal('like_count+1') : Sequelize.literal('like_count-1') },
 				{
 					where: {
 						id: videoId,
 					},
 				},
 			);
+			const likeModel = this.videoModel.findOne({
+				where: {
+					id:videoId
+				}
+			})
+			return (await likeModel).like_count;
 		} catch (error) {
 			throw new HttpException(
 				`${functionName} : ${error}`,

@@ -22,7 +22,7 @@ export class VideoCommentService {
 				where: {
 					video_id: videoId,
 				},
-				attributes: ["content", "createdAt", "parent_id"],
+				attributes: ["id", "user_email", "content", "createdAt", "parent_id"],
 				include: [
 					{
 						model: User,

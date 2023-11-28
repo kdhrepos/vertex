@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsEmail, IsNumber, IsString } from "class-validator";
+import { IsBoolean, IsEmail, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class UpdateCommentDto {
 	@IsEmail()
@@ -26,6 +26,7 @@ export class UpdateCommentDto {
 	})
 	content: string;
 
+	@IsOptional()
 	@IsNumber({ allowNaN: true }, { always: false })
 	@ApiProperty({
 		required: true,
