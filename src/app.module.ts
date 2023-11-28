@@ -38,9 +38,9 @@ import * as path from "path";
 @Module({
 	imports: [
 		ConfigModule.forRoot({
-			envFilePath: `.${process.env.NODE_ENV}.env`,
-			isGlobal: true,
-			expandVariables: true,
+			// envFilePath: `.${process.env.NODE_ENV}.env`,
+			// isGlobal: true,
+			// expandVariables: true,
 		}),
 		SequelizeModule.forRoot({
 			dialect: "mysql",
