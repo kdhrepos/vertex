@@ -252,17 +252,18 @@ export class VideoController {
 
 	@ApiOperation({ description: "유저가 좋아요 누른 비디오 리스트 가져오기" })
 	@Get("like/list")
-	async deleteLikeList(
-		@Query("email") email: string,
-		@Query("videoId") videoId: string,
+	async getLikeList(
+		@Query("email") email: string
 	) {
-		return await this.videoLikeService.delete(email, videoId);
+		return await this.videoLikeService.findAll(email);
 	}
 
 	@ApiOperation({ description: "유저가 좋아요 누른 비디오 리스트 삭제" })
 	@Delete("like/list")
-	async getLikeList(@Query("email") email: string, @Query("videoId") videoId: string) {
-		return await this.videoLikeService.findOne(email,videoId);
+	async deleteLikeList(@Query("email") email: string, @Query("videoId") videoId: string) {
+		console.log(email);
+		console.log(videoId);
+		return await this.videoLikeService.delete(email,videoId);
 	}
 
 	@ApiOperation({ description: "비디오 좋아요/싫어요 누르기" })
