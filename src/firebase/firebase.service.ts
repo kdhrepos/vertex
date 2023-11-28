@@ -107,11 +107,9 @@ export class FirebaseService {
 		}
 	}
 
-	async findVideo(res: Response, video: Video) {
+	async findVideo(videoPath: string) {
 		try {
-			const { id: filePath, video_file_extension: videoFileExtension } = video;
-
-			const videoPath = "videos/" + filePath + videoFileExtension;
+			videoPath = "videos/" + videoPath;
 			const videoDirRef = ref(this.firebaseStorage, videoPath);
 			const videoUrl = await getDownloadURL(videoDirRef);
 

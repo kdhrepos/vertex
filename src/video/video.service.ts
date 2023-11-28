@@ -129,11 +129,10 @@ export class VideoService {
 		}
 	}
 
-	async updateView(video: Video) {
+	async updateView(videoId: string) {
 		try {
-			const { id: videoId, view_count: viewCount } = video;
 			await this.videoModel.update(
-				{ view_count: viewCount + 1 },
+				{ view_count: Sequelize.literal("view_count+1") },
 				{
 					where: {
 						id: videoId,

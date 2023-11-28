@@ -61,23 +61,18 @@ export class VideoController {
 	async streamVideo(
 		@Res() res: Response,
 		@Query("videoId") videoId: string,
+		@Query("videoFileExtension") videoFileExtension:string,
 		@Query("email") email?: string,
+		// @Query("isYoutube") isYoutube : boolean,
 	) {
-		const video = await this.videoService.findOne(videoId);
-		if (video) {
 			// 조회수 갱신, 비디오 기록 후 비디오 스트리밍
-			this.videoService.updateView(video);
-			if (email) this.videoRecordService.create(video.id, email);
+			this.videoService.updateView(videoId);
+			if (email) this.videoRecordService.create(videoId, email);
 
-			const videoUrl = await this.firebaseService.findVideo(res, video);
+			const videoPath = videoId + videoFileExtension;
+			const videoUrl = await this.firebaseService.findVideo(videoPath);
 			console.log("video/watch", videoUrl);
 			return res.send(videoUrl);
-		} else {
-			return res.json({
-				statusCode: 404,
-				message: "Video not found",
-			});
-		}
 	}
 
 	@ApiOperation({ description: "비디오 메타 데이터 요청" })
@@ -298,8 +293,8 @@ export class VideoController {
 	}
 
 	@ApiOperation({ description: "검색을 통해 비디오 요청" })
-	@Get("search/:search_query")
-	async findVideosBySearch(@Query("history") params): Promise < string > {
+	@Get("search")
+	async findVideosBySearch(@Query("history") params: string): Promise < string > {
 		return await this.videoRecommendService.sendMessage(params);
 	}
 }
