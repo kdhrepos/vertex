@@ -32,21 +32,23 @@ import { Hashtag } from "./model/hashtag.model";
 import { Comment } from "./model/comment.model";
 import { Like } from "./model/like.model";
 import { HashtagLink } from "./model/hashtagLink.model";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import * as path from "path";
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({
-			envFilePath: `.${process.env.NODE_ENV}.env`,
-			isGlobal: true,
-			expandVariables: true,
+			// envFilePath: `.${process.env.NODE_ENV}.env`,
+			// isGlobal: true,
+			// expandVariables: true,
 		}),
 		SequelizeModule.forRoot({
 			dialect: "mysql",
-			host: process.env.MYSQL_HOST,
-			port: Number(process.env.MYSQL_PORT),
-			username: process.env.MYSQL_USER,
-			password: process.env.MYSQL_PASSWORD,
-			database: process.env.MYSQL_NAME,
+			host: "165.229.86.160",
+			port: 8194,
+			username: "kim",
+			password: "qwe123",
+			database: "vertex",
 			timezone: "Asia/Seoul",
 			autoLoadModels: true,
 			dialectOptions: {
@@ -70,6 +72,9 @@ import { HashtagLink } from "./model/hashtagLink.model";
 				Hashtag,
 				HashtagLink,
 			],
+		}),
+		ServeStaticModule.forRoot({
+			rootPath: path.join(__dirname, "..", "/build"),
 		}),
 		PostModule,
 		VideoModule,

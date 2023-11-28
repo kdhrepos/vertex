@@ -1,0 +1,1975 @@
+<svg version="1.1" baseProfile="full" width="15539.8" height="1039.0" viewbox="0 0 15539.75 1039" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events">
+<desc >#.interface: fill=lightblue
+#.enumeration: fill=lightgreen
+#.type: fill=lightgray
+[AppModule||+configure(): void]
+[AuthController|-authService: AuthService;-userService: UserService;-firebaseService: FirebaseService|+googleAuth(): Promise&lt;void&gt;;+googleAuthRedirect(): Promise&lt;any&gt;;+localAuth(): Promise&lt;{ data: { email: string; provider_id: string; name: string; profile_image_path: string; background_image_path: string; description: string; gender: string; birthday: string; userSub: Subscription; ... 15 more ...; _model: Model&lt;...&gt;; }; statusCode: number; message: string; }&gt;;+signin(): Promise&lt;User&gt;;+signout(): Promise&lt;boolean&gt;;+checkDuplicatedEmail(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt;&gt;]
+[GoogleAuthGuard||+canActivate(): Promise&lt;boolean&gt;]
+[LocalAuthGuard||+canActivate(): Promise&lt;boolean&gt;]
+[AuthenticatedGuard||+canActivate(): boolean]
+[AuthModule||]
+[AuthService|-userService: UserService|+validateUser(): Promise&lt;{ data: { email: string; provider_id: string; name: string; profile_image_path: string; background_image_path: string; description: string; gender: string; birthday: string; userSub: Subscription; ... 15 more ...; _model: Model&lt;...&gt;; }; statusCode: number; message: string; }&gt;]
+[GoogleStrategy|-userService: UserService|+validate(): Promise&lt;User&gt;]
+[Strategy]&lt;:-[GoogleStrategy]
+[LocalStrategy|-authService: AuthService|+validate(): Promise&lt;any&gt;]
+[Strategy]&lt;:-[LocalStrategy]
+[SessionSerializer||+serializeUser(): any;+deserializeUser(): Promise&lt;void&gt;]
+[PassportSerializer]&lt;:-[SessionSerializer]
+[FirebaseModule||]
+[FirebaseService|-firebase: FirebaseApp;-firebaseStorage: FirebaseStorage;-firebaseConfiguration: { apiKey: string; authDomain: string; projectId: string; storageBucket: string; appId: string; messagingSenderId: string; measurementId: string; }|+uploadVideo(): Promise&lt;{ statusCode: number; message: string; }&gt;;+updateVideo(): Promise&lt;HttpException \| { statusCode: number; message: string; }&gt;;+findVideo(): Promise&lt;void&gt;;+deleteVideo(): Promise&lt;{ statusCode: number; message: string; } \| { statusCode: number; message: string; }&gt;;+downloadVideo(): Promise&lt;string&gt;;+findImage(): Promise&lt;ArrayBuffer&gt;;+uploadImage(): Promise&lt;{ statusCode: number; message: string; }&gt;;+updateImage(): Promise&lt;HttpException \| { statusCode: number; message: string; }&gt;;+deleteImage(): Promise&lt;{ statusCode: number; message: string; }&gt;]
+[HashtagService|-logger: Logger;-hashtagModel: typeof Hashtag;-hashtagLinkModel: typeof HashtagLink|+create(): Promise&lt;void&gt;;+createLink(): Promise&lt;void&gt;;+deleteLink(): Promise&lt;void&gt;]
+[KeywordService|-logger: Logger|]
+[HTTPLoggerMiddleware|-logger: Logger|+use(): void]
+[NestMiddleware&lt;TRequest,TResponse&gt;]&lt;:--[HTTPLoggerMiddleware]
+[Comment|+id: number;+user_email: string;+video_id: string;+post_id: number;+parent_id: number;+content: string;+user: User;+video: Video;+post: Post;+parent: Comment|]
+[Model&lt;TModelAttributes,TCreationAttributes&gt;]&lt;:-[Comment]
+[Hashtag|+id: number;+name: string;+videoLink: HashtagLink;+postLink: HashtagLink|]
+[Model&lt;TModelAttributes,TCreationAttributes&gt;]&lt;:-[Hashtag]
+[HashtagLink|+id: number;+video_id: string;+post_id: number;+hashtag_id: number;+post: Post;+video: Video|]
+[Model&lt;TModelAttributes,TCreationAttributes&gt;]&lt;:-[HashtagLink]
+[Like|+id: number;+user_email: string;+video_id: string;+post_id: number;+user: User;+post: Post;+video: Video|]
+[Model&lt;TModelAttributes,TCreationAttributes&gt;]&lt;:-[Like]
+[PlaylistContents|+video_id: string;+playlist_id: number;+video: Video;+playlist: Playlist|]
+[Model&lt;TModelAttributes,TCreationAttributes&gt;]&lt;:-[PlaylistContents]
+[Playlist|+id: number;+user_email: string;+list_name: string;+is_private: boolean;+user: User;+playlistContents: PlaylistContents|]
+[Model&lt;TModelAttributes,TCreationAttributes&gt;]&lt;:-[Playlist]
+[Post|+id: number;+user_email: string;+channel_email: string;+title: string;+contents: string;+image_file_path: string;+like_count: number;+view_count: number;+user: User;+channel: User;+hashtagLink: HashtagLink;+like: Like|]
+[Model&lt;TModelAttributes,TCreationAttributes&gt;]&lt;:-[Post]
+[Record|+user_email: string;+video_id: string;+video: Video;+user: User|]
+[Model&lt;TModelAttributes,TCreationAttributes&gt;]&lt;:-[Record]
+[Subscription|+user_email: string;+channel_email: string;+user: User\[\];+channel: User\[\]|]
+[Model&lt;TModelAttributes,TCreationAttributes&gt;]&lt;:-[Subscription]
+[User|+email: string;+provider_id: string;+password: string;+name: string;+profile_image_path: string;+background_image_path: string;+description: string;+gender: string;+birthday: string;+userSub: Subscription;+channelSub: Subscription;+videoLike: Like;+postLike: Like;+video: Video;+post: Post|]
+[Model&lt;TModelAttributes,TCreationAttributes&gt;]&lt;:-[User]
+[Video|+id: string;+user_email: string;+title: string;+description: string;+like_count: number;+view_count: number;+video_file_extension: string;+thumbnail_file_extension: string;+user: User;+playlistContents: PlaylistContents;+hashtagLink: HashtagLink;+like: Like;+record: Record|]
+[Model&lt;TModelAttributes,TCreationAttributes&gt;]&lt;:-[Video]
+[PlaylistContentsService|-playlistContentsModel: typeof PlaylistContents|+findAll(): Promise&lt;{ data: PlaylistContents\[\]; statusCode: number; message: string; }&gt;;+add(): Promise&lt;{ data: PlaylistContents; statusCode: number; message: string; }&gt;;+delete(): Promise&lt;{ statusCode: number; message: string; }&gt;]
+[PlaylistController|-playlistService: PlaylistService;-playlistContentsService: PlaylistContentsService|+findPlaylist(): Promise&lt;{ data: Playlist\[\]; statusCode: number; message: string; }&gt;;+createPlaylist(): Promise&lt;Playlist&gt;;+deletePlaylist(): Promise&lt;{ statusCode: number; message: string; }&gt;;+findContents(): Promise&lt;{ data: PlaylistContents\[\]; statusCode: number; message: string; }&gt;;+addToPlaylist(): Promise&lt;{ data: PlaylistContents; statusCode: number; message: string; }&gt;;+deleteToPlaylist(): Promise&lt;void&gt;]
+[PlaylistModule||]
+[PlaylistService|-playlistModel: typeof Playlist|+findAll(): Promise&lt;{ data: Playlist\[\]; statusCode: number; message: string; }&gt;;+create(): Promise&lt;Playlist&gt;;+delete(): Promise&lt;{ statusCode: number; message: string; }&gt;]
+[PostCommentService|-commentModel: typeof Comment|+findAll(): Promise&lt;{ data: Comment\[\]; statusCode: number; message: string; }&gt;;+create(): Promise&lt;{ statusCode: number; message: string; }&gt;;+update(): Promise&lt;{ statusCode: number; message: string; }&gt;;+delete(): Promise&lt;{ statusCode: number; message: string; }&gt;]
+[PostLikeService|-logger: Logger;-likeModel: typeof Like|+put(): Promise&lt;void&gt;]
+[PostController|-postService: PostService;-postCommentService: PostCommentService;-firebaseService: FirebaseService|+findPostList(): Promise&lt;{ data: Post\[\]; statusCode: number; message: string; }&gt;;+findPost(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt;&gt;;+uploadPost(): Promise&lt;void&gt;;+updatePost(): Promise&lt;void&gt;;+deletePost(): Promise&lt;{ statusCode: number; message: string; }&gt;;+getComment(): Promise&lt;{ data: Comment\[\]; statusCode: number; message: string; }&gt;;+createCommentToPost(): Promise&lt;{ statusCode: number; message: string; }&gt;;+updateCommentToPost(): Promise&lt;{ statusCode: number; message: string; }&gt;;+deleteCommentToPost(): Promise&lt;{ statusCode: number; message: string; }&gt;;+likeToPost(): Promise&lt;void&gt;]
+[PostModule||]
+[PostService|-postModel: typeof Post|+findAll(): Promise&lt;{ data: Post\[\]; statusCode: number; message: string; }&gt;;+findOne(): Promise&lt;Post&gt;;+create(): Promise&lt;void&gt;;+update(): Promise&lt;Post&gt;;+delete(): Promise&lt;Post&gt;]
+[SubscriptionController|-subscriptionService: SubscriptionService|+findSubscriptionList(): Promise&lt;{ data: Subscription\[\]; statusCode: number; message: string; }&gt;;+findContentsList(): Promise&lt;{ data: Subscription\[\]; statusCode: number; message: string; }&gt;;+subscribe(): Promise&lt;{ data: Subscription; statusCode: number; message: string; }&gt;;+unsubscribe(): Promise&lt;{ statusCode: number; message: string; }&gt;]
+[SubscriptionModule||]
+[SubscriptionService|-subscriptionModel: typeof Subscription;-videoModel: typeof Video|+findAll(): Promise&lt;{ data: Subscription\[\]; statusCode: number; message: string; }&gt;;+findContents(): Promise&lt;{ data: Subscription\[\]; statusCode: number; message: string; }&gt;;+create(): Promise&lt;{ data: Subscription; statusCode: number; message: string; }&gt;;+delete(): Promise&lt;{ statusCode: number; message: string; }&gt;]
+[UserController|-userService: UserService;-firebaseService: FirebaseService|+getUserProfile(): Promise&lt;{ email: string; provider_id: string; name: string; profile_image_path: string; background_image_path: string; description: string; gender: string; birthday: string; userSub: Subscription; ... 15 more ...; _model: Model&lt;...&gt;; }&gt;;+getUserProfileImage(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt;&gt;]
+[UserModule||]
+[UserService|-userModel: typeof User|+findByEmailOrSave(): Promise&lt;any&gt;;+getUserByEmail(): Promise&lt;User&gt;;+getUserByName(): Promise&lt;User&gt;;+createUser(): Promise&lt;User&gt;;+deleteUser(): Promise&lt;boolean&gt;;+updateUser(): Promise&lt;void&gt;]
+[VideoCommentService|-commentModel: typeof Comment|+findAll(): Promise&lt;{ data: Comment\[\]; statusCode: number; message: string; }&gt;;+create(): Promise&lt;{ data: Comment; statusCode: number; message: string; }&gt;;+update(): Promise&lt;{ statusCode: number; message: string; }&gt;;+delete(): Promise&lt;{ statusCode: number; message: string; }&gt;]
+[VideoLikeService|-likeModel: typeof Like|+findAll(): Promise&lt;false \| Like&gt;;+create(): Promise&lt;boolean&gt;]
+[VideoRecordService|-recordModel: typeof Record|+findAll(): Promise&lt;{ data: Record\[\]; statusCode: number; message: string; }&gt;;+create(): Promise&lt;void&gt;;+delete(): Promise&lt;void&gt;]
+[VideoController|-videoService: VideoService;-videoCommentService: VideoCommentService;-videoRecordService: VideoRecordService;-videoLikeService: VideoLikeService;-firebaseService: FirebaseService|+findVideosByAlgorithm(): Promise&lt;{ data: Video\[\]; statusCode: number; message: string; }&gt;;+streamVideo(): Promise&lt;void \| Response&lt;any, Record&lt;string, any&gt;&gt;&gt;;+getVideoData(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt;&gt;;+getThumbnail(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt; \| HttpException&gt;;+uploadVideo(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt;&gt;;+updateVideo(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt;&gt;;+deleteVideo(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt;&gt;;+downloadVideo(): Promise&lt;void&gt;;+getCommentFromVideo(): Promise&lt;{ data: Comment\[\]; statusCode: number; message: string; }&gt;;+createCommentToVideo(): Promise&lt;{ data: Comment; statusCode: number; message: string; }&gt;;+updateCommentToVideo(): Promise&lt;{ statusCode: number; message: string; }&gt;;+deleteCommentToVideo(): Promise&lt;{ statusCode: number; message: string; }&gt;;+likeToVideo(): Promise&lt;boolean&gt;;+getVideoListInChannel(): Promise&lt;{ data: Video\[\]; statusCode: number; message: string; }&gt;;+getRecordList(): Promise&lt;{ data: Record\[\]; statusCode: number; message: string; }&gt;;+findVideosBySearch(): Promise&lt;any&gt;]
+[VideoModule||]
+[VideoService|-videoModel: typeof Video|+homepage(): Promise&lt;{ data: Video\[\]; statusCode: number; message: string; }&gt;;+findAll(): Promise&lt;{ data: Video\[\]; statusCode: number; message: string; }&gt;;+findOne(): Promise&lt;any&gt;;+create(): Promise&lt;Video&gt;;+updateOne(): Promise&lt;void&gt;;+deleteOne(): Promise&lt;Video&gt;;+updateView(): Promise&lt;void&gt;;+updateLike(): Promise&lt;void&gt;]
+[LoginUserDto|+email: string;+password: string|]
+[CreateUserDto|+email: string;+name: string;+password: string;+description: string;+birthday: string;+gender: string|]
+[DeleteUserDto|+email: string;+password: string|]
+[UpdateUserDto|+password: string;+description: string;+profileImage: File|]
+[DeleteCommentDto|+email: string;+commentId: number;+postId: number|]
+[UpdateCommentDto|+email: string;+commentId: number;+content: string;+postId: number|]
+[UploadCommentDto|+email: string;+content: string;+parentId: number;+postId: number|]
+[CreatePostDto|+email: string;+channelId: string;+title: string;+contents: string;+img: File|]
+[UpdatePostDto|+postId: number;+title: string;+channelEmail: string;+contents: string;+img: File|]
+[DeleteCommentDto|+email: string;+id: number;+videoId: string|]
+[UpdateCommentDto|+email: string;+id: number;+content: string;+parentId: number;+videoId: string|]
+[UploadCommentDto|+email: string;+content: string;+parentId: number;+videoId: string|]
+[DeleteVideoDto|+title: string;+videoId: string|]
+[UpdateVideoDto|+email: string;+title: string;+description: string;+videoId: string|]
+[UploadVideoDto|+email: string;+title: string;+description: string;+video: File;+thumbnail: File|]</desc>
+<g stroke-width="1.0" text-align="left" font="12pt Helvetica, Arial, sans-serif" font-size="12pt" font-family="Helvetica" font-weight="normal" font-style="normal">
+<g font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" stroke-width="3.0" stroke-linejoin="round" stroke-linecap="round" stroke="#33322E">
+<g stroke="transparent" fill="transparent">
+<rect x="0.0" y="0.0" height="1039.0" width="15539.8" stroke="none"></rect>
+</g>
+<g transform="translate(8, 8)" fill="#33322E">
+<g transform="translate(20, 20)" fill="#eee8d5" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal">
+<path d="M2344.4 359.5 L2221.5 683 L2221.5 796.5 L2221.5 796.5 " fill="none"></path>
+<path d="M2349.4 361.4 L2344.4 359.5 L2339.4 357.6 L2349.1 347.0 Z"></path>
+<path d="M2365.6 359.5 L2488.5 683 L2488.5 796.5 L2488.5 796.5 " fill="none"></path>
+<path d="M2370.6 357.6 L2365.6 359.5 L2360.6 361.4 L2360.9 347.0 Z"></path>
+<path d="M2784.0 360.3 L2784 683 L2784 800.5 L2784.0 800.5 " fill="none"></path>
+<path d="M2789.3 360.3 L2784.0 360.3 L2778.7 360.3 L2784.0 347.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M4368.5 360.3 L4368.5 683 L4368.5 796.5 L4368.5 796.5 " fill="none"></path>
+</g>
+<path d="M4373.8 360.3 L4368.5 360.3 L4363.2 360.3 L4368.5 347.0 Z"></path>
+<path d="M5221.6 353.2 L4596.5 683 L4596.5 740.5 L4596.5 740.5 " fill="none"></path>
+<path d="M5224.1 357.9 L5221.6 353.2 L5219.1 348.5 L5233.4 347.0 Z"></path>
+<path d="M5233.2 355.4 L4827.5 683 L4827.5 785.5 L4827.5 785.5 " fill="none"></path>
+<path d="M5236.5 359.5 L5233.2 355.4 L5229.8 351.2 L5243.6 347.0 Z"></path>
+<path d="M5247.5 358.6 L5065 683 L5065 770.5 L5065.0 770.5 " fill="none"></path>
+<path d="M5252.1 361.2 L5247.5 358.6 L5242.8 356.0 L5254.0 347.0 Z"></path>
+<path d="M5264.2 360.3 L5280.5 683 L5280.5 763 L5280.5 763.0 " fill="none"></path>
+<path d="M5269.5 360.0 L5264.2 360.3 L5258.9 360.6 L5263.5 347.0 Z"></path>
+<path d="M5280.1 358.2 L5491.5 683 L5491.5 785.5 L5491.5 785.5 " fill="none"></path>
+<path d="M5284.6 355.3 L5280.1 358.2 L5275.6 361.1 L5272.8 347.0 Z"></path>
+<path d="M5295.7 354.7 L5763.5 683 L5763.5 770.5 L5763.5 770.5 " fill="none"></path>
+<path d="M5298.8 350.3 L5295.7 354.7 L5292.7 359.0 L5284.8 347.0 Z"></path>
+<path d="M5310.3 352.4 L6064 683 L6064 725.5 L6064.0 725.5 " fill="none"></path>
+<path d="M5312.4 347.5 L5310.3 352.4 L5308.2 357.2 L5298.1 347.0 Z"></path>
+<path d="M5321.3 351.3 L6303.5 683 L6303.5 785.5 L6303.5 785.5 " fill="none"></path>
+<path d="M5323.0 346.2 L5321.3 351.3 L5319.6 356.3 L5308.6 347.0 Z"></path>
+<path d="M5331.2 350.6 L6524.5 683 L6524.5 785.5 L6524.5 785.5 " fill="none"></path>
+<path d="M5332.7 345.4 L5331.2 350.6 L5329.8 355.7 L5318.4 347.0 Z"></path>
+<path d="M5343.6 350.0 L6800.5 683 L6800.5 703 L6800.5 703.0 " fill="none"></path>
+<path d="M5344.7 344.8 L5343.6 350.0 L5342.4 355.2 L5330.6 347.0 Z"></path>
+<path d="M5357.9 349.5 L7123.5 683 L7123.5 718 L7123.5 718.0 " fill="none"></path>
+<path d="M5358.9 344.2 L5357.9 349.5 L5356.9 354.7 L5344.8 347.0 Z"></path>
+<g data-name="AppModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="AppModule">
+<rect x="0.0" y="296.5" height="70.0" width="155.0" data-name="AppModule"></rect>
+<path d="M0.0 327.5 L155.0 327.5" fill="none" data-name="AppModule"></path>
+<path d="M0.0 335.5 L155.0 335.5" fill="none" data-name="AppModule"></path>
+</g>
+<g transform="translate(0, 296.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AppModule">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AppModule">
+<a id="src\app.module.ts.AppModule" xlink:href="src\app.module.ts"><text x="69.5" y="13.5" stroke="none" text-anchor="middle" data-name="AppModule">AppModule</text></a>
+
+</g>
+</g>
+<g transform="translate(0, 327.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AppModule">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AppModule">
+
+</g>
+</g>
+<g transform="translate(0, 335.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AppModule">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AppModule">
+<text x="0.0" y="13.5" stroke="none" data-name="AppModule">+configure(): void</text>
+
+</g>
+</g>
+</g>
+<g data-name="AuthController">
+<g fill="#eee8d5" stroke="#33322E" data-name="AuthController">
+<rect x="195.0" y="127.5" height="408.0" width="605.0" data-name="AuthController"></rect>
+<path d="M195.0 158.5 L800.0 158.5" fill="none" data-name="AuthController"></path>
+<path d="M195.0 219.5 L800.0 219.5" fill="none" data-name="AuthController"></path>
+</g>
+<g transform="translate(195, 127.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AuthController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AuthController">
+<a id="src\auth\auth.controller.ts.AuthController" xlink:href="src\auth\auth.controller.ts"><text x="294.5" y="13.5" stroke="none" text-anchor="middle" data-name="AuthController">AuthController</text></a>
+
+</g>
+</g>
+<g transform="translate(195, 158.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AuthController">
+<text x="0.0" y="13.5" stroke="none" data-name="AuthController">-authService: AuthService</text>
+<text x="0.0" y="28.5" stroke="none" data-name="AuthController">-userService: UserService</text>
+<text x="0.0" y="43.5" stroke="none" data-name="AuthController">-firebaseService: FirebaseService</text>
+
+</g>
+</g>
+<g transform="translate(195, 219.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AuthController">
+<text x="0.0" y="13.5" stroke="none" data-name="AuthController">+googleAuth(): Promise&lt;void&gt;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="AuthController">+googleAuthRedirect(): Promise&lt;any&gt;</text>
+<text x="0.0" y="43.5" stroke="none" data-name="AuthController">+localAuth(): Promise&lt;{ data: { email: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="AuthController">provider_id: string</text>
+<text x="0.0" y="73.5" stroke="none" data-name="AuthController">name: string</text>
+<text x="0.0" y="88.5" stroke="none" data-name="AuthController">profile_image_path: string</text>
+<text x="0.0" y="103.5" stroke="none" data-name="AuthController">background_image_path: string</text>
+<text x="0.0" y="118.5" stroke="none" data-name="AuthController">description: string</text>
+<text x="0.0" y="133.5" stroke="none" data-name="AuthController">gender: string</text>
+<text x="0.0" y="148.5" stroke="none" data-name="AuthController">birthday: string</text>
+<text x="0.0" y="163.5" stroke="none" data-name="AuthController">userSub: Subscription</text>
+<text x="0.0" y="178.5" stroke="none" data-name="AuthController">... 15 more ...</text>
+<text x="0.0" y="193.5" stroke="none" data-name="AuthController">_model: Model&lt;...&gt;</text>
+<text x="0.0" y="208.5" stroke="none" data-name="AuthController">}</text>
+<text x="0.0" y="223.5" stroke="none" data-name="AuthController">statusCode: number</text>
+<text x="0.0" y="238.5" stroke="none" data-name="AuthController">message: string</text>
+<text x="0.0" y="253.5" stroke="none" data-name="AuthController">}&gt;</text>
+<text x="0.0" y="268.5" stroke="none" data-name="AuthController">+signin(): Promise&lt;User&gt;</text>
+<text x="0.0" y="283.5" stroke="none" data-name="AuthController">+signout(): Promise&lt;boolean&gt;</text>
+<text x="0.0" y="298.5" stroke="none" data-name="AuthController">+checkDuplicatedEmail(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt;&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="GoogleAuthGuard">
+<g fill="#eee8d5" stroke="#33322E" data-name="GoogleAuthGuard">
+<rect x="840.0" y="296.5" height="70.0" width="288.0" data-name="GoogleAuthGuard"></rect>
+<path d="M840.0 327.5 L1128.0 327.5" fill="none" data-name="GoogleAuthGuard"></path>
+<path d="M840.0 335.5 L1128.0 335.5" fill="none" data-name="GoogleAuthGuard"></path>
+</g>
+<g transform="translate(840, 296.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="GoogleAuthGuard">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="GoogleAuthGuard">
+<a id="src\auth\auth.guard.ts.GoogleAuthGuard" xlink:href="src\auth\auth.guard.ts"><text x="136.0" y="13.5" stroke="none" text-anchor="middle" data-name="GoogleAuthGuard">GoogleAuthGuard</text></a>
+
+</g>
+</g>
+<g transform="translate(840, 327.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GoogleAuthGuard">
+<g transform="translate(8, 8)" fill="#33322E" data-name="GoogleAuthGuard">
+
+</g>
+</g>
+<g transform="translate(840, 335.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GoogleAuthGuard">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GoogleAuthGuard">
+<text x="0.0" y="13.5" stroke="none" data-name="GoogleAuthGuard">+canActivate(): Promise&lt;boolean&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="LocalAuthGuard">
+<g fill="#eee8d5" stroke="#33322E" data-name="LocalAuthGuard">
+<rect x="1168.0" y="296.5" height="70.0" width="288.0" data-name="LocalAuthGuard"></rect>
+<path d="M1168.0 327.5 L1456.0 327.5" fill="none" data-name="LocalAuthGuard"></path>
+<path d="M1168.0 335.5 L1456.0 335.5" fill="none" data-name="LocalAuthGuard"></path>
+</g>
+<g transform="translate(1168, 296.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="LocalAuthGuard">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="LocalAuthGuard">
+<a id="src\auth\auth.guard.ts.LocalAuthGuard" xlink:href="src\auth\auth.guard.ts"><text x="136.0" y="13.5" stroke="none" text-anchor="middle" data-name="LocalAuthGuard">LocalAuthGuard</text></a>
+
+</g>
+</g>
+<g transform="translate(1168, 327.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LocalAuthGuard">
+<g transform="translate(8, 8)" fill="#33322E" data-name="LocalAuthGuard">
+
+</g>
+</g>
+<g transform="translate(1168, 335.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LocalAuthGuard">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="LocalAuthGuard">
+<text x="0.0" y="13.5" stroke="none" data-name="LocalAuthGuard">+canActivate(): Promise&lt;boolean&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="AuthenticatedGuard">
+<g fill="#eee8d5" stroke="#33322E" data-name="AuthenticatedGuard">
+<rect x="1496.0" y="296.5" height="70.0" width="204.0" data-name="AuthenticatedGuard"></rect>
+<path d="M1496.0 327.5 L1700.0 327.5" fill="none" data-name="AuthenticatedGuard"></path>
+<path d="M1496.0 335.5 L1700.0 335.5" fill="none" data-name="AuthenticatedGuard"></path>
+</g>
+<g transform="translate(1496, 296.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AuthenticatedGuard">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AuthenticatedGuard">
+<a id="src\auth\auth.guard.ts.AuthenticatedGuard" xlink:href="src\auth\auth.guard.ts"><text x="94.0" y="13.5" stroke="none" text-anchor="middle" data-name="AuthenticatedGuard">AuthenticatedGuard</text></a>
+
+</g>
+</g>
+<g transform="translate(1496, 327.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthenticatedGuard">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AuthenticatedGuard">
+
+</g>
+</g>
+<g transform="translate(1496, 335.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthenticatedGuard">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AuthenticatedGuard">
+<text x="0.0" y="13.5" stroke="none" data-name="AuthenticatedGuard">+canActivate(): boolean</text>
+
+</g>
+</g>
+</g>
+<g data-name="AuthModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="AuthModule">
+<rect x="1740.0" y="308.0" height="47.0" width="110.0" data-name="AuthModule"></rect>
+<path d="M1740.0 339.0 L1850.0 339.0" fill="none" data-name="AuthModule"></path>
+<path d="M1740.0 347.0 L1850.0 347.0" fill="none" data-name="AuthModule"></path>
+</g>
+<g transform="translate(1740, 308)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AuthModule">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AuthModule">
+<a id="src\auth\auth.module.ts.AuthModule" xlink:href="src\auth\auth.module.ts"><text x="47.0" y="13.5" stroke="none" text-anchor="middle" data-name="AuthModule">AuthModule</text></a>
+
+</g>
+</g>
+<g transform="translate(1740, 339)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthModule">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AuthModule">
+
+</g>
+</g>
+<g transform="translate(1740, 347)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthModule">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AuthModule">
+
+</g>
+</g>
+</g>
+<g data-name="AuthService">
+<g fill="#eee8d5" stroke="#33322E" data-name="AuthService">
+<rect x="1890.0" y="180.0" height="303.0" width="384.0" data-name="AuthService"></rect>
+<path d="M1890.0 211.0 L2274.0 211.0" fill="none" data-name="AuthService"></path>
+<path d="M1890.0 242.0 L2274.0 242.0" fill="none" data-name="AuthService"></path>
+</g>
+<g transform="translate(1890, 180)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AuthService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AuthService">
+<a id="src\auth\auth.service.ts.AuthService" xlink:href="src\auth\auth.service.ts"><text x="184.0" y="13.5" stroke="none" text-anchor="middle" data-name="AuthService">AuthService</text></a>
+
+</g>
+</g>
+<g transform="translate(1890, 211)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AuthService">
+<text x="0.0" y="13.5" stroke="none" data-name="AuthService">-userService: UserService</text>
+
+</g>
+</g>
+<g transform="translate(1890, 242)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AuthService">
+<text x="0.0" y="13.5" stroke="none" data-name="AuthService">+validateUser(): Promise&lt;{ data: { email: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="AuthService">provider_id: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="AuthService">name: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="AuthService">profile_image_path: string</text>
+<text x="0.0" y="73.5" stroke="none" data-name="AuthService">background_image_path: string</text>
+<text x="0.0" y="88.5" stroke="none" data-name="AuthService">description: string</text>
+<text x="0.0" y="103.5" stroke="none" data-name="AuthService">gender: string</text>
+<text x="0.0" y="118.5" stroke="none" data-name="AuthService">birthday: string</text>
+<text x="0.0" y="133.5" stroke="none" data-name="AuthService">userSub: Subscription</text>
+<text x="0.0" y="148.5" stroke="none" data-name="AuthService">... 15 more ...</text>
+<text x="0.0" y="163.5" stroke="none" data-name="AuthService">_model: Model&lt;...&gt;</text>
+<text x="0.0" y="178.5" stroke="none" data-name="AuthService">}</text>
+<text x="0.0" y="193.5" stroke="none" data-name="AuthService">statusCode: number</text>
+<text x="0.0" y="208.5" stroke="none" data-name="AuthService">message: string</text>
+<text x="0.0" y="223.5" stroke="none" data-name="AuthService">}&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="GoogleStrategy">
+<g fill="#eee8d5" stroke="#33322E" data-name="GoogleStrategy">
+<rect x="2106.0" y="796.5" height="93.0" width="231.0" data-name="GoogleStrategy"></rect>
+<path d="M2106.0 827.5 L2337.0 827.5" fill="none" data-name="GoogleStrategy"></path>
+<path d="M2106.0 858.5 L2337.0 858.5" fill="none" data-name="GoogleStrategy"></path>
+</g>
+<g transform="translate(2106, 796.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="GoogleStrategy">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="GoogleStrategy">
+<a id="src\auth\google.strategy.ts.GoogleStrategy" xlink:href="src\auth\google.strategy.ts"><text x="107.5" y="13.5" stroke="none" text-anchor="middle" data-name="GoogleStrategy">GoogleStrategy</text></a>
+
+</g>
+</g>
+<g transform="translate(2106, 827.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GoogleStrategy">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GoogleStrategy">
+<text x="0.0" y="13.5" stroke="none" data-name="GoogleStrategy">-userService: UserService</text>
+
+</g>
+</g>
+<g transform="translate(2106, 858.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GoogleStrategy">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GoogleStrategy">
+<text x="0.0" y="13.5" stroke="none" data-name="GoogleStrategy">+validate(): Promise&lt;User&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="Strategy">
+<g fill="#eee8d5" stroke="#33322E" data-name="Strategy">
+<rect x="2314.0" y="316.0" height="31.0" width="82.0" data-name="Strategy"></rect>
+</g>
+<g transform="translate(2314, 316)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Strategy">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Strategy">
+<text x="33.0" y="13.5" stroke="none" text-anchor="middle" data-name="Strategy">Strategy</text>
+
+</g>
+</g>
+</g>
+<g data-name="LocalStrategy">
+<g fill="#eee8d5" stroke="#33322E" data-name="LocalStrategy">
+<rect x="2377.0" y="796.5" height="93.0" width="223.0" data-name="LocalStrategy"></rect>
+<path d="M2377.0 827.5 L2600.0 827.5" fill="none" data-name="LocalStrategy"></path>
+<path d="M2377.0 858.5 L2600.0 858.5" fill="none" data-name="LocalStrategy"></path>
+</g>
+<g transform="translate(2377, 796.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="LocalStrategy">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="LocalStrategy">
+<a id="src\auth\local.strategy.ts.LocalStrategy" xlink:href="src\auth\local.strategy.ts"><text x="103.5" y="13.5" stroke="none" text-anchor="middle" data-name="LocalStrategy">LocalStrategy</text></a>
+
+</g>
+</g>
+<g transform="translate(2377, 827.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LocalStrategy">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="LocalStrategy">
+<text x="0.0" y="13.5" stroke="none" data-name="LocalStrategy">-authService: AuthService</text>
+
+</g>
+</g>
+<g transform="translate(2377, 858.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LocalStrategy">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="LocalStrategy">
+<text x="0.0" y="13.5" stroke="none" data-name="LocalStrategy">+validate(): Promise&lt;any&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="SessionSerializer">
+<g fill="#eee8d5" stroke="#33322E" data-name="SessionSerializer">
+<rect x="2640.0" y="800.5" height="85.0" width="288.0" data-name="SessionSerializer"></rect>
+<path d="M2640.0 831.5 L2928.0 831.5" fill="none" data-name="SessionSerializer"></path>
+<path d="M2640.0 839.5 L2928.0 839.5" fill="none" data-name="SessionSerializer"></path>
+</g>
+<g transform="translate(2640, 800.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="SessionSerializer">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="SessionSerializer">
+<a id="src\auth\session.serializer.ts.SessionSerializer" xlink:href="src\auth\session.serializer.ts"><text x="136.0" y="13.5" stroke="none" text-anchor="middle" data-name="SessionSerializer">SessionSerializer</text></a>
+
+</g>
+</g>
+<g transform="translate(2640, 831.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SessionSerializer">
+<g transform="translate(8, 8)" fill="#33322E" data-name="SessionSerializer">
+
+</g>
+</g>
+<g transform="translate(2640, 839.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SessionSerializer">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SessionSerializer">
+<text x="0.0" y="13.5" stroke="none" data-name="SessionSerializer">+serializeUser(): any</text>
+<text x="0.0" y="28.5" stroke="none" data-name="SessionSerializer">+deserializeUser(): Promise&lt;void&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="PassportSerializer">
+<g fill="#eee8d5" stroke="#33322E" data-name="PassportSerializer">
+<rect x="2704.0" y="316.0" height="31.0" width="160.0" data-name="PassportSerializer"></rect>
+</g>
+<g transform="translate(2704, 316)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="PassportSerializer">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PassportSerializer">
+<text x="72.0" y="13.5" stroke="none" text-anchor="middle" data-name="PassportSerializer">PassportSerializer</text>
+
+</g>
+</g>
+</g>
+<g data-name="FirebaseModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="FirebaseModule">
+<rect x="2904.0" y="308.0" height="47.0" width="143.0" data-name="FirebaseModule"></rect>
+<path d="M2904.0 339.0 L3047.0 339.0" fill="none" data-name="FirebaseModule"></path>
+<path d="M2904.0 347.0 L3047.0 347.0" fill="none" data-name="FirebaseModule"></path>
+</g>
+<g transform="translate(2904, 308)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="FirebaseModule">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="FirebaseModule">
+<a id="src\firebase\firebase.module.ts.FirebaseModule" xlink:href="src\firebase\firebase.module.ts"><text x="63.5" y="13.5" stroke="none" text-anchor="middle" data-name="FirebaseModule">FirebaseModule</text></a>
+
+</g>
+</g>
+<g transform="translate(2904, 339)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FirebaseModule">
+<g transform="translate(8, 8)" fill="#33322E" data-name="FirebaseModule">
+
+</g>
+</g>
+<g transform="translate(2904, 347)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FirebaseModule">
+<g transform="translate(8, 8)" fill="#33322E" data-name="FirebaseModule">
+
+</g>
+</g>
+</g>
+<g data-name="FirebaseService">
+<g fill="#eee8d5" stroke="#33322E" data-name="FirebaseService">
+<rect x="3087.0" y="52.5" height="558.0" width="522.0" data-name="FirebaseService"></rect>
+<path d="M3087.0 83.5 L3609.0 83.5" fill="none" data-name="FirebaseService"></path>
+<path d="M3087.0 249.5 L3609.0 249.5" fill="none" data-name="FirebaseService"></path>
+</g>
+<g transform="translate(3087, 52.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="FirebaseService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="FirebaseService">
+<a id="src\firebase\firebase.service.ts.FirebaseService" xlink:href="src\firebase\firebase.service.ts"><text x="253.0" y="13.5" stroke="none" text-anchor="middle" data-name="FirebaseService">FirebaseService</text></a>
+
+</g>
+</g>
+<g transform="translate(3087, 83.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FirebaseService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="FirebaseService">
+<text x="0.0" y="13.5" stroke="none" data-name="FirebaseService">-firebase: FirebaseApp</text>
+<text x="0.0" y="28.5" stroke="none" data-name="FirebaseService">-firebaseStorage: FirebaseStorage</text>
+<text x="0.0" y="43.5" stroke="none" data-name="FirebaseService">-firebaseConfiguration: { apiKey: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="FirebaseService">authDomain: string</text>
+<text x="0.0" y="73.5" stroke="none" data-name="FirebaseService">projectId: string</text>
+<text x="0.0" y="88.5" stroke="none" data-name="FirebaseService">storageBucket: string</text>
+<text x="0.0" y="103.5" stroke="none" data-name="FirebaseService">appId: string</text>
+<text x="0.0" y="118.5" stroke="none" data-name="FirebaseService">messagingSenderId: string</text>
+<text x="0.0" y="133.5" stroke="none" data-name="FirebaseService">measurementId: string</text>
+<text x="0.0" y="148.5" stroke="none" data-name="FirebaseService">}</text>
+
+</g>
+</g>
+<g transform="translate(3087, 249.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FirebaseService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="FirebaseService">
+<text x="0.0" y="13.5" stroke="none" data-name="FirebaseService">+uploadVideo(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="FirebaseService">message: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="FirebaseService">}&gt;</text>
+<text x="0.0" y="58.5" stroke="none" data-name="FirebaseService">+updateVideo(): Promise&lt;HttpException | { statusCode: number</text>
+<text x="0.0" y="73.5" stroke="none" data-name="FirebaseService">message: string</text>
+<text x="0.0" y="88.5" stroke="none" data-name="FirebaseService">}&gt;</text>
+<text x="0.0" y="103.5" stroke="none" data-name="FirebaseService">+findVideo(): Promise&lt;void&gt;</text>
+<text x="0.0" y="118.5" stroke="none" data-name="FirebaseService">+deleteVideo(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="133.5" stroke="none" data-name="FirebaseService">message: string</text>
+<text x="0.0" y="148.5" stroke="none" data-name="FirebaseService">} | { statusCode: number</text>
+<text x="0.0" y="163.5" stroke="none" data-name="FirebaseService">message: string</text>
+<text x="0.0" y="178.5" stroke="none" data-name="FirebaseService">}&gt;</text>
+<text x="0.0" y="193.5" stroke="none" data-name="FirebaseService">+downloadVideo(): Promise&lt;string&gt;</text>
+<text x="0.0" y="208.5" stroke="none" data-name="FirebaseService">+findImage(): Promise&lt;ArrayBuffer&gt;</text>
+<text x="0.0" y="223.5" stroke="none" data-name="FirebaseService">+uploadImage(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="238.5" stroke="none" data-name="FirebaseService">message: string</text>
+<text x="0.0" y="253.5" stroke="none" data-name="FirebaseService">}&gt;</text>
+<text x="0.0" y="268.5" stroke="none" data-name="FirebaseService">+updateImage(): Promise&lt;HttpException | { statusCode: number</text>
+<text x="0.0" y="283.5" stroke="none" data-name="FirebaseService">message: string</text>
+<text x="0.0" y="298.5" stroke="none" data-name="FirebaseService">}&gt;</text>
+<text x="0.0" y="313.5" stroke="none" data-name="FirebaseService">+deleteImage(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="328.5" stroke="none" data-name="FirebaseService">message: string</text>
+<text x="0.0" y="343.5" stroke="none" data-name="FirebaseService">}&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="HashtagService">
+<g fill="#eee8d5" stroke="#33322E" data-name="HashtagService">
+<rect x="3649.0" y="255.0" height="153.0" width="330.0" data-name="HashtagService"></rect>
+<path d="M3649.0 286.0 L3979.0 286.0" fill="none" data-name="HashtagService"></path>
+<path d="M3649.0 347.0 L3979.0 347.0" fill="none" data-name="HashtagService"></path>
+</g>
+<g transform="translate(3649, 255)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="HashtagService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="HashtagService">
+<a id="src\hashtag\hashtag.service.ts.HashtagService" xlink:href="src\hashtag\hashtag.service.ts"><text x="157.0" y="13.5" stroke="none" text-anchor="middle" data-name="HashtagService">HashtagService</text></a>
+
+</g>
+</g>
+<g transform="translate(3649, 286)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="HashtagService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="HashtagService">
+<text x="0.0" y="13.5" stroke="none" data-name="HashtagService">-logger: Logger</text>
+<text x="0.0" y="28.5" stroke="none" data-name="HashtagService">-hashtagModel: typeof Hashtag</text>
+<text x="0.0" y="43.5" stroke="none" data-name="HashtagService">-hashtagLinkModel: typeof HashtagLink</text>
+
+</g>
+</g>
+<g transform="translate(3649, 347)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="HashtagService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="HashtagService">
+<text x="0.0" y="13.5" stroke="none" data-name="HashtagService">+create(): Promise&lt;void&gt;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="HashtagService">+createLink(): Promise&lt;void&gt;</text>
+<text x="0.0" y="43.5" stroke="none" data-name="HashtagService">+deleteLink(): Promise&lt;void&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="KeywordService">
+<g fill="#eee8d5" stroke="#33322E" data-name="KeywordService">
+<rect x="4019.0" y="296.5" height="70.0" width="143.0" data-name="KeywordService"></rect>
+<path d="M4019.0 327.5 L4162.0 327.5" fill="none" data-name="KeywordService"></path>
+<path d="M4019.0 358.5 L4162.0 358.5" fill="none" data-name="KeywordService"></path>
+</g>
+<g transform="translate(4019, 296.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="KeywordService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="KeywordService">
+<a id="src\keyword\keyword.service.ts.KeywordService" xlink:href="src\keyword\keyword.service.ts"><text x="63.5" y="13.5" stroke="none" text-anchor="middle" data-name="KeywordService">KeywordService</text></a>
+
+</g>
+</g>
+<g transform="translate(4019, 327.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="KeywordService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="KeywordService">
+<text x="0.0" y="13.5" stroke="none" data-name="KeywordService">-logger: Logger</text>
+
+</g>
+</g>
+<g transform="translate(4019, 358.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="KeywordService">
+<g transform="translate(8, 8)" fill="#33322E" data-name="KeywordService">
+
+</g>
+</g>
+</g>
+<g data-name="HTTPLoggerMiddleware">
+<g fill="#eee8d5" stroke="#33322E" data-name="HTTPLoggerMiddleware">
+<rect x="4266.0" y="796.5" height="93.0" width="205.0" data-name="HTTPLoggerMiddleware"></rect>
+<path d="M4266.0 827.5 L4471.0 827.5" fill="none" data-name="HTTPLoggerMiddleware"></path>
+<path d="M4266.0 858.5 L4471.0 858.5" fill="none" data-name="HTTPLoggerMiddleware"></path>
+</g>
+<g transform="translate(4266, 796.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="HTTPLoggerMiddleware">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="HTTPLoggerMiddleware">
+<a id="src\middleware\http-logger.middleware.ts.HTTPLoggerMiddleware" xlink:href="src\middleware\http-logger.middleware.ts"><text x="94.5" y="13.5" stroke="none" text-anchor="middle" data-name="HTTPLoggerMiddleware">HTTPLoggerMiddleware</text></a>
+
+</g>
+</g>
+<g transform="translate(4266, 827.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="HTTPLoggerMiddleware">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="HTTPLoggerMiddleware">
+<text x="0.0" y="13.5" stroke="none" data-name="HTTPLoggerMiddleware">-logger: Logger</text>
+
+</g>
+</g>
+<g transform="translate(4266, 858.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="HTTPLoggerMiddleware">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="HTTPLoggerMiddleware">
+<text x="0.0" y="13.5" stroke="none" data-name="HTTPLoggerMiddleware">+use(): void</text>
+
+</g>
+</g>
+</g>
+<g data-name="NestMiddleware&lt;TRequest,TResponse&gt;">
+<g fill="#eee8d5" stroke="#33322E" data-name="NestMiddleware&lt;TRequest,TResponse&gt;">
+<rect x="4202.0" y="316.0" height="31.0" width="333.0" data-name="NestMiddleware&lt;TRequest,TResponse&gt;"></rect>
+</g>
+<g transform="translate(4202, 316)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="NestMiddleware&lt;TRequest,TResponse&gt;">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="NestMiddleware&lt;TRequest,TResponse&gt;">
+<text x="158.5" y="13.5" stroke="none" text-anchor="middle" data-name="NestMiddleware&lt;TRequest,TResponse&gt;">NestMiddleware&lt;TRequest,TResponse&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="Comment">
+<g fill="#eee8d5" stroke="#33322E" data-name="Comment">
+<rect x="4511.0" y="740.5" height="205.0" width="171.0" data-name="Comment"></rect>
+<path d="M4511.0 771.5 L4682.0 771.5" fill="none" data-name="Comment"></path>
+<path d="M4511.0 937.5 L4682.0 937.5" fill="none" data-name="Comment"></path>
+</g>
+<g transform="translate(4511, 740.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Comment">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Comment">
+<a id="src\model\comment.model.ts.Comment" xlink:href="src\model\comment.model.ts"><text x="77.5" y="13.5" stroke="none" text-anchor="middle" data-name="Comment">Comment</text></a>
+
+</g>
+</g>
+<g transform="translate(4511, 771.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Comment">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Comment">
+<text x="0.0" y="13.5" stroke="none" data-name="Comment">+id: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="Comment">+user_email: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="Comment">+video_id: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="Comment">+post_id: number</text>
+<text x="0.0" y="73.5" stroke="none" data-name="Comment">+parent_id: number</text>
+<text x="0.0" y="88.5" stroke="none" data-name="Comment">+content: string</text>
+<text x="0.0" y="103.5" stroke="none" data-name="Comment">+user: User</text>
+<text x="0.0" y="118.5" stroke="none" data-name="Comment">+video: Video</text>
+<text x="0.0" y="133.5" stroke="none" data-name="Comment">+post: Post</text>
+<text x="0.0" y="148.5" stroke="none" data-name="Comment">+parent: Comment</text>
+
+</g>
+</g>
+<g transform="translate(4511, 937.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Comment">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Comment">
+
+</g>
+</g>
+</g>
+<g data-name="Model&lt;TModelAttributes,TCreationAttributes&gt;">
+<g fill="#eee8d5" stroke="#33322E" data-name="Model&lt;TModelAttributes,TCreationAttributes&gt;">
+<rect x="5075.8" y="316.0" height="31.0" width="374.0" data-name="Model&lt;TModelAttributes,TCreationAttributes&gt;"></rect>
+</g>
+<g transform="translate(5075.75, 316)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Model&lt;TModelAttributes,TCreationAttributes&gt;">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Model&lt;TModelAttributes,TCreationAttributes&gt;">
+<text x="179.0" y="13.5" stroke="none" text-anchor="middle" data-name="Model&lt;TModelAttributes,TCreationAttributes&gt;">Model&lt;TModelAttributes,TCreationAttributes&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="Hashtag">
+<g fill="#eee8d5" stroke="#33322E" data-name="Hashtag">
+<rect x="4722.0" y="785.5" height="115.0" width="211.0" data-name="Hashtag"></rect>
+<path d="M4722.0 816.5 L4933.0 816.5" fill="none" data-name="Hashtag"></path>
+<path d="M4722.0 892.5 L4933.0 892.5" fill="none" data-name="Hashtag"></path>
+</g>
+<g transform="translate(4722, 785.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Hashtag">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Hashtag">
+<a id="src\model\hashtag.model.ts.Hashtag" xlink:href="src\model\hashtag.model.ts"><text x="97.5" y="13.5" stroke="none" text-anchor="middle" data-name="Hashtag">Hashtag</text></a>
+
+</g>
+</g>
+<g transform="translate(4722, 816.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Hashtag">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Hashtag">
+<text x="0.0" y="13.5" stroke="none" data-name="Hashtag">+id: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="Hashtag">+name: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="Hashtag">+videoLink: HashtagLink</text>
+<text x="0.0" y="58.5" stroke="none" data-name="Hashtag">+postLink: HashtagLink</text>
+
+</g>
+</g>
+<g transform="translate(4722, 892.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Hashtag">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Hashtag">
+
+</g>
+</g>
+</g>
+<g data-name="HashtagLink">
+<g fill="#eee8d5" stroke="#33322E" data-name="HashtagLink">
+<rect x="4973.0" y="770.5" height="145.0" width="184.0" data-name="HashtagLink"></rect>
+<path d="M4973.0 801.5 L5157.0 801.5" fill="none" data-name="HashtagLink"></path>
+<path d="M4973.0 907.5 L5157.0 907.5" fill="none" data-name="HashtagLink"></path>
+</g>
+<g transform="translate(4973, 770.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="HashtagLink">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="HashtagLink">
+<a id="src\model\hashtagLink.model.ts.HashtagLink" xlink:href="src\model\hashtagLink.model.ts"><text x="84.0" y="13.5" stroke="none" text-anchor="middle" data-name="HashtagLink">HashtagLink</text></a>
+
+</g>
+</g>
+<g transform="translate(4973, 801.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="HashtagLink">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="HashtagLink">
+<text x="0.0" y="13.5" stroke="none" data-name="HashtagLink">+id: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="HashtagLink">+video_id: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="HashtagLink">+post_id: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="HashtagLink">+hashtag_id: number</text>
+<text x="0.0" y="73.5" stroke="none" data-name="HashtagLink">+post: Post</text>
+<text x="0.0" y="88.5" stroke="none" data-name="HashtagLink">+video: Video</text>
+
+</g>
+</g>
+<g transform="translate(4973, 907.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="HashtagLink">
+<g transform="translate(8, 8)" fill="#33322E" data-name="HashtagLink">
+
+</g>
+</g>
+</g>
+<g data-name="Like">
+<g fill="#eee8d5" stroke="#33322E" data-name="Like">
+<rect x="5197.0" y="763.0" height="160.0" width="167.0" data-name="Like"></rect>
+<path d="M5197.0 794.0 L5364.0 794.0" fill="none" data-name="Like"></path>
+<path d="M5197.0 915.0 L5364.0 915.0" fill="none" data-name="Like"></path>
+</g>
+<g transform="translate(5197, 763)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Like">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Like">
+<a id="src\model\like.model.ts.Like" xlink:href="src\model\like.model.ts"><text x="75.5" y="13.5" stroke="none" text-anchor="middle" data-name="Like">Like</text></a>
+
+</g>
+</g>
+<g transform="translate(5197, 794)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Like">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Like">
+<text x="0.0" y="13.5" stroke="none" data-name="Like">+id: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="Like">+user_email: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="Like">+video_id: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="Like">+post_id: number</text>
+<text x="0.0" y="73.5" stroke="none" data-name="Like">+user: User</text>
+<text x="0.0" y="88.5" stroke="none" data-name="Like">+post: Post</text>
+<text x="0.0" y="103.5" stroke="none" data-name="Like">+video: Video</text>
+
+</g>
+</g>
+<g transform="translate(5197, 915)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Like">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Like">
+
+</g>
+</g>
+</g>
+<g data-name="PlaylistContents">
+<g fill="#eee8d5" stroke="#33322E" data-name="PlaylistContents">
+<rect x="5404.0" y="785.5" height="115.0" width="175.0" data-name="PlaylistContents"></rect>
+<path d="M5404.0 816.5 L5579.0 816.5" fill="none" data-name="PlaylistContents"></path>
+<path d="M5404.0 892.5 L5579.0 892.5" fill="none" data-name="PlaylistContents"></path>
+</g>
+<g transform="translate(5404, 785.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="PlaylistContents">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PlaylistContents">
+<a id="src\model\playlist-contents.model.ts.PlaylistContents" xlink:href="src\model\playlist-contents.model.ts"><text x="79.5" y="13.5" stroke="none" text-anchor="middle" data-name="PlaylistContents">PlaylistContents</text></a>
+
+</g>
+</g>
+<g transform="translate(5404, 816.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlaylistContents">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PlaylistContents">
+<text x="0.0" y="13.5" stroke="none" data-name="PlaylistContents">+video_id: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PlaylistContents">+playlist_id: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="PlaylistContents">+video: Video</text>
+<text x="0.0" y="58.5" stroke="none" data-name="PlaylistContents">+playlist: Playlist</text>
+
+</g>
+</g>
+<g transform="translate(5404, 892.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlaylistContents">
+<g transform="translate(8, 8)" fill="#33322E" data-name="PlaylistContents">
+
+</g>
+</g>
+</g>
+<g data-name="Playlist">
+<g fill="#eee8d5" stroke="#33322E" data-name="Playlist">
+<rect x="5619.0" y="770.5" height="145.0" width="289.0" data-name="Playlist"></rect>
+<path d="M5619.0 801.5 L5908.0 801.5" fill="none" data-name="Playlist"></path>
+<path d="M5619.0 907.5 L5908.0 907.5" fill="none" data-name="Playlist"></path>
+</g>
+<g transform="translate(5619, 770.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Playlist">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Playlist">
+<a id="src\model\playlist.model.ts.Playlist" xlink:href="src\model\playlist.model.ts"><text x="136.5" y="13.5" stroke="none" text-anchor="middle" data-name="Playlist">Playlist</text></a>
+
+</g>
+</g>
+<g transform="translate(5619, 801.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Playlist">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Playlist">
+<text x="0.0" y="13.5" stroke="none" data-name="Playlist">+id: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="Playlist">+user_email: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="Playlist">+list_name: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="Playlist">+is_private: boolean</text>
+<text x="0.0" y="73.5" stroke="none" data-name="Playlist">+user: User</text>
+<text x="0.0" y="88.5" stroke="none" data-name="Playlist">+playlistContents: PlaylistContents</text>
+
+</g>
+</g>
+<g transform="translate(5619, 907.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Playlist">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Playlist">
+
+</g>
+</g>
+</g>
+<g data-name="Post">
+<g fill="#eee8d5" stroke="#33322E" data-name="Post">
+<rect x="5948.0" y="725.5" height="235.0" width="232.0" data-name="Post"></rect>
+<path d="M5948.0 756.5 L6180.0 756.5" fill="none" data-name="Post"></path>
+<path d="M5948.0 952.5 L6180.0 952.5" fill="none" data-name="Post"></path>
+</g>
+<g transform="translate(5948, 725.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Post">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Post">
+<a id="src\model\post.model.ts.Post" xlink:href="src\model\post.model.ts"><text x="108.0" y="13.5" stroke="none" text-anchor="middle" data-name="Post">Post</text></a>
+
+</g>
+</g>
+<g transform="translate(5948, 756.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Post">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Post">
+<text x="0.0" y="13.5" stroke="none" data-name="Post">+id: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="Post">+user_email: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="Post">+channel_email: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="Post">+title: string</text>
+<text x="0.0" y="73.5" stroke="none" data-name="Post">+contents: string</text>
+<text x="0.0" y="88.5" stroke="none" data-name="Post">+image_file_path: string</text>
+<text x="0.0" y="103.5" stroke="none" data-name="Post">+like_count: number</text>
+<text x="0.0" y="118.5" stroke="none" data-name="Post">+view_count: number</text>
+<text x="0.0" y="133.5" stroke="none" data-name="Post">+user: User</text>
+<text x="0.0" y="148.5" stroke="none" data-name="Post">+channel: User</text>
+<text x="0.0" y="163.5" stroke="none" data-name="Post">+hashtagLink: HashtagLink</text>
+<text x="0.0" y="178.5" stroke="none" data-name="Post">+like: Like</text>
+
+</g>
+</g>
+<g transform="translate(5948, 952.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Post">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Post">
+
+</g>
+</g>
+</g>
+<g data-name="Record">
+<g fill="#eee8d5" stroke="#33322E" data-name="Record">
+<rect x="6220.0" y="785.5" height="115.0" width="167.0" data-name="Record"></rect>
+<path d="M6220.0 816.5 L6387.0 816.5" fill="none" data-name="Record"></path>
+<path d="M6220.0 892.5 L6387.0 892.5" fill="none" data-name="Record"></path>
+</g>
+<g transform="translate(6220, 785.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Record">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Record">
+<a id="src\model\record.model.ts.Record" xlink:href="src\model\record.model.ts"><text x="75.5" y="13.5" stroke="none" text-anchor="middle" data-name="Record">Record</text></a>
+
+</g>
+</g>
+<g transform="translate(6220, 816.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Record">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Record">
+<text x="0.0" y="13.5" stroke="none" data-name="Record">+user_email: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="Record">+video_id: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="Record">+video: Video</text>
+<text x="0.0" y="58.5" stroke="none" data-name="Record">+user: User</text>
+
+</g>
+</g>
+<g transform="translate(6220, 892.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Record">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Record">
+
+</g>
+</g>
+</g>
+<g data-name="Subscription">
+<g fill="#eee8d5" stroke="#33322E" data-name="Subscription">
+<rect x="6427.0" y="785.5" height="115.0" width="195.0" data-name="Subscription"></rect>
+<path d="M6427.0 816.5 L6622.0 816.5" fill="none" data-name="Subscription"></path>
+<path d="M6427.0 892.5 L6622.0 892.5" fill="none" data-name="Subscription"></path>
+</g>
+<g transform="translate(6427, 785.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Subscription">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Subscription">
+<a id="src\model\subscription.model.ts.Subscription" xlink:href="src\model\subscription.model.ts"><text x="89.5" y="13.5" stroke="none" text-anchor="middle" data-name="Subscription">Subscription</text></a>
+
+</g>
+</g>
+<g transform="translate(6427, 816.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Subscription">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Subscription">
+<text x="0.0" y="13.5" stroke="none" data-name="Subscription">+user_email: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="Subscription">+channel_email: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="Subscription">+user: User[]</text>
+<text x="0.0" y="58.5" stroke="none" data-name="Subscription">+channel: User[]</text>
+
+</g>
+</g>
+<g transform="translate(6427, 892.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Subscription">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Subscription">
+
+</g>
+</g>
+</g>
+<g data-name="User">
+<g fill="#eee8d5" stroke="#33322E" data-name="User">
+<rect x="6662.0" y="703.0" height="280.0" width="277.0" data-name="User"></rect>
+<path d="M6662.0 734.0 L6939.0 734.0" fill="none" data-name="User"></path>
+<path d="M6662.0 975.0 L6939.0 975.0" fill="none" data-name="User"></path>
+</g>
+<g transform="translate(6662, 703)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="User">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="User">
+<a id="src\model\user.model.ts.User" xlink:href="src\model\user.model.ts"><text x="130.5" y="13.5" stroke="none" text-anchor="middle" data-name="User">User</text></a>
+
+</g>
+</g>
+<g transform="translate(6662, 734)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="User">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="User">
+<text x="0.0" y="13.5" stroke="none" data-name="User">+email: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="User">+provider_id: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="User">+password: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="User">+name: string</text>
+<text x="0.0" y="73.5" stroke="none" data-name="User">+profile_image_path: string</text>
+<text x="0.0" y="88.5" stroke="none" data-name="User">+background_image_path: string</text>
+<text x="0.0" y="103.5" stroke="none" data-name="User">+description: string</text>
+<text x="0.0" y="118.5" stroke="none" data-name="User">+gender: string</text>
+<text x="0.0" y="133.5" stroke="none" data-name="User">+birthday: string</text>
+<text x="0.0" y="148.5" stroke="none" data-name="User">+userSub: Subscription</text>
+<text x="0.0" y="163.5" stroke="none" data-name="User">+channelSub: Subscription</text>
+<text x="0.0" y="178.5" stroke="none" data-name="User">+videoLike: Like</text>
+<text x="0.0" y="193.5" stroke="none" data-name="User">+postLike: Like</text>
+<text x="0.0" y="208.5" stroke="none" data-name="User">+video: Video</text>
+<text x="0.0" y="223.5" stroke="none" data-name="User">+post: Post</text>
+
+</g>
+</g>
+<g transform="translate(6662, 975)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="User">
+<g transform="translate(8, 8)" fill="#33322E" data-name="User">
+
+</g>
+</g>
+</g>
+<g data-name="Video">
+<g fill="#eee8d5" stroke="#33322E" data-name="Video">
+<rect x="6979.0" y="718.0" height="250.0" width="289.0" data-name="Video"></rect>
+<path d="M6979.0 749.0 L7268.0 749.0" fill="none" data-name="Video"></path>
+<path d="M6979.0 960.0 L7268.0 960.0" fill="none" data-name="Video"></path>
+</g>
+<g transform="translate(6979, 718)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Video">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Video">
+<a id="src\model\video.model.ts.Video" xlink:href="src\model\video.model.ts"><text x="136.5" y="13.5" stroke="none" text-anchor="middle" data-name="Video">Video</text></a>
+
+</g>
+</g>
+<g transform="translate(6979, 749)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Video">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Video">
+<text x="0.0" y="13.5" stroke="none" data-name="Video">+id: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="Video">+user_email: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="Video">+title: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="Video">+description: string</text>
+<text x="0.0" y="73.5" stroke="none" data-name="Video">+like_count: number</text>
+<text x="0.0" y="88.5" stroke="none" data-name="Video">+view_count: number</text>
+<text x="0.0" y="103.5" stroke="none" data-name="Video">+video_file_extension: string</text>
+<text x="0.0" y="118.5" stroke="none" data-name="Video">+thumbnail_file_extension: string</text>
+<text x="0.0" y="133.5" stroke="none" data-name="Video">+user: User</text>
+<text x="0.0" y="148.5" stroke="none" data-name="Video">+playlistContents: PlaylistContents</text>
+<text x="0.0" y="163.5" stroke="none" data-name="Video">+hashtagLink: HashtagLink</text>
+<text x="0.0" y="178.5" stroke="none" data-name="Video">+like: Like</text>
+<text x="0.0" y="193.5" stroke="none" data-name="Video">+record: Record</text>
+
+</g>
+</g>
+<g transform="translate(6979, 960)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Video">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Video">
+
+</g>
+</g>
+</g>
+<g data-name="PlaylistContentsService">
+<g fill="#eee8d5" stroke="#33322E" data-name="PlaylistContentsService">
+<rect x="5489.8" y="210.0" height="243.0" width="387.0" data-name="PlaylistContentsService"></rect>
+<path d="M5489.8 241.0 L5876.8 241.0" fill="none" data-name="PlaylistContentsService"></path>
+<path d="M5489.8 272.0 L5876.8 272.0" fill="none" data-name="PlaylistContentsService"></path>
+</g>
+<g transform="translate(5489.75, 210)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="PlaylistContentsService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PlaylistContentsService">
+<a id="src\playlist\playlist-contents.service.ts.PlaylistContentsService" xlink:href="src\playlist\playlist-contents.service.ts"><text x="185.5" y="13.5" stroke="none" text-anchor="middle" data-name="PlaylistContentsService">PlaylistContentsService</text></a>
+
+</g>
+</g>
+<g transform="translate(5489.75, 241)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlaylistContentsService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PlaylistContentsService">
+<text x="0.0" y="13.5" stroke="none" data-name="PlaylistContentsService">-playlistContentsModel: typeof PlaylistContents</text>
+
+</g>
+</g>
+<g transform="translate(5489.75, 272)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlaylistContentsService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PlaylistContentsService">
+<text x="0.0" y="13.5" stroke="none" data-name="PlaylistContentsService">+findAll(): Promise&lt;{ data: PlaylistContents[]</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PlaylistContentsService">statusCode: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="PlaylistContentsService">message: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="PlaylistContentsService">}&gt;</text>
+<text x="0.0" y="73.5" stroke="none" data-name="PlaylistContentsService">+add(): Promise&lt;{ data: PlaylistContents</text>
+<text x="0.0" y="88.5" stroke="none" data-name="PlaylistContentsService">statusCode: number</text>
+<text x="0.0" y="103.5" stroke="none" data-name="PlaylistContentsService">message: string</text>
+<text x="0.0" y="118.5" stroke="none" data-name="PlaylistContentsService">}&gt;</text>
+<text x="0.0" y="133.5" stroke="none" data-name="PlaylistContentsService">+delete(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="148.5" stroke="none" data-name="PlaylistContentsService">message: string</text>
+<text x="0.0" y="163.5" stroke="none" data-name="PlaylistContentsService">}&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="PlaylistController">
+<g fill="#eee8d5" stroke="#33322E" data-name="PlaylistController">
+<rect x="5916.8" y="157.5" height="348.0" width="415.0" data-name="PlaylistController"></rect>
+<path d="M5916.8 188.5 L6331.8 188.5" fill="none" data-name="PlaylistController"></path>
+<path d="M5916.8 234.5 L6331.8 234.5" fill="none" data-name="PlaylistController"></path>
+</g>
+<g transform="translate(5916.75, 157.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="PlaylistController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PlaylistController">
+<a id="src\playlist\playlist.controller.ts.PlaylistController" xlink:href="src\playlist\playlist.controller.ts"><text x="199.5" y="13.5" stroke="none" text-anchor="middle" data-name="PlaylistController">PlaylistController</text></a>
+
+</g>
+</g>
+<g transform="translate(5916.75, 188.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlaylistController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PlaylistController">
+<text x="0.0" y="13.5" stroke="none" data-name="PlaylistController">-playlistService: PlaylistService</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PlaylistController">-playlistContentsService: PlaylistContentsService</text>
+
+</g>
+</g>
+<g transform="translate(5916.75, 234.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlaylistController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PlaylistController">
+<text x="0.0" y="13.5" stroke="none" data-name="PlaylistController">+findPlaylist(): Promise&lt;{ data: Playlist[]</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PlaylistController">statusCode: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="PlaylistController">message: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="PlaylistController">}&gt;</text>
+<text x="0.0" y="73.5" stroke="none" data-name="PlaylistController">+createPlaylist(): Promise&lt;Playlist&gt;</text>
+<text x="0.0" y="88.5" stroke="none" data-name="PlaylistController">+deletePlaylist(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="103.5" stroke="none" data-name="PlaylistController">message: string</text>
+<text x="0.0" y="118.5" stroke="none" data-name="PlaylistController">}&gt;</text>
+<text x="0.0" y="133.5" stroke="none" data-name="PlaylistController">+findContents(): Promise&lt;{ data: PlaylistContents[]</text>
+<text x="0.0" y="148.5" stroke="none" data-name="PlaylistController">statusCode: number</text>
+<text x="0.0" y="163.5" stroke="none" data-name="PlaylistController">message: string</text>
+<text x="0.0" y="178.5" stroke="none" data-name="PlaylistController">}&gt;</text>
+<text x="0.0" y="193.5" stroke="none" data-name="PlaylistController">+addToPlaylist(): Promise&lt;{ data: PlaylistContents</text>
+<text x="0.0" y="208.5" stroke="none" data-name="PlaylistController">statusCode: number</text>
+<text x="0.0" y="223.5" stroke="none" data-name="PlaylistController">message: string</text>
+<text x="0.0" y="238.5" stroke="none" data-name="PlaylistController">}&gt;</text>
+<text x="0.0" y="253.5" stroke="none" data-name="PlaylistController">+deleteToPlaylist(): Promise&lt;void&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="PlaylistModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="PlaylistModule">
+<rect x="6371.8" y="308.0" height="47.0" width="130.0" data-name="PlaylistModule"></rect>
+<path d="M6371.8 339.0 L6501.8 339.0" fill="none" data-name="PlaylistModule"></path>
+<path d="M6371.8 347.0 L6501.8 347.0" fill="none" data-name="PlaylistModule"></path>
+</g>
+<g transform="translate(6371.75, 308)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="PlaylistModule">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PlaylistModule">
+<a id="src\playlist\playlist.module.ts.PlaylistModule" xlink:href="src\playlist\playlist.module.ts"><text x="57.0" y="13.5" stroke="none" text-anchor="middle" data-name="PlaylistModule">PlaylistModule</text></a>
+
+</g>
+</g>
+<g transform="translate(6371.75, 339)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlaylistModule">
+<g transform="translate(8, 8)" fill="#33322E" data-name="PlaylistModule">
+
+</g>
+</g>
+<g transform="translate(6371.75, 347)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlaylistModule">
+<g transform="translate(8, 8)" fill="#33322E" data-name="PlaylistModule">
+
+</g>
+</g>
+</g>
+<g data-name="PlaylistService">
+<g fill="#eee8d5" stroke="#33322E" data-name="PlaylistService">
+<rect x="6541.8" y="232.5" height="198.0" width="342.0" data-name="PlaylistService"></rect>
+<path d="M6541.8 263.5 L6883.8 263.5" fill="none" data-name="PlaylistService"></path>
+<path d="M6541.8 294.5 L6883.8 294.5" fill="none" data-name="PlaylistService"></path>
+</g>
+<g transform="translate(6541.75, 232.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="PlaylistService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PlaylistService">
+<a id="src\playlist\playlist.service.ts.PlaylistService" xlink:href="src\playlist\playlist.service.ts"><text x="163.0" y="13.5" stroke="none" text-anchor="middle" data-name="PlaylistService">PlaylistService</text></a>
+
+</g>
+</g>
+<g transform="translate(6541.75, 263.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlaylistService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PlaylistService">
+<text x="0.0" y="13.5" stroke="none" data-name="PlaylistService">-playlistModel: typeof Playlist</text>
+
+</g>
+</g>
+<g transform="translate(6541.75, 294.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlaylistService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PlaylistService">
+<text x="0.0" y="13.5" stroke="none" data-name="PlaylistService">+findAll(): Promise&lt;{ data: Playlist[]</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PlaylistService">statusCode: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="PlaylistService">message: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="PlaylistService">}&gt;</text>
+<text x="0.0" y="73.5" stroke="none" data-name="PlaylistService">+create(): Promise&lt;Playlist&gt;</text>
+<text x="0.0" y="88.5" stroke="none" data-name="PlaylistService">+delete(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="103.5" stroke="none" data-name="PlaylistService">message: string</text>
+<text x="0.0" y="118.5" stroke="none" data-name="PlaylistService">}&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="PostCommentService">
+<g fill="#eee8d5" stroke="#33322E" data-name="PostCommentService">
+<rect x="6923.8" y="195.0" height="273.0" width="348.0" data-name="PostCommentService"></rect>
+<path d="M6923.8 226.0 L7271.8 226.0" fill="none" data-name="PostCommentService"></path>
+<path d="M6923.8 257.0 L7271.8 257.0" fill="none" data-name="PostCommentService"></path>
+</g>
+<g transform="translate(6923.75, 195)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="PostCommentService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PostCommentService">
+<a id="src\post\post-comment.service.ts.PostCommentService" xlink:href="src\post\post-comment.service.ts"><text x="166.0" y="13.5" stroke="none" text-anchor="middle" data-name="PostCommentService">PostCommentService</text></a>
+
+</g>
+</g>
+<g transform="translate(6923.75, 226)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PostCommentService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PostCommentService">
+<text x="0.0" y="13.5" stroke="none" data-name="PostCommentService">-commentModel: typeof Comment</text>
+
+</g>
+</g>
+<g transform="translate(6923.75, 257)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PostCommentService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PostCommentService">
+<text x="0.0" y="13.5" stroke="none" data-name="PostCommentService">+findAll(): Promise&lt;{ data: Comment[]</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PostCommentService">statusCode: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="PostCommentService">message: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="PostCommentService">}&gt;</text>
+<text x="0.0" y="73.5" stroke="none" data-name="PostCommentService">+create(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="88.5" stroke="none" data-name="PostCommentService">message: string</text>
+<text x="0.0" y="103.5" stroke="none" data-name="PostCommentService">}&gt;</text>
+<text x="0.0" y="118.5" stroke="none" data-name="PostCommentService">+update(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="133.5" stroke="none" data-name="PostCommentService">message: string</text>
+<text x="0.0" y="148.5" stroke="none" data-name="PostCommentService">}&gt;</text>
+<text x="0.0" y="163.5" stroke="none" data-name="PostCommentService">+delete(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="178.5" stroke="none" data-name="PostCommentService">message: string</text>
+<text x="0.0" y="193.5" stroke="none" data-name="PostCommentService">}&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="PostLikeService">
+<g fill="#eee8d5" stroke="#33322E" data-name="PostLikeService">
+<rect x="7311.8" y="277.5" height="108.0" width="194.0" data-name="PostLikeService"></rect>
+<path d="M7311.8 308.5 L7505.8 308.5" fill="none" data-name="PostLikeService"></path>
+<path d="M7311.8 354.5 L7505.8 354.5" fill="none" data-name="PostLikeService"></path>
+</g>
+<g transform="translate(7311.75, 277.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="PostLikeService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PostLikeService">
+<a id="src\post\post-like.service.ts.PostLikeService" xlink:href="src\post\post-like.service.ts"><text x="89.0" y="13.5" stroke="none" text-anchor="middle" data-name="PostLikeService">PostLikeService</text></a>
+
+</g>
+</g>
+<g transform="translate(7311.75, 308.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PostLikeService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PostLikeService">
+<text x="0.0" y="13.5" stroke="none" data-name="PostLikeService">-logger: Logger</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PostLikeService">-likeModel: typeof Like</text>
+
+</g>
+</g>
+<g transform="translate(7311.75, 354.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PostLikeService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PostLikeService">
+<text x="0.0" y="13.5" stroke="none" data-name="PostLikeService">+put(): Promise&lt;void&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="PostController">
+<g fill="#eee8d5" stroke="#33322E" data-name="PostController">
+<rect x="7545.8" y="97.5" height="468.0" width="495.0" data-name="PostController"></rect>
+<path d="M7545.8 128.5 L8040.8 128.5" fill="none" data-name="PostController"></path>
+<path d="M7545.8 189.5 L8040.8 189.5" fill="none" data-name="PostController"></path>
+</g>
+<g transform="translate(7545.75, 97.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="PostController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PostController">
+<a id="src\post\post.controller.ts.PostController" xlink:href="src\post\post.controller.ts"><text x="239.5" y="13.5" stroke="none" text-anchor="middle" data-name="PostController">PostController</text></a>
+
+</g>
+</g>
+<g transform="translate(7545.75, 128.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PostController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PostController">
+<text x="0.0" y="13.5" stroke="none" data-name="PostController">-postService: PostService</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PostController">-postCommentService: PostCommentService</text>
+<text x="0.0" y="43.5" stroke="none" data-name="PostController">-firebaseService: FirebaseService</text>
+
+</g>
+</g>
+<g transform="translate(7545.75, 189.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PostController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PostController">
+<text x="0.0" y="13.5" stroke="none" data-name="PostController">+findPostList(): Promise&lt;{ data: Post[]</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PostController">statusCode: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="PostController">message: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="PostController">}&gt;</text>
+<text x="0.0" y="73.5" stroke="none" data-name="PostController">+findPost(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt;&gt;</text>
+<text x="0.0" y="88.5" stroke="none" data-name="PostController">+uploadPost(): Promise&lt;void&gt;</text>
+<text x="0.0" y="103.5" stroke="none" data-name="PostController">+updatePost(): Promise&lt;void&gt;</text>
+<text x="0.0" y="118.5" stroke="none" data-name="PostController">+deletePost(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="133.5" stroke="none" data-name="PostController">message: string</text>
+<text x="0.0" y="148.5" stroke="none" data-name="PostController">}&gt;</text>
+<text x="0.0" y="163.5" stroke="none" data-name="PostController">+getComment(): Promise&lt;{ data: Comment[]</text>
+<text x="0.0" y="178.5" stroke="none" data-name="PostController">statusCode: number</text>
+<text x="0.0" y="193.5" stroke="none" data-name="PostController">message: string</text>
+<text x="0.0" y="208.5" stroke="none" data-name="PostController">}&gt;</text>
+<text x="0.0" y="223.5" stroke="none" data-name="PostController">+createCommentToPost(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="238.5" stroke="none" data-name="PostController">message: string</text>
+<text x="0.0" y="253.5" stroke="none" data-name="PostController">}&gt;</text>
+<text x="0.0" y="268.5" stroke="none" data-name="PostController">+updateCommentToPost(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="283.5" stroke="none" data-name="PostController">message: string</text>
+<text x="0.0" y="298.5" stroke="none" data-name="PostController">}&gt;</text>
+<text x="0.0" y="313.5" stroke="none" data-name="PostController">+deleteCommentToPost(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="328.5" stroke="none" data-name="PostController">message: string</text>
+<text x="0.0" y="343.5" stroke="none" data-name="PostController">}&gt;</text>
+<text x="0.0" y="358.5" stroke="none" data-name="PostController">+likeToPost(): Promise&lt;void&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="PostModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="PostModule">
+<rect x="8080.8" y="308.0" height="47.0" width="109.0" data-name="PostModule"></rect>
+<path d="M8080.8 339.0 L8189.8 339.0" fill="none" data-name="PostModule"></path>
+<path d="M8080.8 347.0 L8189.8 347.0" fill="none" data-name="PostModule"></path>
+</g>
+<g transform="translate(8080.75, 308)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="PostModule">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PostModule">
+<a id="src\post\post.module.ts.PostModule" xlink:href="src\post\post.module.ts"><text x="46.5" y="13.5" stroke="none" text-anchor="middle" data-name="PostModule">PostModule</text></a>
+
+</g>
+</g>
+<g transform="translate(8080.75, 339)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PostModule">
+<g transform="translate(8, 8)" fill="#33322E" data-name="PostModule">
+
+</g>
+</g>
+<g transform="translate(8080.75, 347)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PostModule">
+<g transform="translate(8, 8)" fill="#33322E" data-name="PostModule">
+
+</g>
+</g>
+</g>
+<g data-name="PostService">
+<g fill="#eee8d5" stroke="#33322E" data-name="PostService">
+<rect x="8229.8" y="232.5" height="198.0" width="271.0" data-name="PostService"></rect>
+<path d="M8229.8 263.5 L8500.8 263.5" fill="none" data-name="PostService"></path>
+<path d="M8229.8 294.5 L8500.8 294.5" fill="none" data-name="PostService"></path>
+</g>
+<g transform="translate(8229.75, 232.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="PostService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PostService">
+<a id="src\post\post.service.ts.PostService" xlink:href="src\post\post.service.ts"><text x="127.5" y="13.5" stroke="none" text-anchor="middle" data-name="PostService">PostService</text></a>
+
+</g>
+</g>
+<g transform="translate(8229.75, 263.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PostService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PostService">
+<text x="0.0" y="13.5" stroke="none" data-name="PostService">-postModel: typeof Post</text>
+
+</g>
+</g>
+<g transform="translate(8229.75, 294.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PostService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PostService">
+<text x="0.0" y="13.5" stroke="none" data-name="PostService">+findAll(): Promise&lt;{ data: Post[]</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PostService">statusCode: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="PostService">message: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="PostService">}&gt;</text>
+<text x="0.0" y="73.5" stroke="none" data-name="PostService">+findOne(): Promise&lt;Post&gt;</text>
+<text x="0.0" y="88.5" stroke="none" data-name="PostService">+create(): Promise&lt;void&gt;</text>
+<text x="0.0" y="103.5" stroke="none" data-name="PostService">+update(): Promise&lt;Post&gt;</text>
+<text x="0.0" y="118.5" stroke="none" data-name="PostService">+delete(): Promise&lt;Post&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="SubscriptionController">
+<g fill="#eee8d5" stroke="#33322E" data-name="SubscriptionController">
+<rect x="8540.8" y="180.0" height="303.0" width="441.0" data-name="SubscriptionController"></rect>
+<path d="M8540.8 211.0 L8981.8 211.0" fill="none" data-name="SubscriptionController"></path>
+<path d="M8540.8 242.0 L8981.8 242.0" fill="none" data-name="SubscriptionController"></path>
+</g>
+<g transform="translate(8540.75, 180)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="SubscriptionController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="SubscriptionController">
+<a id="src\subscription\subscription.controller.ts.SubscriptionController" xlink:href="src\subscription\subscription.controller.ts"><text x="212.5" y="13.5" stroke="none" text-anchor="middle" data-name="SubscriptionController">SubscriptionController</text></a>
+
+</g>
+</g>
+<g transform="translate(8540.75, 211)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SubscriptionController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SubscriptionController">
+<text x="0.0" y="13.5" stroke="none" data-name="SubscriptionController">-subscriptionService: SubscriptionService</text>
+
+</g>
+</g>
+<g transform="translate(8540.75, 242)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SubscriptionController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SubscriptionController">
+<text x="0.0" y="13.5" stroke="none" data-name="SubscriptionController">+findSubscriptionList(): Promise&lt;{ data: Subscription[]</text>
+<text x="0.0" y="28.5" stroke="none" data-name="SubscriptionController">statusCode: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="SubscriptionController">message: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="SubscriptionController">}&gt;</text>
+<text x="0.0" y="73.5" stroke="none" data-name="SubscriptionController">+findContentsList(): Promise&lt;{ data: Subscription[]</text>
+<text x="0.0" y="88.5" stroke="none" data-name="SubscriptionController">statusCode: number</text>
+<text x="0.0" y="103.5" stroke="none" data-name="SubscriptionController">message: string</text>
+<text x="0.0" y="118.5" stroke="none" data-name="SubscriptionController">}&gt;</text>
+<text x="0.0" y="133.5" stroke="none" data-name="SubscriptionController">+subscribe(): Promise&lt;{ data: Subscription</text>
+<text x="0.0" y="148.5" stroke="none" data-name="SubscriptionController">statusCode: number</text>
+<text x="0.0" y="163.5" stroke="none" data-name="SubscriptionController">message: string</text>
+<text x="0.0" y="178.5" stroke="none" data-name="SubscriptionController">}&gt;</text>
+<text x="0.0" y="193.5" stroke="none" data-name="SubscriptionController">+unsubscribe(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="208.5" stroke="none" data-name="SubscriptionController">message: string</text>
+<text x="0.0" y="223.5" stroke="none" data-name="SubscriptionController">}&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="SubscriptionModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="SubscriptionModule">
+<rect x="9021.8" y="308.0" height="47.0" width="172.0" data-name="SubscriptionModule"></rect>
+<path d="M9021.8 339.0 L9193.8 339.0" fill="none" data-name="SubscriptionModule"></path>
+<path d="M9021.8 347.0 L9193.8 347.0" fill="none" data-name="SubscriptionModule"></path>
+</g>
+<g transform="translate(9021.75, 308)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="SubscriptionModule">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="SubscriptionModule">
+<a id="src\subscription\subscription.module.ts.SubscriptionModule" xlink:href="src\subscription\subscription.module.ts"><text x="78.0" y="13.5" stroke="none" text-anchor="middle" data-name="SubscriptionModule">SubscriptionModule</text></a>
+
+</g>
+</g>
+<g transform="translate(9021.75, 339)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SubscriptionModule">
+<g transform="translate(8, 8)" fill="#33322E" data-name="SubscriptionModule">
+
+</g>
+</g>
+<g transform="translate(9021.75, 347)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SubscriptionModule">
+<g transform="translate(8, 8)" fill="#33322E" data-name="SubscriptionModule">
+
+</g>
+</g>
+</g>
+<g data-name="SubscriptionService">
+<g fill="#eee8d5" stroke="#33322E" data-name="SubscriptionService">
+<rect x="9233.8" y="172.5" height="318.0" width="386.0" data-name="SubscriptionService"></rect>
+<path d="M9233.8 203.5 L9619.8 203.5" fill="none" data-name="SubscriptionService"></path>
+<path d="M9233.8 249.5 L9619.8 249.5" fill="none" data-name="SubscriptionService"></path>
+</g>
+<g transform="translate(9233.75, 172.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="SubscriptionService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="SubscriptionService">
+<a id="src\subscription\subscription.service.ts.SubscriptionService" xlink:href="src\subscription\subscription.service.ts"><text x="185.0" y="13.5" stroke="none" text-anchor="middle" data-name="SubscriptionService">SubscriptionService</text></a>
+
+</g>
+</g>
+<g transform="translate(9233.75, 203.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SubscriptionService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SubscriptionService">
+<text x="0.0" y="13.5" stroke="none" data-name="SubscriptionService">-subscriptionModel: typeof Subscription</text>
+<text x="0.0" y="28.5" stroke="none" data-name="SubscriptionService">-videoModel: typeof Video</text>
+
+</g>
+</g>
+<g transform="translate(9233.75, 249.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SubscriptionService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SubscriptionService">
+<text x="0.0" y="13.5" stroke="none" data-name="SubscriptionService">+findAll(): Promise&lt;{ data: Subscription[]</text>
+<text x="0.0" y="28.5" stroke="none" data-name="SubscriptionService">statusCode: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="SubscriptionService">message: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="SubscriptionService">}&gt;</text>
+<text x="0.0" y="73.5" stroke="none" data-name="SubscriptionService">+findContents(): Promise&lt;{ data: Subscription[]</text>
+<text x="0.0" y="88.5" stroke="none" data-name="SubscriptionService">statusCode: number</text>
+<text x="0.0" y="103.5" stroke="none" data-name="SubscriptionService">message: string</text>
+<text x="0.0" y="118.5" stroke="none" data-name="SubscriptionService">}&gt;</text>
+<text x="0.0" y="133.5" stroke="none" data-name="SubscriptionService">+create(): Promise&lt;{ data: Subscription</text>
+<text x="0.0" y="148.5" stroke="none" data-name="SubscriptionService">statusCode: number</text>
+<text x="0.0" y="163.5" stroke="none" data-name="SubscriptionService">message: string</text>
+<text x="0.0" y="178.5" stroke="none" data-name="SubscriptionService">}&gt;</text>
+<text x="0.0" y="193.5" stroke="none" data-name="SubscriptionService">+delete(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="208.5" stroke="none" data-name="SubscriptionService">message: string</text>
+<text x="0.0" y="223.5" stroke="none" data-name="SubscriptionService">}&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="UserController">
+<g fill="#eee8d5" stroke="#33322E" data-name="UserController">
+<rect x="9659.8" y="187.5" height="288.0" width="592.0" data-name="UserController"></rect>
+<path d="M9659.8 218.5 L10251.8 218.5" fill="none" data-name="UserController"></path>
+<path d="M9659.8 264.5 L10251.8 264.5" fill="none" data-name="UserController"></path>
+</g>
+<g transform="translate(9659.75, 187.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UserController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UserController">
+<a id="src\user\user.controller.ts.UserController" xlink:href="src\user\user.controller.ts"><text x="288.0" y="13.5" stroke="none" text-anchor="middle" data-name="UserController">UserController</text></a>
+
+</g>
+</g>
+<g transform="translate(9659.75, 218.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UserController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UserController">
+<text x="0.0" y="13.5" stroke="none" data-name="UserController">-userService: UserService</text>
+<text x="0.0" y="28.5" stroke="none" data-name="UserController">-firebaseService: FirebaseService</text>
+
+</g>
+</g>
+<g transform="translate(9659.75, 264.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UserController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UserController">
+<text x="0.0" y="13.5" stroke="none" data-name="UserController">+getUserProfile(): Promise&lt;{ email: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="UserController">provider_id: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="UserController">name: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="UserController">profile_image_path: string</text>
+<text x="0.0" y="73.5" stroke="none" data-name="UserController">background_image_path: string</text>
+<text x="0.0" y="88.5" stroke="none" data-name="UserController">description: string</text>
+<text x="0.0" y="103.5" stroke="none" data-name="UserController">gender: string</text>
+<text x="0.0" y="118.5" stroke="none" data-name="UserController">birthday: string</text>
+<text x="0.0" y="133.5" stroke="none" data-name="UserController">userSub: Subscription</text>
+<text x="0.0" y="148.5" stroke="none" data-name="UserController">... 15 more ...</text>
+<text x="0.0" y="163.5" stroke="none" data-name="UserController">_model: Model&lt;...&gt;</text>
+<text x="0.0" y="178.5" stroke="none" data-name="UserController">}&gt;</text>
+<text x="0.0" y="193.5" stroke="none" data-name="UserController">+getUserProfileImage(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt;&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="UserModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="UserModule">
+<rect x="10291.8" y="308.0" height="47.0" width="111.0" data-name="UserModule"></rect>
+<path d="M10291.8 339.0 L10402.8 339.0" fill="none" data-name="UserModule"></path>
+<path d="M10291.8 347.0 L10402.8 347.0" fill="none" data-name="UserModule"></path>
+</g>
+<g transform="translate(10291.75, 308)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UserModule">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UserModule">
+<a id="src\user\user.module.ts.UserModule" xlink:href="src\user\user.module.ts"><text x="47.5" y="13.5" stroke="none" text-anchor="middle" data-name="UserModule">UserModule</text></a>
+
+</g>
+</g>
+<g transform="translate(10291.75, 339)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UserModule">
+<g transform="translate(8, 8)" fill="#33322E" data-name="UserModule">
+
+</g>
+</g>
+<g transform="translate(10291.75, 347)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UserModule">
+<g transform="translate(8, 8)" fill="#33322E" data-name="UserModule">
+
+</g>
+</g>
+</g>
+<g data-name="UserService">
+<g fill="#eee8d5" stroke="#33322E" data-name="UserService">
+<rect x="10442.8" y="247.5" height="168.0" width="312.0" data-name="UserService"></rect>
+<path d="M10442.8 278.5 L10754.8 278.5" fill="none" data-name="UserService"></path>
+<path d="M10442.8 309.5 L10754.8 309.5" fill="none" data-name="UserService"></path>
+</g>
+<g transform="translate(10442.75, 247.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UserService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UserService">
+<a id="src\user\user.service.ts.UserService" xlink:href="src\user\user.service.ts"><text x="148.0" y="13.5" stroke="none" text-anchor="middle" data-name="UserService">UserService</text></a>
+
+</g>
+</g>
+<g transform="translate(10442.75, 278.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UserService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UserService">
+<text x="0.0" y="13.5" stroke="none" data-name="UserService">-userModel: typeof User</text>
+
+</g>
+</g>
+<g transform="translate(10442.75, 309.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UserService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UserService">
+<text x="0.0" y="13.5" stroke="none" data-name="UserService">+findByEmailOrSave(): Promise&lt;any&gt;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="UserService">+getUserByEmail(): Promise&lt;User&gt;</text>
+<text x="0.0" y="43.5" stroke="none" data-name="UserService">+getUserByName(): Promise&lt;User&gt;</text>
+<text x="0.0" y="58.5" stroke="none" data-name="UserService">+createUser(): Promise&lt;User&gt;</text>
+<text x="0.0" y="73.5" stroke="none" data-name="UserService">+deleteUser(): Promise&lt;boolean&gt;</text>
+<text x="0.0" y="88.5" stroke="none" data-name="UserService">+updateUser(): Promise&lt;void&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="VideoCommentService">
+<g fill="#eee8d5" stroke="#33322E" data-name="VideoCommentService">
+<rect x="10794.8" y="187.5" height="288.0" width="348.0" data-name="VideoCommentService"></rect>
+<path d="M10794.8 218.5 L11142.8 218.5" fill="none" data-name="VideoCommentService"></path>
+<path d="M10794.8 249.5 L11142.8 249.5" fill="none" data-name="VideoCommentService"></path>
+</g>
+<g transform="translate(10794.75, 187.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="VideoCommentService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="VideoCommentService">
+<a id="src\video\video-comment.service.ts.VideoCommentService" xlink:href="src\video\video-comment.service.ts"><text x="166.0" y="13.5" stroke="none" text-anchor="middle" data-name="VideoCommentService">VideoCommentService</text></a>
+
+</g>
+</g>
+<g transform="translate(10794.75, 218.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="VideoCommentService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="VideoCommentService">
+<text x="0.0" y="13.5" stroke="none" data-name="VideoCommentService">-commentModel: typeof Comment</text>
+
+</g>
+</g>
+<g transform="translate(10794.75, 249.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="VideoCommentService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="VideoCommentService">
+<text x="0.0" y="13.5" stroke="none" data-name="VideoCommentService">+findAll(): Promise&lt;{ data: Comment[]</text>
+<text x="0.0" y="28.5" stroke="none" data-name="VideoCommentService">statusCode: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="VideoCommentService">message: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="VideoCommentService">}&gt;</text>
+<text x="0.0" y="73.5" stroke="none" data-name="VideoCommentService">+create(): Promise&lt;{ data: Comment</text>
+<text x="0.0" y="88.5" stroke="none" data-name="VideoCommentService">statusCode: number</text>
+<text x="0.0" y="103.5" stroke="none" data-name="VideoCommentService">message: string</text>
+<text x="0.0" y="118.5" stroke="none" data-name="VideoCommentService">}&gt;</text>
+<text x="0.0" y="133.5" stroke="none" data-name="VideoCommentService">+update(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="148.5" stroke="none" data-name="VideoCommentService">message: string</text>
+<text x="0.0" y="163.5" stroke="none" data-name="VideoCommentService">}&gt;</text>
+<text x="0.0" y="178.5" stroke="none" data-name="VideoCommentService">+delete(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="193.5" stroke="none" data-name="VideoCommentService">message: string</text>
+<text x="0.0" y="208.5" stroke="none" data-name="VideoCommentService">}&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="VideoLikeService">
+<g fill="#eee8d5" stroke="#33322E" data-name="VideoLikeService">
+<rect x="11182.8" y="277.5" height="108.0" width="266.0" data-name="VideoLikeService"></rect>
+<path d="M11182.8 308.5 L11448.8 308.5" fill="none" data-name="VideoLikeService"></path>
+<path d="M11182.8 339.5 L11448.8 339.5" fill="none" data-name="VideoLikeService"></path>
+</g>
+<g transform="translate(11182.75, 277.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="VideoLikeService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="VideoLikeService">
+<a id="src\video\video-like.service.ts.VideoLikeService" xlink:href="src\video\video-like.service.ts"><text x="125.0" y="13.5" stroke="none" text-anchor="middle" data-name="VideoLikeService">VideoLikeService</text></a>
+
+</g>
+</g>
+<g transform="translate(11182.75, 308.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="VideoLikeService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="VideoLikeService">
+<text x="0.0" y="13.5" stroke="none" data-name="VideoLikeService">-likeModel: typeof Like</text>
+
+</g>
+</g>
+<g transform="translate(11182.75, 339.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="VideoLikeService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="VideoLikeService">
+<text x="0.0" y="13.5" stroke="none" data-name="VideoLikeService">+findAll(): Promise&lt;false | Like&gt;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="VideoLikeService">+create(): Promise&lt;boolean&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="VideoRecordService">
+<g fill="#eee8d5" stroke="#33322E" data-name="VideoRecordService">
+<rect x="11488.8" y="247.5" height="168.0" width="293.0" data-name="VideoRecordService"></rect>
+<path d="M11488.8 278.5 L11781.8 278.5" fill="none" data-name="VideoRecordService"></path>
+<path d="M11488.8 309.5 L11781.8 309.5" fill="none" data-name="VideoRecordService"></path>
+</g>
+<g transform="translate(11488.75, 247.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="VideoRecordService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="VideoRecordService">
+<a id="src\video\video-record.service.ts.VideoRecordService" xlink:href="src\video\video-record.service.ts"><text x="138.5" y="13.5" stroke="none" text-anchor="middle" data-name="VideoRecordService">VideoRecordService</text></a>
+
+</g>
+</g>
+<g transform="translate(11488.75, 278.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="VideoRecordService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="VideoRecordService">
+<text x="0.0" y="13.5" stroke="none" data-name="VideoRecordService">-recordModel: typeof Record</text>
+
+</g>
+</g>
+<g transform="translate(11488.75, 309.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="VideoRecordService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="VideoRecordService">
+<text x="0.0" y="13.5" stroke="none" data-name="VideoRecordService">+findAll(): Promise&lt;{ data: Record[]</text>
+<text x="0.0" y="28.5" stroke="none" data-name="VideoRecordService">statusCode: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="VideoRecordService">message: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="VideoRecordService">}&gt;</text>
+<text x="0.0" y="73.5" stroke="none" data-name="VideoRecordService">+create(): Promise&lt;void&gt;</text>
+<text x="0.0" y="88.5" stroke="none" data-name="VideoRecordService">+delete(): Promise&lt;void&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="VideoController">
+<g fill="#eee8d5" stroke="#33322E" data-name="VideoController">
+<rect x="11821.8" y="0.0" height="663.0" width="663.0" data-name="VideoController"></rect>
+<path d="M11821.8 31.0 L12484.8 31.0" fill="none" data-name="VideoController"></path>
+<path d="M11821.8 122.0 L12484.8 122.0" fill="none" data-name="VideoController"></path>
+</g>
+<g transform="translate(11821.75, 0)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="VideoController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="VideoController">
+<a id="src\video\video.controller.ts.VideoController" xlink:href="src\video\video.controller.ts"><text x="323.5" y="13.5" stroke="none" text-anchor="middle" data-name="VideoController">VideoController</text></a>
+
+</g>
+</g>
+<g transform="translate(11821.75, 31)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="VideoController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="VideoController">
+<text x="0.0" y="13.5" stroke="none" data-name="VideoController">-videoService: VideoService</text>
+<text x="0.0" y="28.5" stroke="none" data-name="VideoController">-videoCommentService: VideoCommentService</text>
+<text x="0.0" y="43.5" stroke="none" data-name="VideoController">-videoRecordService: VideoRecordService</text>
+<text x="0.0" y="58.5" stroke="none" data-name="VideoController">-videoLikeService: VideoLikeService</text>
+<text x="0.0" y="73.5" stroke="none" data-name="VideoController">-firebaseService: FirebaseService</text>
+
+</g>
+</g>
+<g transform="translate(11821.75, 122)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="VideoController">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="VideoController">
+<text x="0.0" y="13.5" stroke="none" data-name="VideoController">+findVideosByAlgorithm(): Promise&lt;{ data: Video[]</text>
+<text x="0.0" y="28.5" stroke="none" data-name="VideoController">statusCode: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="VideoController">message: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="VideoController">}&gt;</text>
+<text x="0.0" y="73.5" stroke="none" data-name="VideoController">+streamVideo(): Promise&lt;void | Response&lt;any, Record&lt;string, any&gt;&gt;&gt;</text>
+<text x="0.0" y="88.5" stroke="none" data-name="VideoController">+getVideoData(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt;&gt;</text>
+<text x="0.0" y="103.5" stroke="none" data-name="VideoController">+getThumbnail(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt; | HttpException&gt;</text>
+<text x="0.0" y="118.5" stroke="none" data-name="VideoController">+uploadVideo(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt;&gt;</text>
+<text x="0.0" y="133.5" stroke="none" data-name="VideoController">+updateVideo(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt;&gt;</text>
+<text x="0.0" y="148.5" stroke="none" data-name="VideoController">+deleteVideo(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt;&gt;</text>
+<text x="0.0" y="163.5" stroke="none" data-name="VideoController">+downloadVideo(): Promise&lt;void&gt;</text>
+<text x="0.0" y="178.5" stroke="none" data-name="VideoController">+getCommentFromVideo(): Promise&lt;{ data: Comment[]</text>
+<text x="0.0" y="193.5" stroke="none" data-name="VideoController">statusCode: number</text>
+<text x="0.0" y="208.5" stroke="none" data-name="VideoController">message: string</text>
+<text x="0.0" y="223.5" stroke="none" data-name="VideoController">}&gt;</text>
+<text x="0.0" y="238.5" stroke="none" data-name="VideoController">+createCommentToVideo(): Promise&lt;{ data: Comment</text>
+<text x="0.0" y="253.5" stroke="none" data-name="VideoController">statusCode: number</text>
+<text x="0.0" y="268.5" stroke="none" data-name="VideoController">message: string</text>
+<text x="0.0" y="283.5" stroke="none" data-name="VideoController">}&gt;</text>
+<text x="0.0" y="298.5" stroke="none" data-name="VideoController">+updateCommentToVideo(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="313.5" stroke="none" data-name="VideoController">message: string</text>
+<text x="0.0" y="328.5" stroke="none" data-name="VideoController">}&gt;</text>
+<text x="0.0" y="343.5" stroke="none" data-name="VideoController">+deleteCommentToVideo(): Promise&lt;{ statusCode: number</text>
+<text x="0.0" y="358.5" stroke="none" data-name="VideoController">message: string</text>
+<text x="0.0" y="373.5" stroke="none" data-name="VideoController">}&gt;</text>
+<text x="0.0" y="388.5" stroke="none" data-name="VideoController">+likeToVideo(): Promise&lt;boolean&gt;</text>
+<text x="0.0" y="403.5" stroke="none" data-name="VideoController">+getVideoListInChannel(): Promise&lt;{ data: Video[]</text>
+<text x="0.0" y="418.5" stroke="none" data-name="VideoController">statusCode: number</text>
+<text x="0.0" y="433.5" stroke="none" data-name="VideoController">message: string</text>
+<text x="0.0" y="448.5" stroke="none" data-name="VideoController">}&gt;</text>
+<text x="0.0" y="463.5" stroke="none" data-name="VideoController">+getRecordList(): Promise&lt;{ data: Record[]</text>
+<text x="0.0" y="478.5" stroke="none" data-name="VideoController">statusCode: number</text>
+<text x="0.0" y="493.5" stroke="none" data-name="VideoController">message: string</text>
+<text x="0.0" y="508.5" stroke="none" data-name="VideoController">}&gt;</text>
+<text x="0.0" y="523.5" stroke="none" data-name="VideoController">+findVideosBySearch(): Promise&lt;any&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="VideoModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="VideoModule">
+<rect x="12524.8" y="308.0" height="47.0" width="119.0" data-name="VideoModule"></rect>
+<path d="M12524.8 339.0 L12643.8 339.0" fill="none" data-name="VideoModule"></path>
+<path d="M12524.8 347.0 L12643.8 347.0" fill="none" data-name="VideoModule"></path>
+</g>
+<g transform="translate(12524.75, 308)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="VideoModule">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="VideoModule">
+<a id="src\video\video.module.ts.VideoModule" xlink:href="src\video\video.module.ts"><text x="51.5" y="13.5" stroke="none" text-anchor="middle" data-name="VideoModule">VideoModule</text></a>
+
+</g>
+</g>
+<g transform="translate(12524.75, 339)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="VideoModule">
+<g transform="translate(8, 8)" fill="#33322E" data-name="VideoModule">
+
+</g>
+</g>
+<g transform="translate(12524.75, 347)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="VideoModule">
+<g transform="translate(8, 8)" fill="#33322E" data-name="VideoModule">
+
+</g>
+</g>
+</g>
+<g data-name="VideoService">
+<g fill="#eee8d5" stroke="#33322E" data-name="VideoService">
+<rect x="12683.8" y="187.5" height="288.0" width="317.0" data-name="VideoService"></rect>
+<path d="M12683.8 218.5 L13000.8 218.5" fill="none" data-name="VideoService"></path>
+<path d="M12683.8 249.5 L13000.8 249.5" fill="none" data-name="VideoService"></path>
+</g>
+<g transform="translate(12683.75, 187.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="VideoService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="VideoService">
+<a id="src\video\video.service.ts.VideoService" xlink:href="src\video\video.service.ts"><text x="150.5" y="13.5" stroke="none" text-anchor="middle" data-name="VideoService">VideoService</text></a>
+
+</g>
+</g>
+<g transform="translate(12683.75, 218.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="VideoService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="VideoService">
+<text x="0.0" y="13.5" stroke="none" data-name="VideoService">-videoModel: typeof Video</text>
+
+</g>
+</g>
+<g transform="translate(12683.75, 249.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="VideoService">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="VideoService">
+<text x="0.0" y="13.5" stroke="none" data-name="VideoService">+homepage(): Promise&lt;{ data: Video[]</text>
+<text x="0.0" y="28.5" stroke="none" data-name="VideoService">statusCode: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="VideoService">message: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="VideoService">}&gt;</text>
+<text x="0.0" y="73.5" stroke="none" data-name="VideoService">+findAll(): Promise&lt;{ data: Video[]</text>
+<text x="0.0" y="88.5" stroke="none" data-name="VideoService">statusCode: number</text>
+<text x="0.0" y="103.5" stroke="none" data-name="VideoService">message: string</text>
+<text x="0.0" y="118.5" stroke="none" data-name="VideoService">}&gt;</text>
+<text x="0.0" y="133.5" stroke="none" data-name="VideoService">+findOne(): Promise&lt;any&gt;</text>
+<text x="0.0" y="148.5" stroke="none" data-name="VideoService">+create(): Promise&lt;Video&gt;</text>
+<text x="0.0" y="163.5" stroke="none" data-name="VideoService">+updateOne(): Promise&lt;void&gt;</text>
+<text x="0.0" y="178.5" stroke="none" data-name="VideoService">+deleteOne(): Promise&lt;Video&gt;</text>
+<text x="0.0" y="193.5" stroke="none" data-name="VideoService">+updateView(): Promise&lt;void&gt;</text>
+<text x="0.0" y="208.5" stroke="none" data-name="VideoService">+updateLike(): Promise&lt;void&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="LoginUserDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="LoginUserDto">
+<rect x="13040.8" y="289.0" height="85.0" width="156.0" data-name="LoginUserDto"></rect>
+<path d="M13040.8 320.0 L13196.8 320.0" fill="none" data-name="LoginUserDto"></path>
+<path d="M13040.8 366.0 L13196.8 366.0" fill="none" data-name="LoginUserDto"></path>
+</g>
+<g transform="translate(13040.75, 289)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="LoginUserDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="LoginUserDto">
+<a id="src\auth\dto\login-user.dto.ts.LoginUserDto" xlink:href="src\auth\dto\login-user.dto.ts"><text x="70.0" y="13.5" stroke="none" text-anchor="middle" data-name="LoginUserDto">LoginUserDto</text></a>
+
+</g>
+</g>
+<g transform="translate(13040.75, 320)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LoginUserDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="LoginUserDto">
+<text x="0.0" y="13.5" stroke="none" data-name="LoginUserDto">+email: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="LoginUserDto">+password: string</text>
+
+</g>
+</g>
+<g transform="translate(13040.75, 366)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LoginUserDto">
+<g transform="translate(8, 8)" fill="#33322E" data-name="LoginUserDto">
+
+</g>
+</g>
+</g>
+<g data-name="CreateUserDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="CreateUserDto">
+<rect x="13236.8" y="259.0" height="145.0" width="167.0" data-name="CreateUserDto"></rect>
+<path d="M13236.8 290.0 L13403.8 290.0" fill="none" data-name="CreateUserDto"></path>
+<path d="M13236.8 396.0 L13403.8 396.0" fill="none" data-name="CreateUserDto"></path>
+</g>
+<g transform="translate(13236.75, 259)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="CreateUserDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CreateUserDto">
+<a id="src\user\dto\create-user.dto.ts.CreateUserDto" xlink:href="src\user\dto\create-user.dto.ts"><text x="75.5" y="13.5" stroke="none" text-anchor="middle" data-name="CreateUserDto">CreateUserDto</text></a>
+
+</g>
+</g>
+<g transform="translate(13236.75, 290)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateUserDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CreateUserDto">
+<text x="0.0" y="13.5" stroke="none" data-name="CreateUserDto">+email: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="CreateUserDto">+name: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="CreateUserDto">+password: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="CreateUserDto">+description: string</text>
+<text x="0.0" y="73.5" stroke="none" data-name="CreateUserDto">+birthday: string</text>
+<text x="0.0" y="88.5" stroke="none" data-name="CreateUserDto">+gender: string</text>
+
+</g>
+</g>
+<g transform="translate(13236.75, 396)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateUserDto">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CreateUserDto">
+
+</g>
+</g>
+</g>
+<g data-name="DeleteUserDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="DeleteUserDto">
+<rect x="13443.8" y="289.0" height="85.0" width="156.0" data-name="DeleteUserDto"></rect>
+<path d="M13443.8 320.0 L13599.8 320.0" fill="none" data-name="DeleteUserDto"></path>
+<path d="M13443.8 366.0 L13599.8 366.0" fill="none" data-name="DeleteUserDto"></path>
+</g>
+<g transform="translate(13443.75, 289)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="DeleteUserDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="DeleteUserDto">
+<a id="src\user\dto\delete-user.dto.ts.DeleteUserDto" xlink:href="src\user\dto\delete-user.dto.ts"><text x="70.0" y="13.5" stroke="none" text-anchor="middle" data-name="DeleteUserDto">DeleteUserDto</text></a>
+
+</g>
+</g>
+<g transform="translate(13443.75, 320)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DeleteUserDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="DeleteUserDto">
+<text x="0.0" y="13.5" stroke="none" data-name="DeleteUserDto">+email: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="DeleteUserDto">+password: string</text>
+
+</g>
+</g>
+<g transform="translate(13443.75, 366)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DeleteUserDto">
+<g transform="translate(8, 8)" fill="#33322E" data-name="DeleteUserDto">
+
+</g>
+</g>
+</g>
+<g data-name="UpdateUserDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="UpdateUserDto">
+<rect x="13639.8" y="281.5" height="100.0" width="167.0" data-name="UpdateUserDto"></rect>
+<path d="M13639.8 312.5 L13806.8 312.5" fill="none" data-name="UpdateUserDto"></path>
+<path d="M13639.8 373.5 L13806.8 373.5" fill="none" data-name="UpdateUserDto"></path>
+</g>
+<g transform="translate(13639.75, 281.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UpdateUserDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UpdateUserDto">
+<a id="src\user\dto\update-user.dto.ts.UpdateUserDto" xlink:href="src\user\dto\update-user.dto.ts"><text x="75.5" y="13.5" stroke="none" text-anchor="middle" data-name="UpdateUserDto">UpdateUserDto</text></a>
+
+</g>
+</g>
+<g transform="translate(13639.75, 312.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UpdateUserDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UpdateUserDto">
+<text x="0.0" y="13.5" stroke="none" data-name="UpdateUserDto">+password: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="UpdateUserDto">+description: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="UpdateUserDto">+profileImage: File</text>
+
+</g>
+</g>
+<g transform="translate(13639.75, 373.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UpdateUserDto">
+<g transform="translate(8, 8)" fill="#33322E" data-name="UpdateUserDto">
+
+</g>
+</g>
+</g>
+<g data-name="DeleteCommentDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="DeleteCommentDto">
+<rect x="13846.8" y="281.5" height="100.0" width="183.0" data-name="DeleteCommentDto"></rect>
+<path d="M13846.8 312.5 L14029.8 312.5" fill="none" data-name="DeleteCommentDto"></path>
+<path d="M13846.8 373.5 L14029.8 373.5" fill="none" data-name="DeleteCommentDto"></path>
+</g>
+<g transform="translate(13846.75, 281.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="DeleteCommentDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="DeleteCommentDto">
+<a id="src\video\dto\comment-dto\delete-comment.dto.ts.DeleteCommentDto" xlink:href="src\video\dto\comment-dto\delete-comment.dto.ts"><text x="83.5" y="13.5" stroke="none" text-anchor="middle" data-name="DeleteCommentDto">DeleteCommentDto</text></a>
+
+</g>
+</g>
+<g transform="translate(13846.75, 312.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DeleteCommentDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="DeleteCommentDto">
+<text x="0.0" y="13.5" stroke="none" data-name="DeleteCommentDto">+email: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="DeleteCommentDto">+commentId: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="DeleteCommentDto">+postId: number</text>
+
+</g>
+</g>
+<g transform="translate(13846.75, 373.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DeleteCommentDto">
+<g transform="translate(8, 8)" fill="#33322E" data-name="DeleteCommentDto">
+
+</g>
+</g>
+</g>
+<g data-name="UpdateCommentDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="UpdateCommentDto">
+<rect x="14069.8" y="274.0" height="115.0" width="183.0" data-name="UpdateCommentDto"></rect>
+<path d="M14069.8 305.0 L14252.8 305.0" fill="none" data-name="UpdateCommentDto"></path>
+<path d="M14069.8 381.0 L14252.8 381.0" fill="none" data-name="UpdateCommentDto"></path>
+</g>
+<g transform="translate(14069.75, 274)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UpdateCommentDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UpdateCommentDto">
+<a id="src\video\dto\comment-dto\update-comment.dto.ts.UpdateCommentDto" xlink:href="src\video\dto\comment-dto\update-comment.dto.ts"><text x="83.5" y="13.5" stroke="none" text-anchor="middle" data-name="UpdateCommentDto">UpdateCommentDto</text></a>
+
+</g>
+</g>
+<g transform="translate(14069.75, 305)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UpdateCommentDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UpdateCommentDto">
+<text x="0.0" y="13.5" stroke="none" data-name="UpdateCommentDto">+email: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="UpdateCommentDto">+commentId: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="UpdateCommentDto">+content: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="UpdateCommentDto">+postId: number</text>
+
+</g>
+</g>
+<g transform="translate(14069.75, 381)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UpdateCommentDto">
+<g transform="translate(8, 8)" fill="#33322E" data-name="UpdateCommentDto">
+
+</g>
+</g>
+</g>
+<g data-name="UploadCommentDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="UploadCommentDto">
+<rect x="14292.8" y="274.0" height="115.0" width="174.0" data-name="UploadCommentDto"></rect>
+<path d="M14292.8 305.0 L14466.8 305.0" fill="none" data-name="UploadCommentDto"></path>
+<path d="M14292.8 381.0 L14466.8 381.0" fill="none" data-name="UploadCommentDto"></path>
+</g>
+<g transform="translate(14292.75, 274)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UploadCommentDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UploadCommentDto">
+<a id="src\video\dto\comment-dto\upload-comment.dto.ts.UploadCommentDto" xlink:href="src\video\dto\comment-dto\upload-comment.dto.ts"><text x="79.0" y="13.5" stroke="none" text-anchor="middle" data-name="UploadCommentDto">UploadCommentDto</text></a>
+
+</g>
+</g>
+<g transform="translate(14292.75, 305)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UploadCommentDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UploadCommentDto">
+<text x="0.0" y="13.5" stroke="none" data-name="UploadCommentDto">+email: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="UploadCommentDto">+content: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="UploadCommentDto">+parentId: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="UploadCommentDto">+postId: number</text>
+
+</g>
+</g>
+<g transform="translate(14292.75, 381)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UploadCommentDto">
+<g transform="translate(8, 8)" fill="#33322E" data-name="UploadCommentDto">
+
+</g>
+</g>
+</g>
+<g data-name="CreatePostDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="CreatePostDto">
+<rect x="14506.8" y="266.5" height="130.0" width="158.0" data-name="CreatePostDto"></rect>
+<path d="M14506.8 297.5 L14664.8 297.5" fill="none" data-name="CreatePostDto"></path>
+<path d="M14506.8 388.5 L14664.8 388.5" fill="none" data-name="CreatePostDto"></path>
+</g>
+<g transform="translate(14506.75, 266.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="CreatePostDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CreatePostDto">
+<a id="src\post\dto\post-dto\create-post.dto.ts.CreatePostDto" xlink:href="src\post\dto\post-dto\create-post.dto.ts"><text x="71.0" y="13.5" stroke="none" text-anchor="middle" data-name="CreatePostDto">CreatePostDto</text></a>
+
+</g>
+</g>
+<g transform="translate(14506.75, 297.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreatePostDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CreatePostDto">
+<text x="0.0" y="13.5" stroke="none" data-name="CreatePostDto">+email: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="CreatePostDto">+channelId: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="CreatePostDto">+title: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="CreatePostDto">+contents: string</text>
+<text x="0.0" y="73.5" stroke="none" data-name="CreatePostDto">+img: File</text>
+
+</g>
+</g>
+<g transform="translate(14506.75, 388.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreatePostDto">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CreatePostDto">
+
+</g>
+</g>
+</g>
+<g data-name="UpdatePostDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="UpdatePostDto">
+<rect x="14704.8" y="266.5" height="130.0" width="186.0" data-name="UpdatePostDto"></rect>
+<path d="M14704.8 297.5 L14890.8 297.5" fill="none" data-name="UpdatePostDto"></path>
+<path d="M14704.8 388.5 L14890.8 388.5" fill="none" data-name="UpdatePostDto"></path>
+</g>
+<g transform="translate(14704.75, 266.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UpdatePostDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UpdatePostDto">
+<a id="src\post\dto\post-dto\update-post.dto.ts.UpdatePostDto" xlink:href="src\post\dto\post-dto\update-post.dto.ts"><text x="85.0" y="13.5" stroke="none" text-anchor="middle" data-name="UpdatePostDto">UpdatePostDto</text></a>
+
+</g>
+</g>
+<g transform="translate(14704.75, 297.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UpdatePostDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UpdatePostDto">
+<text x="0.0" y="13.5" stroke="none" data-name="UpdatePostDto">+postId: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="UpdatePostDto">+title: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="UpdatePostDto">+channelEmail: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="UpdatePostDto">+contents: string</text>
+<text x="0.0" y="73.5" stroke="none" data-name="UpdatePostDto">+img: File</text>
+
+</g>
+</g>
+<g transform="translate(14704.75, 388.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UpdatePostDto">
+<g transform="translate(8, 8)" fill="#33322E" data-name="UpdatePostDto">
+
+</g>
+</g>
+</g>
+<g data-name="DeleteVideoDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="DeleteVideoDto">
+<rect x="14930.8" y="289.0" height="85.0" width="139.0" data-name="DeleteVideoDto"></rect>
+<path d="M14930.8 320.0 L15069.8 320.0" fill="none" data-name="DeleteVideoDto"></path>
+<path d="M14930.8 366.0 L15069.8 366.0" fill="none" data-name="DeleteVideoDto"></path>
+</g>
+<g transform="translate(14930.75, 289)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="DeleteVideoDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="DeleteVideoDto">
+<a id="src\video\dto\video-dto\delete-video.dto.ts.DeleteVideoDto" xlink:href="src\video\dto\video-dto\delete-video.dto.ts"><text x="61.5" y="13.5" stroke="none" text-anchor="middle" data-name="DeleteVideoDto">DeleteVideoDto</text></a>
+
+</g>
+</g>
+<g transform="translate(14930.75, 320)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DeleteVideoDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="DeleteVideoDto">
+<text x="0.0" y="13.5" stroke="none" data-name="DeleteVideoDto">+title: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="DeleteVideoDto">+videoId: string</text>
+
+</g>
+</g>
+<g transform="translate(14930.75, 366)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DeleteVideoDto">
+<g transform="translate(8, 8)" fill="#33322E" data-name="DeleteVideoDto">
+
+</g>
+</g>
+</g>
+<g data-name="UpdateVideoDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="UpdateVideoDto">
+<rect x="15109.8" y="274.0" height="115.0" width="167.0" data-name="UpdateVideoDto"></rect>
+<path d="M15109.8 305.0 L15276.8 305.0" fill="none" data-name="UpdateVideoDto"></path>
+<path d="M15109.8 381.0 L15276.8 381.0" fill="none" data-name="UpdateVideoDto"></path>
+</g>
+<g transform="translate(15109.75, 274)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UpdateVideoDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UpdateVideoDto">
+<a id="src\video\dto\video-dto\update-video.dto.ts.UpdateVideoDto" xlink:href="src\video\dto\video-dto\update-video.dto.ts"><text x="75.5" y="13.5" stroke="none" text-anchor="middle" data-name="UpdateVideoDto">UpdateVideoDto</text></a>
+
+</g>
+</g>
+<g transform="translate(15109.75, 305)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UpdateVideoDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UpdateVideoDto">
+<text x="0.0" y="13.5" stroke="none" data-name="UpdateVideoDto">+email: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="UpdateVideoDto">+title: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="UpdateVideoDto">+description: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="UpdateVideoDto">+videoId: string</text>
+
+</g>
+</g>
+<g transform="translate(15109.75, 381)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UpdateVideoDto">
+<g transform="translate(8, 8)" fill="#33322E" data-name="UpdateVideoDto">
+
+</g>
+</g>
+</g>
+<g data-name="UploadVideoDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="UploadVideoDto">
+<rect x="15316.8" y="266.5" height="130.0" width="167.0" data-name="UploadVideoDto"></rect>
+<path d="M15316.8 297.5 L15483.8 297.5" fill="none" data-name="UploadVideoDto"></path>
+<path d="M15316.8 388.5 L15483.8 388.5" fill="none" data-name="UploadVideoDto"></path>
+</g>
+<g transform="translate(15316.75, 266.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UploadVideoDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UploadVideoDto">
+<a id="src\video\dto\video-dto\upload-video.dto.ts.UploadVideoDto" xlink:href="src\video\dto\video-dto\upload-video.dto.ts"><text x="75.5" y="13.5" stroke="none" text-anchor="middle" data-name="UploadVideoDto">UploadVideoDto</text></a>
+
+</g>
+</g>
+<g transform="translate(15316.75, 297.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UploadVideoDto">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UploadVideoDto">
+<text x="0.0" y="13.5" stroke="none" data-name="UploadVideoDto">+email: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="UploadVideoDto">+title: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="UploadVideoDto">+description: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="UploadVideoDto">+video: File</text>
+<text x="0.0" y="73.5" stroke="none" data-name="UploadVideoDto">+thumbnail: File</text>
+
+</g>
+</g>
+<g transform="translate(15316.75, 388.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UploadVideoDto">
+<g transform="translate(8, 8)" fill="#33322E" data-name="UploadVideoDto">
+
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</svg>

@@ -3,16 +3,13 @@ import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { swaggerSetup } from "./swagger";
 import * as cookieParser from "cookie-parser";
-import { setUpSession } from "./setup.session";
+// import { setUpSession } from "./setup.session";
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule, {
 		bodyParser: true,
 		cors: true,
 	});
-
-	// CORS
-	// app.enableCors({ origin: true });
 
 	// Swagger Documentation
 	swaggerSetup(app);
@@ -32,8 +29,8 @@ async function bootstrap() {
 	app.use(cookieParser());
 
 	// Session
-	setUpSession(app);
+	// setUpSession(app);
 
-	await app.listen(process.env.SERVER_PORT);
+	await app.listen(8000);
 }
 bootstrap();

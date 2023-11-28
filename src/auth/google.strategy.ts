@@ -9,9 +9,10 @@ import { UserService } from "src/user/user.service";
 export class GoogleStrategy extends PassportStrategy(Strategy) {
 	constructor(private userService: UserService) {
 		super({
-			clientID: process.env.GOOGLE_CLIENT_ID,
-			clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-			callbackURL: `${process.env.SERVER_URL}:${process.env.SERVER_PORT}/auth/google`,
+			clientID:
+				"606232107300-rvju7vreed3eme9ah8kclnga5ounttad.apps.googleusercontent.com",
+			clientSecret: "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",
+			callbackURL: `https://careful-horribly-ladybird.ngrok-free.app:8000/auth/google`,
 			scope: ["email", "profile"],
 		});
 	}
