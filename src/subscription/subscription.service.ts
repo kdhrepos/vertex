@@ -34,7 +34,7 @@ export class SubscriptionService {
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	async findOne(userId: string, channelId: string) {
+	async findOne(channelId: string, userId: string) {
 		try {
 			const subscribeData = await this.subscriptionModel.findOne({
 				where: {
