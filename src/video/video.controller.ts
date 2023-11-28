@@ -46,7 +46,7 @@ export class VideoController {
 		private videoRecordService: VideoRecordService,
 		private videoLikeService: VideoLikeService,
 		private firebaseService: FirebaseService,
-	) { }
+	) {}
 
 	@ApiOperation({ description: "추천 알고리즘을 통한 비디오 요청" })
 	@Get("home")
@@ -56,16 +56,19 @@ export class VideoController {
 
 	@ApiOperation({ description: "하나의 비디오 시청을 위해 비디오 요청" })
 	@Get("watch")
-	async streamVideo(@Res() res: Response, @Query("videoId") videoId: string, @Query("email") email?: string) {
+	async streamVideo(
+		@Res() res: Response,
+		@Query("videoId") videoId: string,
+		@Query("email") email?: string,
+	) {
 		const video = await this.videoService.findOne(videoId);
 		if (video) {
 			// 조회수 갱신, 비디오 기록 후 비디오 스트리밍
 			this.videoService.updateView(video);
-			if (email)
-				this.videoRecordService.create(video.id, email);
+			if (email) this.videoRecordService.create(video.id, email);
 
 			const videoUrl = await this.firebaseService.findVideo(res, video);
-			console.log("video/watch",videoUrl)
+			console.log("video/watch", videoUrl);
 			return res.send(videoUrl);
 		} else {
 			return res.json({
@@ -101,10 +104,10 @@ export class VideoController {
 		@Query("videoId") videoId: string,
 		@Query("thumbnailFileExtension") thumbnailFileExtension: string,
 	) {
-			const thumbnailPath = videoId + thumbnailFileExtension;
-			const imgUrl = await this.firebaseService.findImage(thumbnailPath);
+		const thumbnailPath = videoId + thumbnailFileExtension;
+		const imgUrl = await this.firebaseService.findImage(thumbnailPath);
 
-			return res.send(imgUrl);
+		return res.send(imgUrl);
 	}
 
 	@ApiOperation({ description: "비디오 업로드" })
@@ -241,30 +244,24 @@ export class VideoController {
 		@Query("videoId") videoId: string,
 		@Query("email") email: string,
 	) {
-		return await this.videoLikeService.findOne(email,videoId);
+		return await this.videoLikeService.findOne(email, videoId);
 	}
 
 	@ApiOperation({ description: "유저가 좋아요 누른 비디오 리스트 가져오기" })
 	@Get("like/list")
-	async getLikeList(
-		@Query("email") email: string,
-	) {
-		console.log(email)
+	async getLikeList(@Query("email") email: string) {
+		console.log(email);
 		return await this.videoLikeService.findAll(email);
 	}
-
-
 
 	@ApiOperation({ description: "비디오 좋아요/싫어요 누르기" })
 	@Post("like")
 	async likeToVideo(
 		@Query("videoId") videoId: string,
 		@Query("email") email: string,
-	)
-	{
+	) {
 		const isLiked = await this.videoLikeService.create(videoId, email);
 		return await this.videoService.updateLike(videoId, isLiked);
-
 	}
 
 	@ApiOperation({
@@ -280,7 +277,7 @@ export class VideoController {
 	})
 	@Get("record")
 	async getRecordList(@Req() req: Request, @Query("email") email: string) {
-		console.log(email)
+		console.log(email);
 		return await this.videoRecordService.findAll(email);
 	}
 
@@ -288,9 +285,12 @@ export class VideoController {
 		description: "비디오 시청 기록 삭제",
 	})
 	@Delete("record")
-	async deleteRecord(@Query("email") email: string, @Query("videoId") videoId :string) {
-		console.log(email,videoId)
-		return await this.videoRecordService.delete(email,videoId);
+	async deleteRecord(
+		@Query("email") email: string,
+		@Query("videoId") videoId: string,
+	) {
+		console.log(email, videoId);
+		return await this.videoRecordService.delete(email, videoId);
 	}
 
 	@ApiOperation({ description: "검색을 통해 비디오 요청" })

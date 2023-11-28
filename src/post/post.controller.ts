@@ -37,7 +37,7 @@ import { PostLikeService } from "./post-like.service";
 export class PostController {
 	constructor(
 		private postService: PostService,
-		private postLikeService:PostLikeService,
+		private postLikeService: PostLikeService,
 		private postCommentService: PostCommentService,
 		private firebaseService: FirebaseService,
 	) {}
@@ -64,15 +64,12 @@ export class PostController {
 		description: "채널 내 하나의 게시글 데이터 요청 (이미지 포함)",
 	})
 	@Get("image")
-	async findPost(
-		@Res() res: Response,
-		@Query("postId") postId: number,
-	) {
+	async findPost(@Res() res: Response, @Query("postId") postId: number) {
 		const post = await this.postService.findOne(postId);
 		const imgUrl = await this.firebaseService.findImage(post.image_file_path);
 
 		return res.send(imgUrl);
-	}	
+	}
 
 	@ApiOperation({ description: "한 채널에 게시글 업로드" })
 	@Post("")
@@ -144,8 +141,11 @@ export class PostController {
 
 	@ApiOperation({ description: "게시글 좋아요 누르기/취소" })
 	@Post("like")
-	async likeToPost(@Query("postId") postId: number, @Query("email") email: string,) {
-			return await this.postLikeService.create(postId,email);
+	async likeToPost(
+		@Query("postId") postId: number,
+		@Query("email") email: string,
+	) {
+		return await this.postLikeService.create(postId, email);
 	}
 
 	@ApiOperation({ description: "하나의 게시글에 좋아요 눌렀는지 체크" })
@@ -154,6 +154,6 @@ export class PostController {
 		@Body("postId") postId: string,
 		@Body("email") email: string,
 	) {
-			return await this.postLikeService.findOne(postId, email);
+		return await this.postLikeService.findOne(postId, email);
 	}
 }
