@@ -253,7 +253,6 @@ export class VideoController {
 	@ApiOperation({ description: "유저가 좋아요 누른 비디오 리스트 가져오기" })
 	@Get("like/list")
 	async getLikeList(@Query("email") email: string) {
-		console.log(email);
 		return await this.videoLikeService.findAll(email);
 	}
 
