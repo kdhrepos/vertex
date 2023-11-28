@@ -83,4 +83,22 @@ export class VideoLikeService {
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	async delete(email: string, videoId: string) {
+		try {
+			await this.likeModel.destroy({
+				where: {
+					user_email: email,
+					video_id: videoId,
+				},
+			});
+
+			return {
+				statusCode: 200,
+				message: "Record is successfully deleted",
+			};
+		} catch (error) {
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
