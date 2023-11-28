@@ -36,6 +36,7 @@ import { DeleteCommentDto } from "./dto/comment-dto/delete-comment.dto";
 import { VideoLikeService } from "./video-like.service";
 import * as path from "path";
 import * as bcrypt from "bcrypt";
+import { VideoRecommendService } from "./video-recommend.service";
 
 @ApiTags("Video")
 @Controller("video")
@@ -45,6 +46,7 @@ export class VideoController {
 		private videoCommentService: VideoCommentService,
 		private videoRecordService: VideoRecordService,
 		private videoLikeService: VideoLikeService,
+		private videoRecommendService:VideoRecommendService,
 		private firebaseService: FirebaseService,
 	) { }
 
@@ -297,7 +299,7 @@ export class VideoController {
 
 	@ApiOperation({ description: "검색을 통해 비디오 요청" })
 	@Get("search/:search_query")
-	async findVideosBySearch(@Param("search_query") params) {
-		return params;
+	async findVideosBySearch(@Query("history") params): Promise < string > {
+		return await this.videoRecommendService.sendMessage(params);
 	}
 }

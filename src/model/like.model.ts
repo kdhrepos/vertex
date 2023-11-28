@@ -16,15 +16,15 @@ export class Like extends Model {
 	id: number;
 
 	@ForeignKey(() => User)
-	@Column({ unique: true, allowNull: false, onDelete: "CASCADE" })
+	@Column({ unique: false, allowNull: false, onDelete: "CASCADE" })
 	user_email: string;
 
 	@ForeignKey(() => Video)
-	@Column({ unique: true, allowNull: true, onDelete: "CASCADE" })
+	@Column({ unique: false, allowNull: true, onDelete: "CASCADE" })
 	video_id: string;
 
 	@ForeignKey(() => Post)
-	@Column({ unique: true, allowNull: true, onDelete: "CASCADE" })
+	@Column({ unique: false, allowNull: true, onDelete: "CASCADE" })
 	post_id: number;
 
 	/**
@@ -35,10 +35,12 @@ export class Like extends Model {
 	@BelongsTo(() => User, "user_email")
 	user: User;
 
+	@BelongsTo(() => Video, "video_id")
+	video: Video;
+
 	@BelongsTo(() => Post, "post_id")
 	post: Post;
 
-	@BelongsTo(() => Video, "video_id")
-	video: Video;
+	 
 	/* Has */
 }
