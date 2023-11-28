@@ -52,8 +52,8 @@ export class VideoController {
 
 	@ApiOperation({ description: "추천 알고리즘을 통한 비디오 요청" })
 	@Get("home")
-	async findVideosByAlgorithm() {
-		return await this.videoService.homepage();
+	async findVideosByAlgorithm(@Query("page") page:number) {
+		return await this.videoService.findVideoByAlgorithm(page);
 	}
 
 	@ApiOperation({ description: "하나의 비디오 시청을 위해 비디오 요청" })
@@ -202,9 +202,9 @@ export class VideoController {
 	async deleteVideo(
 		@Res() res: Response,
 		@Query("videoId") videoId: string,
-		@Query("email") email: string,
 	) {
-		const video = await this.videoService.deleteOne(videoId, email);
+		console.log(videoId)
+		const video = await this.videoService.deleteOne(videoId,);
 		const result = await this.firebaseService.deleteVideo(video);
 		return res.send(result);
 	}
@@ -256,7 +256,8 @@ export class VideoController {
 	@ApiOperation({ description: "유저가 좋아요 누른 비디오 리스트 가져오기" })
 	@Get("like/list")
 	async getLikeList(
-		@Query("email") email: string
+		@Query("email") email: string,
+		@Query() page?:number
 	) {
 		return await this.videoLikeService.findAll(email);
 	}
@@ -283,7 +284,7 @@ export class VideoController {
 		description: "한 크리에이터의 채널에 들어갔을때 비디오 요청",
 	})
 	@Get("/channel/list")
-	async getVideoListInChannel(@Query("channelId") channelId: string) {
+	async getVideoListInChannel(@Query("channelId") channelId: string,@Query() page?:number) {
 		return await this.videoService.findAll(channelId);
 	}
 
@@ -291,7 +292,7 @@ export class VideoController {
 		description: "비디오 시청 기록 리스트 요청",
 	})
 	@Get("record")
-	async getRecordList(@Req() req: Request, @Query("email") email: string) {
+	async getRecordList(@Req() req: Request, @Query("email") email: string,@Query() page?:number) {
 		console.log(email);
 		return await this.videoRecordService.findAll(email);
 	}
@@ -310,13 +311,13 @@ export class VideoController {
 
 	@ApiOperation({ description: "추천 알고리즘" })
 	@Get("recommend")
-	async recommendAlgorithm(@Query("history") params: string) {
+	async recommendAlgorithm(@Query("history") params: string,@Query("page") page?:number) {
 		return await this.videoRecommendService.sendMessage(params);
 	}
 
 	@ApiOperation({ description: "비디오 검색" })
 	@Get("search")
-	async findVideoBySearch(@Query("query") query: string) {
+	async findVideoBySearch(@Query("query") query: string,@Query("page") page?:number) {
 		return await this.videoService.findBySearch(query);
 	}
 }

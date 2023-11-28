@@ -14,17 +14,22 @@ export class VideoService {
 		@InjectModel(User)
 		private userModel: typeof User,
 	) {}
-
-	async homepage() {
+	async findVideoByAlgorithm(page:number) {
 		try {
-			const videos = await this.videoModel.findAll();
+			const videos = await this.videoModel.findAll({
+				order:[['createdAt','DESC']],
+				offset:page * 12,
+				limit : 12
+			});
 
 			return {
 				data: videos,
 				statusCode: 200,
 				message: "Videos are successfully found",
 			};
-		} catch (error) {}
+		} catch (error) {
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	async findAll(channelId: string) {
@@ -131,12 +136,11 @@ export class VideoService {
 		}
 	}
 
-	async deleteOne(videoId: string, email: string) {
+	async deleteOne(videoId: string) {
 		try {
 			const video = await this.videoModel.findOne({
 				where: {
 					id: videoId,
-					user_email: email,
 				},
 			});
 

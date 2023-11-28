@@ -29,6 +29,7 @@ export class VideoCommentService {
 						attributes: ["name"],
 					},
 				],
+				order:[['createdAt','DESC']]
 			});
 
 			return {

@@ -50,13 +50,13 @@ export class PostController {
 
 	@ApiOperation({ description: "새로운 게시글 리스트 요청" })
 	@Get("list/new")
-	async findNewPosts() {
+	async findNewPosts(@Query("page") page?:number) {
 		return await this.postService.findNewPosts();
 	}
 
 	@ApiOperation({ description: "한 채널의 게시글 리스트 요청" })
 	@Get("list")
-	async findPostList(@Query("channelId") channelId: string) {
+	async findPostList(@Query("channelId") channelId: string, @Query("page") page?:number) {
 		return await this.postService.findAll(channelId);
 	}
 
@@ -108,9 +108,9 @@ export class PostController {
 	@Delete("")
 	async deletePost(
 		@Query("postId") postId: string,
-		@Query("email") email: string,
 	) {
-		const post = await this.postService.delete(postId, email);
+		console.log(postId)
+		const post = await this.postService.delete(postId);
 		const { image_file_path: imgPath } = post;
 		return await this.firebaseService.deleteImage(imgPath);
 	}
