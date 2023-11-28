@@ -31,6 +31,7 @@
 		"@nestjs/serve-static": "^4.0.0",
 		"@nestjs/swagger": "^7.1.16",
 		"@types/express-mysql-session": "^3.0.3",
+		"amqplib": "^0.10.3",
 		"aws-sdk": "^2.1503.0",
 		"bcrypt": "^5.1.1",
 		"class-transformer": "^0.5.1",

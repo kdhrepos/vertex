@@ -34,7 +34,7 @@ export class SubscriptionService {
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	async findOne(userId: string, channelId: string) {
+	async findOne(channelId: string, userId: string) {
 		try {
 			const subscribeData = await this.subscriptionModel.findOne({
 				where: {
@@ -85,7 +85,7 @@ export class SubscriptionService {
 		}
 	}
 
-	async create(channelId: string, userId: string) {
+	async create(userId: string, channelId: string) {
 		try {
 			// 자기 자신 구독 불가
 			if (userId === channelId) {
@@ -94,12 +94,10 @@ export class SubscriptionService {
 					HttpStatus.BAD_REQUEST,
 				);
 			}
-
 			const subscription = await this.subscriptionModel.create({
 				user_email: userId,
 				channel_email: channelId,
 			});
-
 			return {
 				data: subscription,
 				statusCode: 200,
@@ -110,9 +108,10 @@ export class SubscriptionService {
 		}
 	}
 
-	async delete(channelId: string, userId: string) {
+	async delete(userId: string, channelId: string) {
 		const functionName = SubscriptionService.prototype.delete.name;
 		try {
+			console.log(userId);
 			await this.subscriptionModel.destroy({
 				where: {
 					user_email: userId,

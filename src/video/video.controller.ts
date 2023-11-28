@@ -34,9 +34,9 @@ import { UpdateCommentDto } from "./dto/comment-dto/update-comment.dto";
 import { VideoRecordService } from "./video-record.service";
 import { DeleteCommentDto } from "./dto/comment-dto/delete-comment.dto";
 import { VideoLikeService } from "./video-like.service";
-import { VideoRecommandService } from './video-recommand.service';
 import * as path from "path";
 import * as bcrypt from "bcrypt";
+import { VideoRecommendService } from "./video-recommend.service";
 
 @ApiTags("Video")
 @Controller("video")
@@ -46,8 +46,8 @@ export class VideoController {
 		private videoCommentService: VideoCommentService,
 		private videoRecordService: VideoRecordService,
 		private videoLikeService: VideoLikeService,
+		private videoRecommendService: VideoRecommendService,
 		private firebaseService: FirebaseService,
-		private videoRecommandService: VideoRecommandService,
 	) { }
 
 	@ApiOperation({ description: "추천 알고리즘을 통한 비디오 요청" })
@@ -108,11 +108,11 @@ export class VideoController {
 	) {
 		const thumbnailPath = videoId + thumbnailFileExtension;
 		const imgUrl = await this.firebaseService.findImage(thumbnailPath);
-		if (imgUrl)
+		if (imgUrl) {
 			return res.send(imgUrl);
+		}
 		return res.send("./defaultImg.png");
 	}
-
 
 	@ApiOperation({ description: "비디오 업로드" })
 	@Post("")
@@ -300,6 +300,6 @@ export class VideoController {
 	@ApiOperation({ description: "검색을 통해 비디오 요청" })
 	@Get("search/:search_query")
 	async findVideosBySearch(@Query("history") params): Promise<string> {
-		return await this.videoRecommandService.sendMessage(params);
+		return await this.videoRecommendService.sendMessage(params);
 	}
 }
