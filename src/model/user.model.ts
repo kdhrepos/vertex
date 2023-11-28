@@ -52,12 +52,6 @@ export class User extends Model {
 	@BelongsToMany(() => User, () => Subscription, "channel_email")
 	channelSub: Subscription;
 
-	@BelongsToMany(() => Video, () => Like, "user_email")
-	videoLike: Like;
-
-	@BelongsToMany(() => Post, () => Like, "user_email")
-	postLike: Like;
-
 	/* Has */
 	@HasMany(() => Video)
 	video: Video;
