@@ -12,7 +12,7 @@ export class VideoLikeService {
 
 	async findAll(email: string) {
 		try {
-			const record = await this.likeModel.findOne({
+			const record = await this.likeModel.findAll({
 				where: {
 					user_email: email,
 					video_id: {
