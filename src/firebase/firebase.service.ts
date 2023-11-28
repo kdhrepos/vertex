@@ -38,11 +38,7 @@ export class FirebaseService {
 	async uploadVideo(hashedFilePath: string, video: Express.Multer.File) {
 		const functionName = FirebaseService.prototype.uploadVideo.name;
 		try {
-			if (!video)
-				throw new HttpException(
-					`${functionName} : "Invalid Video Object"`,
-					HttpStatus.BAD_REQUEST,
-				);
+			if (!video) return;
 
 			// Firebase Storage 내 Video 파일 경로 생성
 			let videoPath = "videos/";

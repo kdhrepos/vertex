@@ -59,20 +59,27 @@ export class UserController {
 			channelImage?:Express.Multer.File[];
 		},
 	) {
-		const profileImagePath =
-			files.profileImage[0] !== null || files.profileImage[0] !== undefined
-				? (await bcrypt.hashSync(`${Date.now()}`, 12).replace(/\//g, "")) +
-				  path.extname(files.profileImage[0].originalname)
-				: null;
+		console.log(files)
 
-		const channelImagePath =
-			files.channelImage[0] !== null || files.channelImage[0] !== undefined
-				? (await bcrypt.hashSync(`${Date.now()}`, 12).replace(/\//g, "")) +
-				  path.extname(files.channelImage[0].originalname)
-				: null;
+		let profileImagePath=null;
 
-		this.firebaseService.uploadImage(files.profileImage[0],profileImagePath);
-		this.firebaseService.uploadImage(files.channelImage[0],channelImagePath);
+		if(files.profileImage !== null && files.profileImage !== undefined){
+			profileImagePath = (await bcrypt.hashSync(`${Date.now()}`, 12).replace(/\//g, "")) +
+			path.extname(files.profileImage[0].originalname);
+		}
+
+
+		let channelImagePath=null;
+
+		if(files.channelImage !== null && files.channelImage !== undefined){
+			channelImagePath = (await bcrypt.hashSync(`${Date.now()}`, 12).replace(/\//g, "")) +
+			path.extname(files.channelImage[0].originalname);
+		}
+
+		if(profileImagePath !==null)
+			this.firebaseService.uploadImage(files.profileImage[0],profileImagePath);
+		if(channelImagePath!==null)
+			this.firebaseService.uploadImage(files.channelImage[0],channelImagePath);
 
 		return await this.userService.updateUser(updateUserDto,profileImagePath,channelImagePath);
 	}
@@ -85,24 +92,13 @@ export class UserController {
 		@Res() res: Response,
 		@Query("email") email: string,
 	) {
-		console.log(email)
 		const user = await this.userService.getUserByEmail(email);
-
 		if (
 			user.profile_image_path !== undefined &&
 			user.profile_image_path !== null
 		) {
-			const img = await this.firebaseService.findImage(user.profile_image_path);
-			const imgFileExt = user.profile_image_path.split(".");
-			const buffer = Buffer.from(img);
-
-			res.setHeader(
-				"Content-Type",
-				`image/${imgFileExt[imgFileExt.length - 1]}`,
-			);
-			res.setHeader("Content-Length", buffer.length);
-
-			return res.send(buffer);
+			const imgUrl = await this.firebaseService.findImage(user.profile_image_path);
+			return res.send(imgUrl);
 		}
 		return null;
 	}
@@ -119,9 +115,8 @@ export class UserController {
 			user.channel_image_path !== undefined &&
 			user.channel_image_path !== null
 		) {
-			const videoUrl = await this.firebaseService.findImage(user.channel_image_path);
-
-			return res.send(videoUrl);
+			const imgUrl = await this.firebaseService.findImage(user.channel_image_path);
+			return res.send(imgUrl);
 		}
 		return null;
 	}

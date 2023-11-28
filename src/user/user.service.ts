@@ -138,7 +138,7 @@ export class UserService {
 			if(channelImagePath !== null)
 				user.channel_image_path=channelImagePath;
 			
-			user.save();
+			await user.save();
 			
 			return {
 				statusCode :200,
