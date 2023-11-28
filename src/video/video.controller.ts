@@ -62,13 +62,17 @@ export class VideoController {
 		@Res() res: Response,
 		@Query("videoId") videoId: string,
 		@Query("videoFileExtension") videoFileExtension:string,
+		@Query("isYoutube") isYoutube : boolean,
 		@Query("email") email?: string,
-		// @Query("isYoutube") isYoutube : boolean,
 	) {
 			// 조회수 갱신, 비디오 기록 후 비디오 스트리밍
 			this.videoService.updateView(videoId);
 			if (email) this.videoRecordService.create(videoId, email);
 
+			if(isYoutube){
+				const video = await this.videoService.findOne(videoId);
+				return res.send(video.id);
+			}
 			const videoPath = videoId + videoFileExtension;
 			const videoUrl = await this.firebaseService.findVideo(videoPath);
 			console.log("video/watch", videoUrl);
@@ -292,9 +296,15 @@ export class VideoController {
 		return await this.videoRecordService.delete(email, videoId);
 	}
 
-	@ApiOperation({ description: "검색을 통해 비디오 요청" })
-	@Get("search")
-	async findVideosBySearch(@Query("history") params: string): Promise < string > {
+	@ApiOperation({ description: "추천 알고리즘" })
+	@Get("recommend")
+	async recommendAlgorithm(@Query("history") params: string) {
 		return await this.videoRecommendService.sendMessage(params);
+	}
+
+	@ApiOperation({ description: "비디오 검색" })
+	@Get("search")
+	async findVideoBySearch(@Query("query") query: string) {
+		return await this.videoService.findBySearch(query);
 	}
 }

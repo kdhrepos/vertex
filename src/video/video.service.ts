@@ -4,6 +4,7 @@ import { InjectModel } from "@nestjs/sequelize";
 import { UpdateVideoDto } from "./dto/video-dto/update-video.dto";
 import { User } from "src/model/user.model";
 import { Sequelize } from "sequelize";
+import { Op } from "sequelize";
 
 @Injectable()
 export class VideoService {
@@ -56,6 +57,25 @@ export class VideoService {
 				return existedVideo;
 			}
 			return false;
+		} catch (error) {
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	async findBySearch(query : string){
+		try {
+			const videos = await this.videoModel.findAll({
+				where:{
+					title: {
+						[Op.like]: `%${query}%`,
+					},
+				}
+			})
+			return {
+				data: videos,
+				statusCode : 200,
+				message:"Videos are successfully found"
+			}
 		} catch (error) {
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
