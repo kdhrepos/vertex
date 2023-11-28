@@ -106,8 +106,9 @@ export class VideoController {
 	) {
 		const thumbnailPath = videoId + thumbnailFileExtension;
 		const imgUrl = await this.firebaseService.findImage(thumbnailPath);
-
-		return res.send(imgUrl);
+		if(imgUrl)
+			return res.send(imgUrl);
+		return res.send("./defaultImg.png");
 	}
 
 	@ApiOperation({ description: "비디오 업로드" })

@@ -91,7 +91,9 @@ export class UserController {
 		@Res() res: Response,
 		@Query("email") email: string,
 	) {
+		console.log("hi")
 		const user = await this.userService.getUserByEmail(email);
+		console.log(user)
 		if (
 			user.profile_image_path !== undefined &&
 			user.profile_image_path !== null
@@ -99,7 +101,7 @@ export class UserController {
 			const imgUrl = await this.firebaseService.findImage(user.profile_image_path);
 			return res.send(imgUrl);
 		}
-		return null;
+		return res.send(null);
 	}
 
 	@ApiBody({ description: "유저가 자신의 카드 이미지를 받아옴" })
@@ -116,7 +118,7 @@ export class UserController {
 			const imgUrl = await this.firebaseService.findImage(user.channel_image_path);
 			return res.send(imgUrl);
 		}
-		return null;
+		return res.send(null);
 	}
 
 	// @ApiBody({ description: "유저가 자신의 프로필 이미지를 받아옴" })
