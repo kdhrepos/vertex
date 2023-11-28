@@ -33,11 +33,19 @@ export class SubscriptionController {
 		return await this.subscriptionService.findContents(userId, page);
 	}
 
+	@ApiOperation({ description: "채널에 대한 구독 확인" })
+	@Get("/check")
+	async subscribeCheck(
+		@Query("userId") userId: string,
+		@Query("channelId") channelId: string,		
+	) {
+		return await this.subscriptionService.findOne(channelId, userId);
+	}
 	@ApiOperation({ description: "채널에 대한 구독 요청" })
 	@Post("/subscribe")
 	async subscribe(
-		@Body("userId") userId: string,
-		@Body("channelId") channelId: string,
+		@Query("userId") userId: string,
+		@Query("channelId") channelId: string,
 	) {
 		return await this.subscriptionService.create(channelId, userId);
 	}
@@ -45,8 +53,8 @@ export class SubscriptionController {
 	@ApiOperation({ description: "채널에 대한 구독 취소" })
 	@Post("/unsubscribe")
 	async unsubscribe(
-		@Body("userId") userId: string,
-		@Body("channelId") channelId: string,
+		@Query("userId") userId: string,
+		@Query("channelId") channelId: string,
 	) {
 		return await this.subscriptionService.delete(channelId, userId);
 	}
