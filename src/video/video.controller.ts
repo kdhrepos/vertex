@@ -46,7 +46,7 @@ export class VideoController {
 		private videoRecordService: VideoRecordService,
 		private videoLikeService: VideoLikeService,
 		private firebaseService: FirebaseService,
-	) {}
+	) { }
 
 	@ApiOperation({ description: "추천 알고리즘을 통한 비디오 요청" })
 	@Get("home")
@@ -106,8 +106,9 @@ export class VideoController {
 	) {
 		const thumbnailPath = videoId + thumbnailFileExtension;
 		const imgUrl = await this.firebaseService.findImage(thumbnailPath);
-		if(imgUrl)
+		if (imgUrl) {
 			return res.send(imgUrl);
+		}
 		return res.send("./defaultImg.png");
 	}
 

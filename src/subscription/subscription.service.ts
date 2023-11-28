@@ -9,7 +9,7 @@ export class SubscriptionService {
 	constructor(
 		@InjectModel(Subscription) private subscriptionModel: typeof Subscription,
 		@InjectModel(Video) private videoModel: typeof Video,
-	) {}
+	) { }
 
 	async findAll(userId: string) {
 		try {
@@ -34,7 +34,22 @@ export class SubscriptionService {
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
+	async findOne(userId: string, channelId: string) {
+		try {
+			const subscribeData = await this.subscriptionModel.findOne({
+				where: {
+					user_email: userId,
+					channel_email: channelId
+				}
+			})
+			if (subscribeData) {
+				return true;
+			}
+			return false;
+		} catch (error) {
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 	async findContents(userId: string, page: number) {
 		try {
 			const contentsList = await this.subscriptionModel.findAll({
