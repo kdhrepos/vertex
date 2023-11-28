@@ -19,14 +19,12 @@ export class SubscriptionController {
 	constructor(private subscriptionService: SubscriptionService) {}
 
 	@ApiOperation({ description: "구독 목록 요청" })
-	@UseGuards(AuthenticatedGuard)
 	@Get("/list")
 	async findSubscriptionList(@Query("userId") userId: string) {
 		return await this.subscriptionService.findAll(userId);
 	}
 
 	@ApiOperation({ description: "구독한 채널의 모든 컨텐츠를 최신 순으로 요청" })
-	@UseGuards(AuthenticatedGuard)
 	@Get("/contents")
 	async findContentsList(
 		@Query("userId") userId: string,
@@ -36,7 +34,6 @@ export class SubscriptionController {
 	}
 
 	@ApiOperation({ description: "채널에 대한 구독 요청" })
-	@UseGuards(AuthenticatedGuard)
 	@Post("/subscribe")
 	async subscribe(
 		@Body("userId") userId: string,
@@ -46,7 +43,6 @@ export class SubscriptionController {
 	}
 
 	@ApiOperation({ description: "채널에 대한 구독 취소" })
-	@UseGuards(AuthenticatedGuard)
 	@Post("/unsubscribe")
 	async unsubscribe(
 		@Body("userId") userId: string,

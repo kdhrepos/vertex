@@ -257,10 +257,9 @@ export class VideoController {
 	@ApiOperation({ description: "비디오 좋아요/싫어요 누르기" })
 	@Post("like")
 	async likeToVideo(
-		@Query("videoId") videoId: string,
-		@Query("email") email: string,
+		@Body("videoId") videoId: string,
+		@Body("email") email: string,
 	) {
-		console.log(videoId,email)
 		const isLiked = await this.videoLikeService.create(videoId, email);
 		return await this.videoService.updateLike(videoId, isLiked);
 	}

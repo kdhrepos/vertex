@@ -92,7 +92,6 @@ export class UserController {
 		@Query("email") email: string,
 	) {
 		const user = await this.userService.getUserByEmail(email);
-		console.log(user.profile_image_path)
 		if (
 			user.profile_image_path !== undefined &&
 			user.profile_image_path !== null
@@ -107,10 +106,9 @@ export class UserController {
 	@Get("channel/image")
 	async getChannelImage(
 		@Res() res: Response,
-		@Query("userId") userId: string,
+		@Query("email") email: string,
 	) {
-		const user = await this.userService.getUserByEmail(userId);
-
+		const user = await this.userService.getUserByEmail(email);
 		if (
 			user.channel_image_path !== undefined &&
 			user.channel_image_path !== null
