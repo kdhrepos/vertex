@@ -10,8 +10,6 @@ export class HashtagService {
 		@InjectModel(HashtagLink) private hashtagLinkModel: typeof HashtagLink,
 	) {}
 
-	private readonly logger = new Logger("Hashtag Service");
-
 	async create() {}
 
 	async createLink() {}

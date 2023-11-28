@@ -36,7 +36,6 @@ export class FirebaseService {
 	}
 
 	async uploadVideo(hashedFilePath: string, video: Express.Multer.File) {
-		const functionName = FirebaseService.prototype.uploadVideo.name;
 		try {
 			if (!video) return;
 
@@ -114,7 +113,7 @@ export class FirebaseService {
 
 			const videoPath = "videos/" + filePath + videoFileExtension;
 			const videoDirRef = ref(this.firebaseStorage, videoPath);
-			const videoUrl= await getDownloadURL(videoDirRef);
+			const videoUrl = await getDownloadURL(videoDirRef);
 
 			return videoUrl;
 		} catch (error) {
@@ -173,7 +172,7 @@ export class FirebaseService {
 		try {
 			const imagePath = "images/" + imgPath;
 			const imgDirRef = ref(this.firebaseStorage, imagePath);
-			const imgUrl= await getDownloadURL(imgDirRef);
+			const imgUrl = await getDownloadURL(imgDirRef);
 
 			return imgUrl;
 		} catch (error) {
@@ -186,8 +185,7 @@ export class FirebaseService {
 	async uploadImage(img: Express.Multer.File, imgPath: any) {
 		const functionName = FirebaseService.prototype.uploadImage.name;
 		try {
-			if (!img)
-				return;
+			if (!img) return;
 
 			const imagePath = "images/" + imgPath;
 			const imgDirRef = ref(this.firebaseStorage, imagePath);

@@ -54,21 +54,6 @@ export class UserService {
 		return result;
 	}
 
-	async getUserByName(name: string) {
-		const result = await this.userModel.findOne({
-			where: {
-				name: name,
-			},
-			raw: true,
-		});
-
-		if (!result) {
-			return null;
-		}
-
-		return result;
-	}
-
 	async createUser(createUserDto: CreateUserDto) {
 		try {
 			const { email, name, password, description, gender, birthday } =
@@ -120,20 +105,23 @@ export class UserService {
 		}
 	}
 
-	async updateUser(updateUserDto: UpdateUserDto,profileImagePath:string,channelImagePath:string) {
+	async updateUser(
+		updateUserDto: UpdateUserDto,
+		profileImagePath: string,
+		channelImagePath: string,
+	) {
 		try {
-			const {email, name, description}=updateUserDto
+			const { email, name, description } = updateUserDto;
 
 			const user = await this.userModel.findByPk(email);
 
-			if(name !== null)
-				user.name = name;
+			if (name !== null) user.name = name;
 
-			if(description !== null)
-				user.description=description;
+			if (description !== null) user.description = description;
 
-			if(profileImagePath !== null)
-				user.profile_image_path=profileImagePath;
+			if (profileImagePath !== null) user.profile_image_path = profileImagePath;
+
+			if (channelImagePath !== null) user.channel_image_path = channelImagePath;
 
 			if(channelImagePath !== null)
 				user.channel_image_path=channelImagePath;
@@ -141,9 +129,9 @@ export class UserService {
 			await user.save();
 			
 			return {
-				statusCode :200,
-				message : "User successfully updated!"
-			}
+				statusCode: 200,
+				message: "User successfully updated!",
+			};
 		} catch (error) {
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
