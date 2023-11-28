@@ -261,8 +261,8 @@ export class VideoController {
 
 	@ApiOperation({ description: "유저가 좋아요 누른 비디오 리스트 삭제" })
 	@Delete("like/list")
-	async getLikeList(@Query("email") email: string) {
-		return await this.videoLikeService.findAll(email);
+	async getLikeList(@Query("email") email: string, @Query("videoId") videoId: string) {
+		return await this.videoLikeService.findOne(email,videoId);
 	}
 
 	@ApiOperation({ description: "비디오 좋아요/싫어요 누르기" })

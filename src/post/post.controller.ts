@@ -141,16 +141,16 @@ export class PostController {
 
 	@ApiOperation({ description: "게시글 좋아요 누르기/취소" })
 	@Post("like")
-	async likeToPost(@Query("postId") postId: number, @Query("email") email: string) {
-		const isLiked = await this.postLikeService.create(postId, email);
-		return await this.postService.updateLike(postId, isLiked);
+	async likeToPost(@Body("postId") postId: number, @Body("email") email: string) {
+		const liked = await this.postLikeService.create(postId, email);
+		return await this.postService.updateLike(postId, liked);
 	}
 
 	@ApiOperation({ description: "하나의 게시글에 좋아요 눌렀는지 체크" })
 	@Get("like/check")
 	async checkLikeToVideo(
-		@Body("postId") postId: string,
-		@Body("email") email: string,
+		@Query("postId") postId: string,
+		@Query("email") email: string,
 	) {
 		return await this.postLikeService.findOne(postId, email);
 	}

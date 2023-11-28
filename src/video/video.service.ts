@@ -176,12 +176,12 @@ export class VideoService {
 					},
 				},
 			);
-			const likeModel = this.videoModel.findOne({
+			const likeModel = await this.videoModel.findOne({
 				where: {
 					id:videoId
 				}
 			})
-			return (await likeModel).like_count;
+			return await likeModel.like_count;
 		} catch (error) {
 			throw new HttpException(
 				`${functionName} : ${error}`,

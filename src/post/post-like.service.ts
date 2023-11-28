@@ -57,19 +57,19 @@ export class PostLikeService {
 
 	async create(postId: number, email: string) {
 		try {
-			const existedRecord = await this.postModel.findOne({
+			const record = await this.postModel.findOne({
 				where: {
 					user_email: email,
-					video_id: postId,
+					post_id: postId,
 				},
 			});
-			if (existedRecord) {
-				await existedRecord.destroy();
+			if (record) {
+				await record.destroy();
 				return false;
 			}
 			await this.likeModel.create({
 				user_email: email,
-				video_id: postId,
+				post_id: postId,
 			});
 			return true;
 		} catch (error) {
