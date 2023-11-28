@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as amqp from 'amqplib'
 
 @Injectable()
-export class VideoRecommandService {
+export class VideoRecommendService {
     private readonly uri = 'amqp://localhost';
 
     private generateUuid(): string {

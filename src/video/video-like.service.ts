@@ -54,20 +54,23 @@ export class VideoLikeService {
 
 	async create(videoId: string, email: string) {
 		try {
+			console.log(videoId, email)
 			const existedRecord = await this.likeModel.findOne({
 				where: {
 					user_email: email,
 					video_id: videoId,
 				},
-			});
+			}).catch((err)=>
+			{console.log(err)})
 			if (existedRecord) {
 				await existedRecord.destroy();
 				return false;
 			}
 			await this.likeModel.create({
-				user_email: email,
+				user_email: email,		
 				video_id: videoId,
-			});
+			}).catch((err)=>
+			{console.log(err)})
 			return true;
 		} catch (error) {
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
