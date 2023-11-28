@@ -123,9 +123,6 @@ export class UserService {
 
 			if (channelImagePath !== null) user.channel_image_path = channelImagePath;
 
-			if(channelImagePath !== null)
-				user.channel_image_path=channelImagePath;
-			
 			await user.save();
 			
 			return {

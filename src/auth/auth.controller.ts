@@ -65,6 +65,7 @@ export class AuthController {
 	@ApiOperation({ description: "일반 로그인 접근 Route" })
 	@Post("login/local")
 	async localAuth(@Body() loginUserDto: LoginUserDto) {
+		console.log(loginUserDto)
 		return await this.authService.validateUser(loginUserDto);
 	}
 

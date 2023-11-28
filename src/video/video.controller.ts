@@ -260,6 +260,7 @@ export class VideoController {
 		@Query("videoId") videoId: string,
 		@Query("email") email: string,
 	) {
+		console.log(videoId,email)
 		const isLiked = await this.videoLikeService.create(videoId, email);
 		return await this.videoService.updateLike(videoId, isLiked);
 	}

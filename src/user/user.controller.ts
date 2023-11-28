@@ -59,8 +59,7 @@ export class UserController {
 			channelImage?:Express.Multer.File[];
 		},
 	) {
-		console.log(files)
-
+		console.log(updateUserDto)
 		let profileImagePath=null;
 
 		if(files.profileImage !== null && files.profileImage !== undefined){
@@ -93,6 +92,7 @@ export class UserController {
 		@Query("email") email: string,
 	) {
 		const user = await this.userService.getUserByEmail(email);
+		console.log(user.profile_image_path)
 		if (
 			user.profile_image_path !== undefined &&
 			user.profile_image_path !== null
