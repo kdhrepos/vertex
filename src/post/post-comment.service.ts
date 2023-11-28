@@ -92,7 +92,7 @@ export class PostCommentService {
 					post_id: postId,
 					user_email: email,
 				},
-			});
+			})
 
 			return {
 				statusCode: 200,

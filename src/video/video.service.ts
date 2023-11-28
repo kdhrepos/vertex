@@ -17,6 +17,24 @@ export class VideoService {
 	async findVideoByAlgorithm(page:number) {
 		try {
 			const videos = await this.videoModel.findAll({
+				order:[['view_count','DESC']],
+				offset:page * 12,
+				limit : 12
+			});
+
+			return {
+				data: videos,
+				statusCode: 200,
+				message: "Videos are successfully found",
+			};
+		} catch (error) {
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	async findNewVideos(page:number){
+		try {
+			const videos = await this.videoModel.findAll({
 				order:[['createdAt','DESC']],
 				offset:page * 12,
 				limit : 12

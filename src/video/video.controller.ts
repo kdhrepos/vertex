@@ -56,6 +56,12 @@ export class VideoController {
 		return await this.videoService.findVideoByAlgorithm(page);
 	}
 
+	@ApiOperation({ description: "최신순 비디오 요청" })
+	@Get("newest")
+	async findNewVideos(@Query("page") page:number) {
+		return await this.videoService.findNewVideos(page);
+	}
+
 	@ApiOperation({ description: "하나의 비디오 시청을 위해 비디오 요청" })
 	@Get("watch")
 	async streamVideo(
@@ -257,7 +263,7 @@ export class VideoController {
 	@Get("like/list")
 	async getLikeList(
 		@Query("email") email: string,
-		@Query() page?:number
+		@Query("page") page?:number
 	) {
 		return await this.videoLikeService.findAll(email);
 	}

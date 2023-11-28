@@ -151,7 +151,7 @@ export class PostController {
 
 	@ApiOperation({ description: "하나의 게시글에 좋아요 눌렀는지 체크" })
 	@Get("like/check")
-	async checkLikeToVideo(
+	async checkLikeToPost(
 		@Query("postId") postId: string,
 		@Query("email") email: string,
 	) {
