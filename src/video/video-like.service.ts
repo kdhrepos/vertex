@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Op } from "sequelize";
 import { Like } from "src/model/like.model";
+import { Video } from "src/model/video.model";
 
 @Injectable()
 export class VideoLikeService {
@@ -19,7 +20,13 @@ export class VideoLikeService {
 						[Op.not]: null,
 					},
 				},
-			});
+				include:[
+					{
+						model:Video,
+						as: "video"
+					}
+				],
+			})
 			if (record) {
 				return record;
 			}
