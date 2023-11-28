@@ -19,10 +19,9 @@ export class SubscriptionController {
 	constructor(private subscriptionService: SubscriptionService) {}
 
 	@ApiOperation({ description: "구독 목록 요청" })
-	@UseGuards(AuthenticatedGuard)
 	@Get("/list")
-	async findSubscriptionList(@Query("userId") userId: string) {
-		return await this.subscriptionService.findAll(userId);
+	async findSubscriptionList(@Query("email") email: string) {
+		return await this.subscriptionService.findAll(email);
 	}
 
 	@ApiOperation({ description: "구독한 채널의 모든 컨텐츠를 최신 순으로 요청" })

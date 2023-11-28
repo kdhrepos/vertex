@@ -4,14 +4,15 @@ import { Post } from "src/model/post.model";
 import { CreatePostDto } from "./dto/post-dto/create-post.dto";
 import { UpdatePostDto } from "./dto/post-dto/update-post.dto";
 import { User } from "src/model/user.model";
+import { Sequelize } from "sequelize";
 
 @Injectable()
 export class PostService {
 	constructor(
 		@InjectModel(Post)
 		private postModel: typeof Post,
-	) {}
-	
+	) { }
+
 	async findNewPosts() {
 		try {
 			const posts = await this.postModel.findAll({
@@ -170,6 +171,32 @@ export class PostService {
 				},
 				raw: true,
 			});
+		} catch (error) {
+			throw new HttpException(
+				`${functionName} : ${error}`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
+
+	async updateLike(postId: number, liked: boolean) {
+		const functionName = PostService.prototype.updateLike.name;
+		try {
+			await this.postModel.update(
+				// 좋아요를 누르지 않았다면 +1, 좋아요를 눌렀었다면 취소이므로 -1
+				{ like_count: liked ? Sequelize.literal('like_count+1') : Sequelize.literal('like_count-1') },
+				{
+					where: {
+						id: postId,
+					},
+				},
+			);
+			const likeModel = this.postModel.findOne({
+				where: {
+					id: postId
+				}
+			})
+			return (await likeModel).like_count;
 		} catch (error) {
 			throw new HttpException(
 				`${functionName} : ${error}`,

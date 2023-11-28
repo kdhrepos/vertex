@@ -37,10 +37,10 @@ import { PostLikeService } from "./post-like.service";
 export class PostController {
 	constructor(
 		private postService: PostService,
-		private postLikeService:PostLikeService,
+		private postLikeService: PostLikeService,
 		private postCommentService: PostCommentService,
 		private firebaseService: FirebaseService,
-	) {}
+	) { }
 
 	// @ApiOperation({ description: "게시글 고유 아이디를 통해 하나의 게시글 검색" })
 	// @Get("/:creator_id/post/:post_id")
@@ -72,7 +72,7 @@ export class PostController {
 		const imgUrl = await this.firebaseService.findImage(post.image_file_path);
 
 		return res.send(imgUrl);
-	}	
+	}
 
 	@ApiOperation({ description: "한 채널에 게시글 업로드" })
 	@Post("")
@@ -85,7 +85,7 @@ export class PostController {
 		const hashedFilePath =
 			img !== null && img !== undefined
 				? (await bcrypt.hashSync("asdasdasjid", 12).replace(/\//g, "")) +
-				  path.extname(img.originalname)
+				path.extname(img.originalname)
 				: null;
 
 		if (img !== null && img !== undefined)
@@ -144,16 +144,17 @@ export class PostController {
 
 	@ApiOperation({ description: "게시글 좋아요 누르기/취소" })
 	@Post("like")
-	async likeToPost(@Query("postId") postId: number, @Query("email") email: string,) {
-			return await this.postLikeService.create(postId,email);
+	async likeToPost(@Query("postId") postId: number, @Query("email") email: string) {
+		const isLiked = await this.postLikeService.create(postId, email);
+		return await this.postService.updateLike(postId, isLiked);
 	}
 
 	@ApiOperation({ description: "하나의 게시글에 좋아요 눌렀는지 체크" })
-	@Get("like")
+	@Get("like/check")
 	async checkLikeToVideo(
 		@Body("postId") postId: string,
 		@Body("email") email: string,
 	) {
-			return await this.postLikeService.findOne(postId, email);
+		return await this.postLikeService.findOne(postId, email);
 	}
 }

@@ -60,7 +60,6 @@ export class VideoLikeService {
 					video_id: videoId,
 				},
 			});
-			console.log(existedRecord);
 			if (existedRecord) {
 				await existedRecord.destroy();
 				return false;

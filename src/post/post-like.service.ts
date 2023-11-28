@@ -12,9 +12,9 @@ export class PostLikeService {
 
 		@InjectModel(Like)
 		private likeModel: typeof Like,
-	) {}
+	) { }
 
-	async findAll(userId : string){
+	async findAll(userId: string) {
 		try {
 			const record = await this.likeModel.findAll({
 				where: {
@@ -25,8 +25,8 @@ export class PostLikeService {
 				},
 			});
 
-			return {	
-				data : record,
+			return {
+				data: record,
 				statusCode: 200,
 				message: "Post like successfully found",
 			};
@@ -35,23 +35,17 @@ export class PostLikeService {
 		}
 	}
 
-	async findOne(userId : string, postId: string){
+	async findOne(postId: string, email: string) {
 		try {
 			const record = await this.likeModel.findOne({
 				where: {
-					user_email: userId,
+					user_email: email,
 					post_id: postId
 				},
 			});
-			
 			if (record) {
-				return {	
-					data : record,
-					statusCode: 200,
-					message: "Post like successfully found",
-				};
+				return true;
 			}
-			
 			return false;
 		} catch (error) {
 			throw new HttpException(
@@ -61,21 +55,23 @@ export class PostLikeService {
 		}
 	}
 
-	async create(postId: number, userId:string) {
+	async create(postId: number, email: string) {
 		try {
-			const post = await this.postModel.findByPk(postId);
-
-			post.like_count++;
-			post.save();
-
-			this.likeModel.create({
-				user_email: userId,
-				post_id : postId,
+			const existedRecord = await this.postModel.findOne({
+				where: {
+					user_email: email,
+					video_id: postId,
+				},
 			});
-			return {
-				statusCode: 200,
-				message: "Post like successfully updated",
-			};
+			if (existedRecord) {
+				await existedRecord.destroy();
+				return false;
+			}
+			await this.likeModel.create({
+				user_email: email,
+				video_id: postId,
+			});
+			return true;
 		} catch (error) {
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

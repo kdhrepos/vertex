@@ -25,7 +25,6 @@ export class SubscriptionService {
 				order: [["createdAt", "DESC"]],
 				raw: true,
 			});
-
 			return {
 				data: subscriptionList,
 				statusCode: 200,
