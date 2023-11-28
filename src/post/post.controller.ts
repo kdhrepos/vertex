@@ -64,10 +64,7 @@ export class PostController {
 		description: "채널 내 하나의 게시글 데이터 요청 (이미지 포함)",
 	})
 	@Get("image")
-	async findPost(
-		@Res() res: Response,
-		@Query("postId") postId: number,
-	) {
+	async findPost(@Res() res: Response, @Query("postId") postId: number) {
 		const post = await this.postService.findOne(postId);
 		const imgUrl = await this.firebaseService.findImage(post.image_file_path);
 

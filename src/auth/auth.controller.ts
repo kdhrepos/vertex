@@ -54,7 +54,7 @@ export class AuthController {
 	@ApiResponse({ description: "구글 소셜 로그인 성공 시 유저 정보 반환" })
 	@Get("google")
 	// @UseGuards(GoogleAuthGuard)
-	async googleAuthRedirect(@Req() req, @Res() res) {
+	async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
 		const { user } = req;
 		if (!user) {
 			return res.send(user);
@@ -65,6 +65,7 @@ export class AuthController {
 	@ApiOperation({ description: "일반 로그인 접근 Route" })
 	@Post("login/local")
 	async localAuth(@Body() loginUserDto: LoginUserDto) {
+		console.log(loginUserDto)
 		return await this.authService.validateUser(loginUserDto);
 	}
 
@@ -113,6 +114,4 @@ export class AuthController {
 			msg: "Valid Email",
 		});
 	}
-
-
 }
