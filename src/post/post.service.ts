@@ -13,7 +13,7 @@ export class PostService {
 		private postModel: typeof Post,
 	) { }
 
-	async findNewPosts() {
+	async findNewPosts(page:number) {
 		try {
 			const posts = await this.postModel.findAll({
 				raw: true,
@@ -25,6 +25,8 @@ export class PostService {
 						attributes: ["name"],
 					},
 				],
+				offset: page * 3,
+				limit : 3
 			});
 
 			return {
@@ -51,7 +53,7 @@ export class PostService {
 						attributes: ["name"],
 					},
 				],
-				order:[["createdAt","DESC"]]
+				order:[["view_count","DESC"]]
 			});
 
 			return {

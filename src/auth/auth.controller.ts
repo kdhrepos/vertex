@@ -75,7 +75,7 @@ export class AuthController {
 	@ApiExtraModels(CreateUserDto)
 	@Post("signup/local")
 	@UseInterceptors(FileInterceptor("profile", {}))
-	async signin(
+	async signup(
 		@Body() createUserDto: CreateUserDto,
 		@UploadedFile() profileImage?: Express.Multer.File,
 	) {

@@ -6,7 +6,6 @@ import * as bcrypt from "bcrypt";
 import { User } from "src/model/user.model";
 import { DeleteUserDto } from "src/user/dto/delete-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { Video } from "src/model/video.model";
 
 @Injectable()
 export class UserService {

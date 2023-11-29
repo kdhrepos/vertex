@@ -16,7 +16,7 @@ export class DeleteCommentDto {
 		description: "댓글의 id",
 		example: "1",
 	})
-	commentId: number;
+	id: number;
 
 	@IsNumber()
 	@ApiProperty({

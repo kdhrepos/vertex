@@ -16,7 +16,7 @@ export class UpdateCommentDto {
 		description: "1",
 		example: "댓글의 id",
 	})
-	commentId: number;
+	id: number;
 
 	@IsString()
 	@ApiProperty({

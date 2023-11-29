@@ -50,11 +50,11 @@ export class SubscriptionService {
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	async findContents(userId: string, page: number) {
+	async findContents(email: string, page: number) {
 		try {
 			const contentsList = await this.subscriptionModel.findAll({
 				where: {
-					user_email: userId,
+					user_email: email,
 				},
 				attributes: ["channel_email"],
 				include: [
@@ -65,14 +65,14 @@ export class SubscriptionService {
 						include: [
 							{
 								model: Video,
-								as: "video",
-								order: [["updatedAt", "DESC"]],
+								as: "video", 
 							},
 						],
+						order: [["createdAt", "DESC"]],
 					},
 				],
-				limit: page,
-				raw: true,
+				offset:page * 12,
+				limit : 12,
 			});
 
 			return {

@@ -16,12 +16,10 @@ export class PostCommentService {
 				where: {
 					post_id: postId,
 				},
-				attributes: ["id", "post_id", "createdAt", "updatedAt"],
-				raw: true,
+				attributes: ["id", "user_email", "content", "createdAt", "parent_id"],
 				include: [
 					{
 						model: User,
-						as: "user",
 						attributes: ["name"],
 					},
 				],
@@ -60,15 +58,13 @@ export class PostCommentService {
 
 	async update(updateCommentDto: UpdateCommentDto) {
 		try {
-			const { commentId, content, postId, email } = updateCommentDto;
+			const { id, content, postId, email } = updateCommentDto;
 
 			await this.commentModel.update(
 				{ content: content },
 				{
 					where: {
-						id: commentId,
-						post_id: postId,
-						user_email: email,
+						id: id,
 					},
 				},
 			);
@@ -84,11 +80,11 @@ export class PostCommentService {
 
 	async delete(deleteCommentDto: DeleteCommentDto) {
 		try {
-			const { email, commentId, postId } = deleteCommentDto;
+			const { email, id, postId } = deleteCommentDto;
 
 			await this.commentModel.destroy({
 				where: {
-					id: commentId,
+					id: id,
 					post_id: postId,
 					user_email: email,
 				},

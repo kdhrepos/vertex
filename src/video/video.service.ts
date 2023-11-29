@@ -18,8 +18,8 @@ export class VideoService {
 		try {
 			const videos = await this.videoModel.findAll({
 				order:[['view_count','DESC']],
-				offset:page * 12,
-				limit : 12
+				offset:page * 3,
+				limit : 3
 			});
 
 			return {
@@ -36,8 +36,8 @@ export class VideoService {
 		try {
 			const videos = await this.videoModel.findAll({
 				order:[['createdAt','DESC']],
-				offset:page * 12,
-				limit : 12
+				offset:page * 3,
+				limit : 3
 			});
 
 			return {

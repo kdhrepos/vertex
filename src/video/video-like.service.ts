@@ -89,7 +89,7 @@ export class VideoLikeService {
 			await this.likeModel.destroy({
 				where: {
 					user_email: email,
-					video_id: videoId,
+					video_id: videoId,	
 				},
 			});
 
