@@ -79,6 +79,7 @@ export class AuthController {
 		@Body() createUserDto: CreateUserDto,
 		@UploadedFile() profileImage?: Express.Multer.File,
 	) {
+		console.log(createUserDto)
 		const { email, name } = createUserDto;
 		const hashedFilePath =
 			profileImage !== null && profileImage !== undefined

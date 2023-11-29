@@ -54,6 +54,9 @@ export class Video extends Model {
 	@Column
 	thumbnail_file_extension: string;
 
+	@Column({ defaultValue:false })
+	is_youtube : boolean;
+
 	/**
 	 * Relationship
 	 */
@@ -67,9 +70,6 @@ export class Video extends Model {
 
 	@BelongsToMany(() => Hashtag, () => HashtagLink, "video_id")
 	hashtagLink: HashtagLink;
-
-	@BelongsToMany(() => User, () => Like, "video_id")
-	like: Like;
 
 	@BelongsToMany(() => User, () => Record, "video_id")
 	record: Record;

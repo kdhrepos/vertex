@@ -13,6 +13,7 @@ export class VideoRecommendService {
 
     async sendMessage(message: string): Promise<string> {
         console.log(message)
+        // return await message
 
         const connection = await amqp.connect(this.uri);
         const channel = await connection.createChannel();
@@ -31,7 +32,7 @@ export class VideoRecommendService {
         // console.log(` [x] Sent '${message}'`);
 
         const res = ['a', 'b', 'c', 'd', 'e', 'f',]
-        const resString = JSON.stringify(res);
+        const resString = JSON.stringify(message);
         channel.sendToQueue(queue, Buffer.from(resString), {
             correlationId: correlationId,
             replyTo: replyQueueName

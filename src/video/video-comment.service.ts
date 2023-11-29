@@ -29,6 +29,7 @@ export class VideoCommentService {
 						attributes: ["name"],
 					},
 				],
+				order:[['createdAt','DESC']]
 			});
 
 			return {
@@ -94,12 +95,10 @@ export class VideoCommentService {
 			const video = await this.commentModel.findOne({
 				where: {
 					id: id,
-					user_email: email,
-					video_id: videoId,
 				},
-			});
+			})
 
-			if (!video) {
+			if (video) {
 				await video.destroy();
 				return {
 					statusCode: 200,

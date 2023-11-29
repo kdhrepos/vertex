@@ -51,6 +51,7 @@ export class PostService {
 						attributes: ["name"],
 					},
 				],
+				order:[["createdAt","DESC"]]
 			});
 
 			return {
@@ -155,13 +156,12 @@ export class PostService {
 		}
 	}
 
-	async delete(postId: string, email: string) {
+	async delete(postId: string) {
 		const functionName = PostService.prototype.delete.name;
 		try {
 			this.postModel.destroy({
 				where: {
 					id: postId,
-					user_email: email,
 				},
 			});
 
@@ -191,12 +191,16 @@ export class PostService {
 					},
 				},
 			);
-			const likeModel = this.postModel.findOne({
+			const likeModel = await this.postModel.findOne({
 				where: {
 					id: postId
 				}
 			})
-			return (await likeModel).like_count;
+			return {
+				data:likeModel.like_count,
+				statusCode: 200,
+				message:"Like successfully made"
+			}
 		} catch (error) {
 			throw new HttpException(
 				`${functionName} : ${error}`,

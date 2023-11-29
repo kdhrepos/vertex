@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Op } from "sequelize";
 import { Like } from "src/model/like.model";
+import { Video } from "src/model/video.model";
 
 @Injectable()
 export class VideoLikeService {
@@ -12,14 +13,20 @@ export class VideoLikeService {
 
 	async findAll(email: string) {
 		try {
-			const record = await this.likeModel.findOne({
+			const record = await this.likeModel.findAll({
 				where: {
 					user_email: email,
 					video_id: {
 						[Op.not]: null,
 					},
 				},
-			});
+				include:[
+					{
+						model:Video,
+						as: "video"
+					}
+				],
+			})
 			if (record) {
 				return record;
 			}
@@ -32,11 +39,11 @@ export class VideoLikeService {
 		}
 	}
 
-	async findOne(userId : string, videoId: string){
+	async findOne(email : string, videoId: string){
 		try {
 			const record = await this.likeModel.findOne({
 				where: {
-					user_email: userId,
+					user_email: email,
 					video_id: videoId
 				},
 			});
@@ -72,6 +79,24 @@ export class VideoLikeService {
 			}).catch((err)=>
 			{console.log(err)})
 			return true;
+		} catch (error) {
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	async delete(email: string, videoId: string) {
+		try {
+			await this.likeModel.destroy({
+				where: {
+					user_email: email,
+					video_id: videoId,
+				},
+			});
+
+			return {
+				statusCode: 200,
+				message: "Record is successfully deleted",
+			};
 		} catch (error) {
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

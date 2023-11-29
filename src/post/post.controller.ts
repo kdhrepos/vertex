@@ -50,13 +50,13 @@ export class PostController {
 
 	@ApiOperation({ description: "새로운 게시글 리스트 요청" })
 	@Get("list/new")
-	async findNewPosts() {
+	async findNewPosts(@Query("page") page?:number) {
 		return await this.postService.findNewPosts();
 	}
 
 	@ApiOperation({ description: "한 채널의 게시글 리스트 요청" })
 	@Get("list")
-	async findPostList(@Query("channelId") channelId: string) {
+	async findPostList(@Query("channelId") channelId: string, @Query("page") page?:number) {
 		return await this.postService.findAll(channelId);
 	}
 
@@ -108,9 +108,9 @@ export class PostController {
 	@Delete("")
 	async deletePost(
 		@Query("postId") postId: string,
-		@Query("email") email: string,
 	) {
-		const post = await this.postService.delete(postId, email);
+		console.log(postId)
+		const post = await this.postService.delete(postId);
 		const { image_file_path: imgPath } = post;
 		return await this.firebaseService.deleteImage(imgPath);
 	}
@@ -124,33 +124,36 @@ export class PostController {
 	@ApiOperation({ description: "게시글에 댓글 등록" })
 	@Post("/comment")
 	async createCommentToPost(@Body() uploadCommentDto: UploadCommentDto) {
+		console.log(uploadCommentDto)
 		return await this.postCommentService.create(uploadCommentDto);
 	}
 
 	@ApiOperation({ description: "게시글의 댓글 수정" })
 	@Patch("/comment")
 	async updateCommentToPost(@Body() updateCommentDto: UpdateCommentDto) {
+		console.log(updateCommentDto)
 		return await this.postCommentService.update(updateCommentDto);
 	}
 
 	@ApiOperation({ description: "게시글의 댓글 삭제" })
 	@Delete("/comment")
 	async deleteCommentToPost(@Body() deleteCommentDto: DeleteCommentDto) {
+		console.log(deleteCommentDto)
 		return await this.postCommentService.delete(deleteCommentDto);
 	}
 
 	@ApiOperation({ description: "게시글 좋아요 누르기/취소" })
 	@Post("like")
-	async likeToPost(@Query("postId") postId: number, @Query("email") email: string) {
-		const isLiked = await this.postLikeService.create(postId, email);
-		return await this.postService.updateLike(postId, isLiked);
+	async likeToPost(@Body("postId") postId: number, @Body("email") email: string) {
+		const liked = await this.postLikeService.create(postId, email);
+		return await this.postService.updateLike(postId, liked);
 	}
 
 	@ApiOperation({ description: "하나의 게시글에 좋아요 눌렀는지 체크" })
 	@Get("like/check")
-	async checkLikeToVideo(
-		@Body("postId") postId: string,
-		@Body("email") email: string,
+	async checkLikeToPost(
+		@Query("postId") postId: string,
+		@Query("email") email: string,
 	) {
 		return await this.postLikeService.findOne(postId, email);
 	}

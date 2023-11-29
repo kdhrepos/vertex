@@ -4,6 +4,7 @@ import { InjectModel } from "@nestjs/sequelize";
 import { UpdateVideoDto } from "./dto/video-dto/update-video.dto";
 import { User } from "src/model/user.model";
 import { Sequelize } from "sequelize";
+import { Op } from "sequelize";
 
 @Injectable()
 export class VideoService {
@@ -13,17 +14,40 @@ export class VideoService {
 		@InjectModel(User)
 		private userModel: typeof User,
 	) {}
-
-	async homepage() {
+	async findVideoByAlgorithm(page:number) {
 		try {
-			const videos = await this.videoModel.findAll();
+			const videos = await this.videoModel.findAll({
+				order:[['view_count','DESC']],
+				offset:page * 12,
+				limit : 12
+			});
 
 			return {
 				data: videos,
 				statusCode: 200,
 				message: "Videos are successfully found",
 			};
-		} catch (error) {}
+		} catch (error) {
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	async findNewVideos(page:number){
+		try {
+			const videos = await this.videoModel.findAll({
+				order:[['createdAt','DESC']],
+				offset:page * 12,
+				limit : 12
+			});
+
+			return {
+				data: videos,
+				statusCode: 200,
+				message: "Videos are successfully found",
+			};
+		} catch (error) {
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	async findAll(channelId: string) {
@@ -56,6 +80,25 @@ export class VideoService {
 				return existedVideo;
 			}
 			return false;
+		} catch (error) {
+			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	async findBySearch(query : string){
+		try {
+			const videos = await this.videoModel.findAll({
+				where:{
+					title: {
+						[Op.like]: `%${query}%`,
+					},
+				}
+			})
+			return {
+				data: videos,
+				statusCode : 200,
+				message:"Videos are successfully found"
+			}
 		} catch (error) {
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -111,12 +154,11 @@ export class VideoService {
 		}
 	}
 
-	async deleteOne(videoId: string, email: string) {
+	async deleteOne(videoId: string) {
 		try {
 			const video = await this.videoModel.findOne({
 				where: {
 					id: videoId,
-					user_email: email,
 				},
 			});
 
@@ -129,11 +171,10 @@ export class VideoService {
 		}
 	}
 
-	async updateView(video: Video) {
+	async updateView(videoId: string) {
 		try {
-			const { id: videoId, view_count: viewCount } = video;
 			await this.videoModel.update(
-				{ view_count: viewCount + 1 },
+				{ view_count: Sequelize.literal("view_count+1") },
 				{
 					where: {
 						id: videoId,
@@ -157,12 +198,12 @@ export class VideoService {
 					},
 				},
 			);
-			const likeModel = this.videoModel.findOne({
+			const likeModel = await this.videoModel.findOne({
 				where: {
 					id:videoId
 				}
 			})
-			return (await likeModel).like_count;
+			return await likeModel.like_count;
 		} catch (error) {
 			throw new HttpException(
 				`${functionName} : ${error}`,

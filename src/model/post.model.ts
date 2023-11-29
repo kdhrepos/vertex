@@ -54,7 +54,4 @@ export class Post extends Model {
 
 	@BelongsToMany(() => Hashtag, () => HashtagLink, "post_id")
 	hashtagLink: HashtagLink;
-
-	@BelongsToMany(() => User, () => Like, "post_id")
-	like: Like;
 }
