@@ -334,8 +334,14 @@ export class VideoController {
 
 	@ApiOperation({ description: "추천 알고리즘" })
 	@Get("recommend")
-	async recommendAlgorithm(@Query("history") params: string, @Query("page") page?: number) {
-		return await this.videoRecommendService.sendMessage(params);
+	async recommendAlgorithm(@Query("history") params: any, @Query("page") page?: number) {
+		// get history by userId
+		const history = await this.videoRecordService.findAll(params.userId);
+		const arr = []
+		history.data.forEach((row) => arr.push(row['title']));
+		console.log(arr);
+		// page
+		return await this.videoRecommendService.sendMessage(`${arr}`);
 	}
 
 	@ApiOperation({ description: "비디오 검색" })
