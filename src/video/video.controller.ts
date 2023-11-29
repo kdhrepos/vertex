@@ -164,7 +164,7 @@ export class VideoController {
 
 	@ApiOperation({ description: "비디오 업로드" })
 	@Post("/dummy")
-	async dummyVideoInsert(@Body() data: any) {
+	async dummyVideoInsert(@Body('dummy') data: any) {
 		console.log(data)
 
 		//	data.forEach((row) => {
