@@ -31,13 +31,12 @@ export class VideoRecommendService {
         // });
         // console.log(` [x] Sent '${message}'`);
 
-        const res = ['a', 'b', 'c', 'd', 'e', 'f',]
         const resString = JSON.stringify(message);
+        console.log(resString);
         channel.sendToQueue(queue, Buffer.from(resString), {
             correlationId: correlationId,
             replyTo: replyQueueName
         });
-        console.log(res);
 
         console.log(` [*] Waiting for messages At Nest. To exit, press Ctrl+C`);
         return new Promise<string>((resolve) => {

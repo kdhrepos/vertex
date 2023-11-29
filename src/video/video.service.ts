@@ -107,8 +107,8 @@ export class VideoService {
 	async create(
 		videoId: string,
 		title: string,
-		description: string,
 		email: string,
+		description: string,
 		videoFileExtension: string,
 		thumbnailFileExtension: string,
 	) {
@@ -126,7 +126,9 @@ export class VideoService {
 				name: (await user).name,
 				video_file_extension: videoFileExtension,
 				thumbnail_file_extension: thumbnailFileExtension,
-			});
+			}).catch(error=>{
+				console.log(error)
+			})
 		} catch (error) {
 			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

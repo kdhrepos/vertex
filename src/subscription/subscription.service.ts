@@ -6,10 +6,10 @@ import { Video } from "src/model/video.model";
 
 @Injectable()
 export class SubscriptionService {
-	constructor(
-		@InjectModel(Subscription) private subscriptionModel: typeof Subscription,
-		@InjectModel(Video) private videoModel: typeof Video,
-	) { }
+  constructor(
+    @InjectModel(Subscription) private subscriptionModel: typeof Subscription,
+    @InjectModel(Video) private videoModel: typeof Video
+  ) {}
 
 	async findAll(userId: string) {
 		try {
@@ -75,59 +75,59 @@ export class SubscriptionService {
 				limit : 12,
 			});
 
-			return {
-				data: contentsList,
-				statusCode: 200,
-				message: "Contents are sucessfully found",
-			};
-		} catch (error) {
-			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+      return {
+        data: contentsList,
+        statusCode: 200,
+        message: "Contents are sucessfully found",
+      };
+    } catch (error) {
+      throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
-	async create(userId: string, channelId: string) {
-		try {
-			// 자기 자신 구독 불가
-			if (userId === channelId) {
-				throw new HttpException(
-					`Self Subscription Error`,
-					HttpStatus.BAD_REQUEST,
-				);
-			}
-			const subscription = await this.subscriptionModel.create({
-				user_email: userId,
-				channel_email: channelId,
-			});
-			return {
-				data: subscription,
-				statusCode: 200,
-				message: "Sucessfully subscripted",
-			};
-		} catch (error) {
-			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+  async create(userId: string, channelId: string) {
+    try {
+      // 자기 자신 구독 불가
+      if (userId === channelId) {
+        throw new HttpException(
+          `Self Subscription Error`,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      const subscription = await this.subscriptionModel.create({
+        user_email: userId,
+        channel_email: channelId,
+      });
+      return {
+        data: subscription,
+        statusCode: 200,
+        message: "Sucessfully subscripted",
+      };
+    } catch (error) {
+      throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
-	async delete(userId: string, channelId: string) {
-		const functionName = SubscriptionService.prototype.delete.name;
-		try {
-			console.log(userId);
-			await this.subscriptionModel.destroy({
-				where: {
-					user_email: userId,
-					channel_email: channelId,
-				},
-			});
+  async delete(userId: string, channelId: string) {
+    const functionName = SubscriptionService.prototype.delete.name;
+    try {
+      console.log(userId);
+      await this.subscriptionModel.destroy({
+        where: {
+          user_email: userId,
+          channel_email: channelId,
+        },
+      });
 
-			return {
-				statusCode: 200,
-				message: "Successfully Deleted",
-			};
-		} catch (error) {
-			throw new HttpException(
-				`${functionName} : ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
-		}
-	}
+      return {
+        statusCode: 200,
+        message: "Successfully Deleted",
+      };
+    } catch (error) {
+      throw new HttpException(
+        `${functionName} : ${error}`,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
 }

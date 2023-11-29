@@ -4,6 +4,7 @@ import { ValidationPipe } from "@nestjs/common";
 import { swaggerSetup } from "./swagger";
 import * as cookieParser from "cookie-parser";
 // import { setUpSession } from "./setup.session";
+import { urlencoded, json } from 'body-parser';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule, {
@@ -27,6 +28,8 @@ async function bootstrap() {
 
 	// Enable Cookie
 	app.use(cookieParser());
+	app.use(json({ limit: '50mb' }));
+	app.use(urlencoded({ limit: '50mb', extended: true }));
 
 	// Session
 	// setUpSession(app);
