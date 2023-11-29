@@ -162,6 +162,23 @@ export class VideoController {
 		return res.send(result);
 	}
 
+	@ApiOperation({ description: "비디오 업로드" })
+	@Post("/dummy")
+	async dummyVideoInsert(@Body() data: any) {
+		console.log(data)
+
+		//	data.forEach((row) => {
+		// 		this.videoService.create(
+		// 			row[0],
+		// 			row[1],
+		// 			row[2],
+		// 			row[3],
+		// 			row[4],
+		// 			row[5],
+		// 		);
+		//	})
+	}
+
 	@ApiOperation({ description: "비디오 수정" })
 	@Patch("")
 	@UseInterceptors(
