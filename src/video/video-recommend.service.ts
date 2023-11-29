@@ -11,7 +11,7 @@ export class VideoRecommendService {
             Math.random().toString();
     }
 
-    async sendMessage(message: string): Promise<string> {
+    async sendMessage(message: any): Promise<string> {
         console.log(message)
         // return await message
 
@@ -42,8 +42,8 @@ export class VideoRecommendService {
         return new Promise<string>((resolve) => {
             channel.consume(replyQueueName, (msg) => {
                 // const data = JSON.parse(msg.content.toString())
-                console.log(typeof msg.content.toString())
-                console.log(` [*] Received response: '${msg.content.toString()}'`);
+                // console.log(typeof msg.content.toString())
+                // console.log(` [*] Received response: '${msg.content.toString()}'`);
                 if (msg.properties.correlationId === correlationId) {
                     resolve(msg.content.toString());
 

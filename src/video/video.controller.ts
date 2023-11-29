@@ -337,11 +337,36 @@ export class VideoController {
 	async recommendAlgorithm(@Query("history") params: any, @Query("page") page?: number) {
 		// get history by userId
 		const history = await this.videoRecordService.findAll(params.userId);
+		// console.log(history)
 		const arr = []
-		history.data.forEach((row) => arr.push(row['title']));
-		console.log(arr);
+		history.data.forEach((row) => {
+			// console.log(row.video)
+			arr.push(row.video.title)});
+		// console.log('title : ', arr);
 		// page
-		return await this.videoRecommendService.sendMessage(`${arr}`);
+		const res =  await this.videoRecommendService.sendMessage(arr);
+		if(res) {
+			const youtubeURL = 'https://www.youtube.com/watch?v='
+			const data = []
+			JSON.parse(String(res).replace(/'/g, '"')).forEach(row => {
+				data.push(youtubeURL + row)
+			})
+			console.log(data)
+
+			const videoList = []
+			// await data.forEach(async (row) => {
+			// 	const video = await this.videoService.findOne(row);
+			// 	videoList.push(video)
+			// })
+			for(let i = 0; i<data.length; i++) {
+				const video = await this.videoService.findOne(data[i]);
+				videoList.push(video)
+			}
+			console.log(videoList)
+
+			return videoList;
+		}
+		else return null;
 	}
 
 	@ApiOperation({ description: "비디오 검색" })
