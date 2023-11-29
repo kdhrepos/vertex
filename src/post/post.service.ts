@@ -8,204 +8,207 @@ import { Sequelize } from "sequelize";
 
 @Injectable()
 export class PostService {
-	constructor(
-		@InjectModel(Post)
-		private postModel: typeof Post,
-	) { }
+  constructor(
+    @InjectModel(Post)
+    private postModel: typeof Post
+  ) {}
 
-	async findNewPosts() {
-		try {
-			const posts = await this.postModel.findAll({
-				raw: true,
-				order: [["createdAt", "DESC"]],
-				include: [
-					{
-						model: User,
-						as: "user",
-						attributes: ["name"],
-					},
-				],
-			});
+  async findNewPosts() {
+    try {
+      const posts = await this.postModel.findAll({
+        raw: true,
+        order: [["createdAt", "DESC"]],
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["name"],
+          },
+        ],
+      });
 
-			return {
-				data: posts,
-				statusCode: 200,
-				message: "Newest posts are successfully found",
-			};
-		} catch (error) {
-			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+      return {
+        data: posts,
+        statusCode: 200,
+        message: "Newest posts are successfully found",
+      };
+    } catch (error) {
+      throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
-	async findAll(channelId: string) {
-		try {
-			const posts = await this.postModel.findAll({
-				where: {
-					channel_email: channelId,
-				},
-				raw: true,
-				include: [
-					{
-						model: User,
-						as: "user",
-						attributes: ["name"],
-					},
-				],
-				order:[["createdAt","DESC"]]
-			});
+  async findAll(channelId: string, page: number) {
+    try {
+      const posts = await this.postModel.findAll({
+        where: {
+          channel_email: channelId,
+        },
+        raw: true,
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["name"],
+          },
+        ],
+        order: [["createdAt", "DESC"]],
+        offset: page * 12,
+        limit: 12,
+      });
 
-			return {
-				data: posts,
-				statusCode: 200,
-				message: "Posts are successfully found",
-			};
-		} catch (error) {
-			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+      return {
+        data: posts,
+        statusCode: 200,
+        message: "Posts are successfully found",
+      };
+    } catch (error) {
+      throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
-	async findOne(postId: number) {
-		try {
-			const existedPost = await this.postModel.findOne({
-				where: {
-					id: postId,
-				},
-				attributes: [
-					"id",
-					"title",
-					"contents",
-					"like_count",
-					"view_count",
-					"image_file_path",
-					"createdAt",
-					"updatedAt",
-				],
-				raw: true,
-			});
+  async findOne(postId: number) {
+    try {
+      const existedPost = await this.postModel.findOne({
+        where: {
+          id: postId,
+        },
+        attributes: [
+          "id",
+          "title",
+          "contents",
+          "like_count",
+          "view_count",
+          "image_file_path",
+          "createdAt",
+          "updatedAt",
+        ],
+        raw: true,
+      });
 
-			this.postModel.update(
-				{
-					view_count: existedPost.view_count + 1,
-				},
-				{
-					where: {
-						id: postId,
-					},
-				},
-			);
+      this.postModel.update(
+        {
+          view_count: existedPost.view_count + 1,
+        },
+        {
+          where: {
+            id: postId,
+          },
+        }
+      );
 
-			return existedPost;
-		} catch (error) {
-			throw new HttpException(
-				`${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
-		}
-	}
+      return existedPost;
+    } catch (error) {
+      throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
-	async create(createPostDto: CreatePostDto, imgPath: string) {
-		try {
-			const { channelId, title, contents, email } = createPostDto;
+  async create(createPostDto: CreatePostDto, imgPath: string) {
+    try {
+      const { channelId, title, contents, email } = createPostDto;
 
-			const post = await this.postModel.create({
-				user_email: email,
-				channel_email: channelId,
-				title: title,
-				contents: contents,
-				image_file_path: imgPath,
-			});
+      const post = await this.postModel.create({
+        user_email: email,
+        channel_email: channelId,
+        title: title,
+        contents: contents,
+        image_file_path: imgPath,
+      });
 
-			return {
-				data: post,
-				statusCode: 200,
-				message: "Post successfully uploaded",
-			};
-		} catch (error) {
-			throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+      return {
+        data: post,
+        statusCode: 200,
+        message: "Post successfully uploaded",
+      };
+    } catch (error) {
+      throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
-	async update(updatePostDto: UpdatePostDto) {
-		const functionName = PostService.prototype.update.name;
-		try {
-			const { postId, title, contents } = updatePostDto;
+  async update(updatePostDto: UpdatePostDto) {
+    const functionName = PostService.prototype.update.name;
+    try {
+      const { postId, title, contents } = updatePostDto;
 
-			this.postModel.update(
-				{
-					title: title,
-					contents: contents,
-				},
-				{
-					where: {
-						id: postId,
-					},
-				},
-			);
+      this.postModel.update(
+        {
+          title: title,
+          contents: contents,
+        },
+        {
+          where: {
+            id: postId,
+          },
+        }
+      );
 
-			return await this.postModel.findOne({
-				where: {
-					id: postId,
-				},
-				raw: true,
-			});
-		} catch (error) {
-			throw new HttpException(
-				`${functionName} : ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
-		}
-	}
+      return await this.postModel.findOne({
+        where: {
+          id: postId,
+        },
+        raw: true,
+      });
+    } catch (error) {
+      throw new HttpException(
+        `${functionName} : ${error}`,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
 
-	async delete(postId: string) {
-		const functionName = PostService.prototype.delete.name;
-		try {
-			this.postModel.destroy({
-				where: {
-					id: postId,
-				},
-			});
+  async delete(postId: string) {
+    const functionName = PostService.prototype.delete.name;
+    try {
+      this.postModel.destroy({
+        where: {
+          id: postId,
+        },
+      });
 
-			return await this.postModel.findOne({
-				where: {
-					id: postId,
-				},
-				raw: true,
-			});
-		} catch (error) {
-			throw new HttpException(
-				`${functionName} : ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
-		}
-	}
+      return await this.postModel.findOne({
+        where: {
+          id: postId,
+        },
+        raw: true,
+      });
+    } catch (error) {
+      throw new HttpException(
+        `${functionName} : ${error}`,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
 
-	async updateLike(postId: number, liked: boolean) {
-		const functionName = PostService.prototype.updateLike.name;
-		try {
-			await this.postModel.update(
-				// 좋아요를 누르지 않았다면 +1, 좋아요를 눌렀었다면 취소이므로 -1
-				{ like_count: liked ? Sequelize.literal('like_count+1') : Sequelize.literal('like_count-1') },
-				{
-					where: {
-						id: postId,
-					},
-				},
-			);
-			const likeModel = await this.postModel.findOne({
-				where: {
-					id: postId
-				}
-			})
-			return {
-				data:likeModel.like_count,
-				statusCode: 200,
-				message:"Like successfully made"
-			}
-		} catch (error) {
-			throw new HttpException(
-				`${functionName} : ${error}`,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
-		}
-	}
+  async updateLike(postId: number, liked: boolean) {
+    const functionName = PostService.prototype.updateLike.name;
+    try {
+      await this.postModel.update(
+        // 좋아요를 누르지 않았다면 +1, 좋아요를 눌렀었다면 취소이므로 -1
+        {
+          like_count: liked
+            ? Sequelize.literal("like_count+1")
+            : Sequelize.literal("like_count-1"),
+        },
+        {
+          where: {
+            id: postId,
+          },
+        }
+      );
+      const likeModel = await this.postModel.findOne({
+        where: {
+          id: postId,
+        },
+      });
+      return {
+        data: likeModel.like_count,
+        statusCode: 200,
+        message: "Like successfully made",
+      };
+    } catch (error) {
+      throw new HttpException(
+        `${functionName} : ${error}`,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
 }
