@@ -22,6 +22,7 @@ export class VideoRecordService {
 						as: "video",
 					},
 				],
+				order:[['createdAt','DESC']]
 			});
 
 			return {

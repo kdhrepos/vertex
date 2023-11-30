@@ -167,18 +167,18 @@ export class VideoController {
 	@ApiOperation({ description: "비디오 업로드" })
 	@Post("/dummy")
 	async dummyVideoInsert(@Body('dummy') data: any) {
-		console.log("dummy", data)
+		// console.log("dummy", data)
 
-			data.forEach((row) => {
-				this.videoService.create(
-					row[0],
-					row[1],
-					row[2],
-					row[3],
-					row[4],
-					row[5],
-				);
-			})
+		// 	data.forEach((row) => {
+		// 		this.videoService.create(
+		// 			row[0],
+		// 			row[1],
+		// 			row[2],
+		// 			row[3],
+		// 			row[4],
+		// 			row[5],
+		// 		);
+		// 	})
 	}
 
 	@ApiOperation({ description: "비디오 수정" })
@@ -309,15 +309,15 @@ export class VideoController {
 		description: "한 크리에이터의 채널에 들어갔을때 비디오 요청",
 	})
 	@Get("/channel/list")
-	async getVideoListInChannel(@Query("channelId") channelId: string, @Query() page?: number) {
-		return await this.videoService.findAll(channelId);
+	async getVideoListInChannel(@Query("channelId") channelId: string, @Query("page") page: number) {
+		return await this.videoService.findAll(channelId,page);
 	}
 
 	@ApiOperation({
 		description: "비디오 시청 기록 리스트 요청",
 	})
 	@Get("record")
-	async getRecordList(@Req() req: Request, @Query("email") email: string, @Query() page?: number) {
+	async getRecordList(@Req() req: Request, @Query("email") email: string) {
 		console.log(email);
 		return await this.videoRecordService.findAll(email);
 	}
@@ -369,9 +369,39 @@ export class VideoController {
 		else return null;
 	}
 
+	@ApiOperation({ description: "추천 알고리즘" })
+	@Get("recommend/side")
+	async recommendSide(@Query("title") title:string) {
+		// page
+		const arr =[];
+		arr.push(title);
+		const res =  await this.videoRecommendService.sendMessage(arr);
+		console.log(res);
+		if(res) {
+			const youtubeURL = 'https://www.youtube.com/watch?v='
+			const data = []
+			JSON.parse(String(res).replace(/'/g, '"')).forEach(row => {
+				data.push(youtubeURL + row)
+			})
+
+			const videoList = []
+			// await data.forEach(async (row) => {
+			// 	const video = await this.videoService.findOne(row);
+			// 	videoList.push(video)
+			// })
+			for(let i = 0; i<3; i++) {
+				const video = await this.videoService.findOne(data[i]);
+				videoList.push(video)
+			}
+
+			return videoList;
+		}
+		else return null;
+	}
+
 	@ApiOperation({ description: "비디오 검색" })
 	@Get("search")
-	async findVideoBySearch(@Query("query") query: string, @Query("page") page?: number) {
-		return await this.videoService.findBySearch(query);
+	async findVideoBySearch(@Query("query") query: string, @Query("page") page: number) {
+		return await this.videoService.findBySearch(query,page);
 	}
 }

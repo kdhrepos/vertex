@@ -52,12 +52,14 @@ export class VideoService {
 		}
 	}
 
-	async findAll(channelId: string) {
+	async findAll(channelId: string,page:number) {
 		try {
 			const videos = await this.videoModel.findAll({
 				where: {
 					user_email: channelId,
 				},
+				offset: page * 12,
+				limit : 12,
 			});
 
 			return {
@@ -87,14 +89,16 @@ export class VideoService {
 		}
 	}
 
-	async findBySearch(query : string){
+	async findBySearch(query : string,page:number){
 		try {
 			const videos = await this.videoModel.findAll({
 				where:{
 					title: {
 						[Op.like]: `%${query}%`,
 					},
-				}
+				},
+				offset : page * 12,
+				limit : 12,
 			})
 			return {
 				data: videos,
