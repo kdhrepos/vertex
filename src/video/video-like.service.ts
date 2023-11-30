@@ -20,6 +20,7 @@ export class VideoLikeService {
 						[Op.not]: null,
 					},
 				},
+				order:[['createdAt','DESC']],
 				include:[
 					{
 						model:Video,

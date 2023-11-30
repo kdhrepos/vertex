@@ -18,9 +18,11 @@ export class VideoService {
 		try {
 			const videos = await this.videoModel.findAll({
 				order:[['view_count','DESC']],
-				offset:page * 12,
+				offset: page * 12,
 				limit : 12
 			});
+
+			console.log("LENGTH", videos.length);
 
 			return {
 				data: videos,
@@ -113,17 +115,18 @@ export class VideoService {
 		thumbnailFileExtension: string,
 	) {
 		try {
-			const user = this.userModel.findOne({
+			const user = await this.userModel.findOne({
 				where:{
 					email: email
 				}
 			})
+
 			return this.videoModel.create({
 				id: videoId,
 				title: title,
 				description: description === null ? null : description,
 				user_email: email,
-				name: (await user).name,
+				name: user.name,
 				video_file_extension: videoFileExtension,
 				thumbnail_file_extension: thumbnailFileExtension,
 			}).catch(error=>{

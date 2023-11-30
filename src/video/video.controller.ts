@@ -133,18 +133,20 @@ export class VideoController {
 			thumbnail?: Express.Multer.File[];
 		},
 	) {
+		console.log(uploadVideoDto);
+
 		const { email, title, description } = uploadVideoDto;
 		// 비디오 ID 및 파이어 베이스 내 파일 경로 생성
 		const hashedFilePath = bcrypt
-			.hashSync(`${email}${title}`, 12)
+			.hashSync(`${Date.now()}`, 12)
 			.replace(/\//g, "");
 
 		// 메타 데이터를 DB에 저장
 		this.videoService.create(
 			hashedFilePath,
 			title,
-			description,
 			email,
+			description,
 			path.extname(files.video[0].originalname),
 			path.extname(files.thumbnail[0].originalname),
 		);
@@ -334,7 +336,7 @@ export class VideoController {
 
 	@ApiOperation({ description: "추천 알고리즘" })
 	@Get("recommend")
-	async recommendAlgorithm(@Query("history") params: any, @Query("page") page?: number) {
+	async recommendAlgorithm(@Query("history") params: any, @Query("page") page: number) {
 		// get history by userId
 		const history = await this.videoRecordService.findAll(params.userId);
 		// console.log(history)
@@ -351,18 +353,16 @@ export class VideoController {
 			JSON.parse(String(res).replace(/'/g, '"')).forEach(row => {
 				data.push(youtubeURL + row)
 			})
-			console.log(data)
 
 			const videoList = []
 			// await data.forEach(async (row) => {
 			// 	const video = await this.videoService.findOne(row);
 			// 	videoList.push(video)
 			// })
-			for(let i = 0; i<data.length; i++) {
+			for(let i = 0; i<12; i++) {
 				const video = await this.videoService.findOne(data[i]);
 				videoList.push(video)
 			}
-			console.log(videoList)
 
 			return videoList;
 		}
