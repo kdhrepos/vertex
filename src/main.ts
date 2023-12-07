@@ -3,7 +3,7 @@ import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { swaggerSetup } from "./swagger";
 import * as cookieParser from "cookie-parser";
-// import { setUpSession } from "./setup.session";
+import { setUpSession } from "./setup.session";
 import { urlencoded, json } from 'body-parser';
 
 async function bootstrap() {
@@ -32,7 +32,7 @@ async function bootstrap() {
 	app.use(urlencoded({ limit: '50mb', extended: true }));
 
 	// Session
-	// setUpSession(app);
+	setUpSession(app);
 
 	await app.listen(8000);
 }

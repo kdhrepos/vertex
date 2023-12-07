@@ -38,14 +38,14 @@ export class VideoRecordService {
 	async create(videoId: string, userId: string) {
 		try {
 			console.log(videoId, userId);
-			const existedRecord = await this.recordModel.findOne({
+			const record = await this.recordModel.findOne({
 				where: {
 					user_email: userId,
 					video_id: videoId,
 				},
 			});
 
-			if (existedRecord) {
+			if (record) {
 				return;
 			}
 
